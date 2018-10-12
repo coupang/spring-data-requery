@@ -42,12 +42,8 @@ plugins {
 apply plugin: 'nebula.nebula-release'
 
 allprojects {
-
-    ext.baseVersion = "0.4.0"
-    ext.snapshotVersion = true
-
     group = 'com.coupang'
-    version = "$baseVersion" + (snapshotVersion ? "-SNAPSHOT" : "")
+    version = "$baseVersion" + "$snapshotVersion"
 
     repositories {
         mavenCentral()
