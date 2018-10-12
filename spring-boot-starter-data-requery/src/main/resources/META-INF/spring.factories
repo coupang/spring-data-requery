@@ -1,0 +1,6 @@
+# Auto Configure
+org.springframework.boot.autoconfigure.EnableAutoConfiguration = \
+  org.springframework.boot.autoconfigure.data.requery.RequeryAutoConfiguration,\
+  org.springframework.boot.autoconfigure.data.requery.RequeryDataAutoConfiguration,\
+  org.springframework.boot.autoconfigure.data.requery.RequeryRepositoriesAutoConfiguration
+  

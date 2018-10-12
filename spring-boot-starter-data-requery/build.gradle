@@ -1,0 +1,60 @@
+buildscript {
+
+    repositories {
+        jcenter()
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+
+    dependencies {
+        // for Java apt
+        classpath "net.ltgt.gradle:gradle-apt-plugin:0.15"
+    }
+}
+
+/*
+ * Copyright 2018 Coupang Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// lombok을 gradle 에서 사용하기 위한 plugin
+plugins {
+    id 'io.franzbecker.gradle-lombok' version '1.14'
+}
+
+apply plugin: 'java'
+apply plugin: 'net.ltgt.apt'
+
+idea {
+    module {
+        sourceDirs += file("${buildDir}/generated/source/apt/main/")
+        testSourceDirs += file("${buildDir}/generated/source/apt/test/")
+        generatedSourceDirs += file("${buildDir}/generated/source/apt/main/")
+    }
+}
+
+dependencies {
+
+    optional project(":spring-data-requery")
+
+    optional "org.springframework.boot:spring-boot-autoconfigure"
+    optional "org.springframework.boot:spring-boot-autoconfigure-processor"
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+
+    testAnnotationProcessor "org.projectlombok:lombok"
+    testAnnotationProcessor "io.requery:requery-processor"
+
+    // spring framework
+    testImplementation("org.springframework.boot:spring-boot-starter-jdbc")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+}

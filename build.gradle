@@ -1,0 +1,262 @@
+/*
+ * Copyright 2018 Coupang Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+buildscript {
+
+    repositories {
+        jcenter()
+        maven { url "https://plugins.gradle.org/m2/" }
+        maven { url "https://repo.spring.io/plugins-release" }
+
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_version"
+        classpath "io.spring.gradle:propdeps-plugin:0.0.9.RELEASE"
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.6.RELEASE"
+        classpath "com.palantir:jacoco-coverage:0.4.0"
+
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokka_version"
+
+        classpath "com.netflix.nebula:nebula-publishing-plugin:9.0.2"
+        classpath "com.netflix.nebula:nebula-release-plugin:8.0.1"
+    }
+}
+
+plugins {
+    id "com.jfrog.bintray" version "1.7.3"
+}
+
+apply plugin: 'nebula.nebula-release'
+
+allprojects {
+
+    ext.baseVersion = "0.4.0"
+    ext.snapshotVersion = true
+
+    group = 'com.coupang'
+    version = "$baseVersion" + (snapshotVersion ? "-SNAPSHOT" : "")
+
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven { url "https://repo.spring.io/release" }
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+
+    apply plugin: 'propdeps'
+    apply plugin: 'propdeps-maven'
+    apply plugin: 'propdeps-idea'
+
+    apply plugin: "io.spring.dependency-management"
+    apply plugin: 'idea'
+
+    apply plugin: 'jacoco'
+    apply plugin: 'org.jetbrains.dokka'
+    apply plugin: 'nebula.maven-publish'
+
+    rootProject.tasks.release.finalizedBy tasks.publish
+
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.boot:spring-boot-dependencies:$spring_boot_version"
+        }
+
+        dependencies {
+            dependency "org.jetbrains.kotlin:kotlin-stdlib-common:$kotlin_version"
+            dependency "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+            dependency "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+            dependency "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+            dependency "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+            dependency "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+
+            dependency "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinx_coroutines_version"
+            dependency "org.jetbrains.kotlinx:kotlinx-coroutines-io:$kotlinx_coroutines_version"
+            dependency "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:$kotlinx_coroutines_version"
+            dependency "org.jetbrains.kotlinx:kotlinx-coroutines-nio:$kotlinx_coroutines_version"
+            dependency "org.jetbrains.kotlinx:kotlinx-coroutines-rx2:$kotlinx_coroutines_version"
+
+            dependency "io.requery:requery:$requery_version"
+            dependency "io.requery:requery-kotlin:$requery_version"
+            dependency "io.requery:requery-jackson:$requery_version"
+            dependency "io.requery:requery-processor:$requery_version"
+
+            dependency "org.slf4j:slf4j-api:1.7.25"
+            dependency "ch.qos.logback:logback-classic:1.2.3"
+            dependency "io.github.microutils:kotlin-logging:1.5.4"
+
+
+            dependency "org.projectlombok:lombok:1.18.0"
+
+            // JSR-310 Backport for JDK 7 / JDK 6
+            dependency "org.threeten:threetenbp:1.3.6"
+
+            dependency "com.zaxxer:HikariCP:3.1.0"
+
+            dependency "org.jetbrains:annotations:16.0.2"
+            dependency "com.google.code.findbugs:jsr305:3.0.2"
+
+            dependency "javax.cache:cache-api:1.1.0"
+            dependency "javax.inject:javax.inject:1"
+            dependency "javax.annotation:javax.annotation-api:1.3.2"
+            dependency "javax.interceptor:javax.interceptor-api:1.2.2"
+            dependency "javax.persistence:persistence-api:1.0.2"
+            dependency "javax.validation:validation-api:2.0.1.Final"
+            dependency "org.eclipse.persistence:javax.persistence:2.2.0"
+
+            dependency "org.javassist:javassist:3.22.0-GA"
+
+            // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+            dependency "org.apache.commons:commons-lang3:3.7"
+            dependency "org.apache.commons:commons-collections4:4.1"
+
+            dependency "org.cache2k:cache2k-all:1.0.2.Final"
+            dependency "org.cache2k:cache2k-jcache:1.0.2.Final"
+
+            dependency "org.assertj:assertj-core:3.10.0"
+            dependency "org.mockito:mockito-core:2.19.0"
+            dependency "com.nhaarman:mockito-kotlin:1.6.0"
+
+            dependency "mysql:mysql-connector-java:8.0.11"
+
+            dependency "com.h2database:h2:1.4.197"
+            dependency "org.testcontainers:mysql:1.7.3"
+            dependency "org.testcontainers:mariadb:1.7.3"
+            dependency "org.testcontainers:postgresql:1.7.3"
+        }
+    }
+
+    dependencies {
+
+        compile "org.slf4j:slf4j-api"
+        testCompile "ch.qos.logback:logback-classic"
+
+        testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
+        testRuntime "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
+
+        testCompile "org.assertj:assertj-core"
+        testCompile "org.mockito:mockito-core"
+
+        testImplementation "com.fasterxml.jackson.core:jackson-core"
+        testImplementation "com.fasterxml.jackson.core:jackson-databind"
+        testImplementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+        testImplementation "com.fasterxml.jackson.datatype:jackson-datatype-jdk8"
+
+        testImplementation "org.cache2k:cache2k-all"
+        testImplementation "org.cache2k:cache2k-jcache"
+
+        testImplementation "io.reactivex.rxjava2:rxjava"
+        testImplementation "io.projectreactor:reactor-core"
+
+        // Only needed to run tests in an (IntelliJ) IDE(A) that bundles an older version
+        testRuntime "org.junit.platform:junit-platform-launcher:$junit_platform_version"
+        testRuntime "org.junit.platform:junit-platform-console-standalone:$junit_platform_version"
+
+        testCompile "org.springframework.boot:spring-boot-starter-jdbc"
+        testCompile "org.springframework.boot:spring-boot-starter-test"
+
+        testCompile "com.zaxxer:HikariCP"
+        testCompile "mysql:mysql-connector-java"
+
+        testCompile "com.h2database:h2"
+        testCompile "org.testcontainers:mysql"
+    }
+
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+
+    compileTestJava {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+
+    test {
+        useJUnitPlatform()
+        // systemProperty 'java.util.logging.manager', 'ch.qos.logback.classic.Logger'
+
+        ignoreFailures true
+        // maxParallelForks 4
+        // set heap size for the test JVM(s)
+        minHeapSize = "1G"
+        maxHeapSize = "4G"
+        jvmArgs "-XX:ReservedCodeCacheSize=2g"
+    }
+
+    jacoco {
+        toolVersion = "0.8.1"
+    }
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    // Skip Documentation Tasks?
+    def skipDocumantation = false
+
+
+    if (!skipDocumantation) {
+        dokka {
+            outputFormat = 'html'
+            outputDirectory = "$buildDir/dokka"
+            // reportNotDocumented = false
+
+            includes = ['README.md']
+        }
+
+        task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
+            includes = ['README.md']
+
+            outputFormat = 'javadoc'
+            outputDirectory = "$buildDir/javadoc"
+            // reportNotDocumented = false
+        }
+
+        // Too slow ...
+        task dokkaJar(type: Jar, dependsOn: 'dokka') {
+            classifier = 'kdoc'
+            from fileTree(new File(project.buildDir, 'kdoc'))
+        }
+
+        task javadocJar(type: Jar, dependsOn: 'dokkaJavadoc') {
+            classifier = 'javadoc'
+            // from dokkaJavadoc.outputDirectory
+            from fileTree(new File(project.buildDir, 'javadoc'))
+        }
+    }
+
+    artifacts {
+        archives sourcesJar
+    }
+
+    publishing {
+        publications {
+            nebula(MavenPublication) {
+                artifact sourcesJar
+                if (!skipDocumantation) {
+                    artifact dokkaJar
+                    artifact javadocJar
+                }
+            }
+        }
+        repositories {
+            mavenLocal()
+        }
+    }
+}

@@ -1,0 +1,2 @@
+#http\://www.springframework.org/schema/data/requery = \
+#  org.springframework.data.requery.repository.config.RequeryRepositoryNameSpaceHandler
