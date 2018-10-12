@@ -36,7 +36,7 @@ buildscript {
 }
 
 plugins {
-    id "com.jfrog.bintray" version "1.7.3"
+    id "com.jfrog.bintray" version "1.8.4"
 }
 
 apply plugin: 'nebula.nebula-release'
@@ -245,6 +245,27 @@ subprojects {
         archives sourcesJar
     }
 
+    def pomConfig = {
+        licenses {
+            license {
+                name "The Apache Software License, Version 2.0"
+                url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                distribution "repo"
+            }
+        }
+        developers {
+            developer {
+                id "debop"
+                name "Sunghyouk Bae"
+                email "debop@coupang.com"
+            }
+        }
+
+        scm {
+            url "https://github.com/coupang/spring-data-requery"
+        }
+    }
+
     publishing {
         publications {
             nebula(MavenPublication) {
@@ -256,7 +277,29 @@ subprojects {
             }
         }
         repositories {
+            maven { url "https://bintray.com/coupang/coupang-oss-repository" }
             mavenLocal()
+        }
+    }
+
+    bintray {
+        user = System.getenv('BINTRAY_USER')
+        key = System.getenv('BINTRAY_KEY')
+        publications = ['MavenPublication']
+        publish = true
+        pkg {
+            repo = 'coupang-oss-repository'
+            name = "spring-data-requery"
+            userOrg = 'debop'
+            licenses = ['Apache-2.0']
+            vcsUrl = 'https://github.com/coupang/spring-data-requery.git'
+
+            version {
+                name = "$version"
+                desc = 'Spring Data with Requery'
+                released = new Date()
+                vcsTag = "$version"
+            }
         }
     }
 }

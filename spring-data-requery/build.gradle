@@ -79,3 +79,4 @@ dependencies {
     compile "org.slf4j:slf4j-api"
     testImplementation "ch.qos.logback:logback-classic"
 }
+
