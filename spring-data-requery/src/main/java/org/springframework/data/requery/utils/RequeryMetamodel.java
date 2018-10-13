@@ -27,22 +27,25 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * RequeryMetamodel
+ * Requery Entity의 meta model 정보를 나타냅니다.
  *
  * @author debop
  * @since 18. 6. 7
  */
 public class RequeryMetamodel {
 
+    @NotNull
     private final EntityModel entityModel;
+
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     private Optional<Collection<Class<?>>> managedTypes = Optional.empty();
 
 
-    public RequeryMetamodel(@NotNull EntityModel entityModel) {
+    public RequeryMetamodel(@NotNull final EntityModel entityModel) {
         this.entityModel = entityModel;
     }
 
-    public boolean isRequeryManaged(@NotNull Class<?> entityClass) {
+    public boolean isRequeryManaged(@NotNull final Class<?> entityClass) {
         return getManagedTypes().contains(entityClass);
     }
 
@@ -53,7 +56,7 @@ public class RequeryMetamodel {
             .stream()
             .filter(type -> entityClass.equals(type.getClassType()))
             .findFirst()
-            .flatMap(type -> getSingleKeyAttribute(type))
+            .flatMap(RequeryMetamodel::getSingleKeyAttribute)
             .filter(attr -> attr.getClassType().equals(attributeClass))
             .map(attr -> attr.getName().equals(name))
             .orElse(false);
@@ -63,10 +66,10 @@ public class RequeryMetamodel {
     @NotNull
     private Collection<Class<?>> getManagedTypes() {
         if (!managedTypes.isPresent()) {
-            Set<Type<?>> managedTypes = entityModel.getTypes();
-            Set<Class<?>> types = new HashSet<>(managedTypes.size());
+            Set<Type<?>> entityTypes = entityModel.getTypes();
+            Set<Class<?>> types = new HashSet<>(entityTypes.size());
 
-            for (Type<?> managedType : managedTypes) {
+            for (Type<?> managedType : entityTypes) {
                 Class<?> type = managedType.getClassType();
                 if (type != null) {
                     types.add(type);
@@ -79,7 +82,8 @@ public class RequeryMetamodel {
     }
 
 
-    private static Optional<? extends Attribute<?, ?>> getSingleKeyAttribute(Type<?> type) {
+    @NotNull
+    private static Optional<? extends Attribute<?, ?>> getSingleKeyAttribute(@NotNull final Type<?> type) {
         return Optional.ofNullable(type.getSingleKeyAttribute());
     }
 

@@ -21,6 +21,7 @@ import io.requery.query.element.QueryElement;
 import io.requery.query.function.Count;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.ReturnedType;
 import org.springframework.data.repository.query.parser.PartTree;
@@ -29,7 +30,7 @@ import org.springframework.data.requery.core.RequeryOperations;
 import static org.springframework.data.requery.utils.RequeryUtils.unwrap;
 
 /**
- * org.springframework.data.requery.repository.query.RequeryCountQueryCreator
+ * Requery용 Count Query를 생성하는 클래스
  *
  * @author debop
  * @since 18. 6. 21
@@ -37,37 +38,28 @@ import static org.springframework.data.requery.utils.RequeryUtils.unwrap;
 @Slf4j
 public class RequeryCountQueryCreator extends RequeryQueryCreator {
 
-    public RequeryCountQueryCreator(@NotNull RequeryOperations operations,
-                                    @NotNull ParameterMetadataProvider provider,
-                                    @NotNull ReturnedType returnedType,
-                                    @NotNull PartTree tree) {
+    public RequeryCountQueryCreator(@NotNull final RequeryOperations operations,
+                                    @NotNull final ParameterMetadataProvider provider,
+                                    @NotNull final ReturnedType returnedType,
+                                    @NotNull final PartTree tree) {
         super(operations, provider, returnedType, tree);
     }
 
+    @NotNull
     @Override
-    protected QueryElement<?> createQueryElement(ReturnedType type) {
+    protected QueryElement<?> createQueryElement(@NotNull final ReturnedType type) {
         return unwrap(getOperations().select(Count.count(getDomainClass())));
     }
 
     @SuppressWarnings("unchecked")
+    @NotNull
     @Override
-    protected QueryElement<?> complete(LogicalCondition<?, ?> criteria,
-                                       Sort sort,
-                                       QueryElement<?> root) {
+    protected QueryElement<?> complete(@Nullable final LogicalCondition<?, ?> criteria,
+                                       @NotNull final Sort sort,
+                                       @NotNull final QueryElement<?> root) {
 
         return unwrap(getOperations()
                           .select(Count.count(getDomainClass()))
                           .where(criteria));
-
-//        QueryElement<?> query = unwrap(getOperations().select(Count.count(getDomainClass())));
-
-//        if (criteria != null) {
-//            if (criteria.isDistinct()) {
-//                query = unwrap(query.distinct());
-//            }
-//
-//            return unwrap(RequeryUtils.applyWhereClause(query, criteria.getWhereElements()));
-//        }
-//        return query;
     }
 }

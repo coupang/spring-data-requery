@@ -22,18 +22,30 @@ import org.springframework.data.mapping.PersistentEntity;
 import java.util.Collection;
 
 /**
- * org.springframework.data.requery.mapping.RequeryPersistentEntity
+ * Requery Entity 에서 id, index 정보등을 추출할 수 있도록 하는 {@link PersistentEntity}
  *
  * @author debop
  * @since 18. 6. 7
  */
 public interface RequeryPersistentEntity<T> extends PersistentEntity<T, RequeryPersistentProperty>, ApplicationContextAware {
 
+    /**
+     * Entity의 Identifier 속성이 한 개인 경우 해당 속성에 대한 {@link RequeryPersistentProperty} 정보를 반환합니다.
+     */
     RequeryPersistentProperty getSingleIdProperty();
 
+    /**
+     * Entity의 모든 identifier 에 대한 {@link RequeryPersistentProperty}의 컬렉션을 반환합니다.
+     */
     Collection<RequeryPersistentProperty> getIdProperties();
 
+    /**
+     * 모든 index 정보를 반환합니다.
+     */
     Collection<RequeryPersistentProperty> getIndexes();
 
+    /**
+     * embedded entity에 대한 {@link RequeryPersistentProperty}를 제공합니다.
+     */
     Collection<RequeryPersistentProperty> getEmbeddedProperties();
 }

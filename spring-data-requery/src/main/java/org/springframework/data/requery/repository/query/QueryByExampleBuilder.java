@@ -23,8 +23,10 @@ import io.requery.query.Result;
 import io.requery.query.WhereAndOr;
 import io.requery.query.element.LogicalOperator;
 import io.requery.query.element.QueryElement;
+import io.requery.query.function.Function;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.ExampleMatcher.NullHandler;
@@ -32,7 +34,6 @@ import org.springframework.data.requery.utils.RequeryUtils;
 import org.springframework.data.support.ExampleMatcherAccessor;
 import org.springframework.data.util.DirectFieldAccessFallbackBeanWrapper;
 import org.springframework.util.Assert;
-import org.springframework.util.LinkedMultiValueMap;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -42,8 +43,7 @@ import static org.springframework.data.domain.ExampleMatcher.StringMatcher;
 import static org.springframework.data.requery.utils.RequeryUtils.unwrap;
 
 /**
- * Query by {@link Example} 을 수행하기 위해, Example 을 이용하여
- * {@link WhereAndOr} 를 빌드하도록 합니다.
+ * Query by {@link Example} 을 수행하기 위해, Example 을 이용하여 {@link QueryElement}를 빌드합니다.
  *
  * @author debop
  * @since 18. 6. 19
@@ -52,15 +52,15 @@ import static org.springframework.data.requery.utils.RequeryUtils.unwrap;
 @UtilityClass
 public class QueryByExampleBuilder {
 
-    private static final LinkedMultiValueMap<Class<?>, Field> entityFields = new LinkedMultiValueMap<>();
+//    private static final LinkedMultiValueMap<Class<?>, Field> entityFields = new LinkedMultiValueMap<>();
 
     /**
      * {@link Example} 를 표현하는 {@link WhereAndOr} 조건절로 빌드합니다.
      */
-    // TODO : rename to applyExample 
     @SuppressWarnings("unchecked")
-    public static <E> QueryElement<? extends Result<E>> getWhereAndOr(QueryElement<? extends Result<E>> root, Example<E> example) {
-
+    @NotNull
+    public static <E> QueryElement<? extends Result<E>> applyExample(@NotNull final QueryElement<? extends Result<E>> root,
+                                                                     @NotNull final Example<E> example) {
         Assert.notNull(root, "Root must not be null!");
         Assert.notNull(example, "Example must not be null!");
 
@@ -70,9 +70,6 @@ public class QueryByExampleBuilder {
                                                          example.getProbe(),
                                                          example.getProbeType(),
                                                          new ExampleMatcherAccessor(matcher));
-
-//        List<Condition<?, ?>> conds = RequeryUtils.getGenericConditions(conditions);
-//        return (QueryElement<? extends Result<E>>) buildWhereClause(root, conds, matcher.isAllMatching());
 
         LogicalCondition<E, ?> whereCondition = null;
         if (matcher.isAllMatching()) {
@@ -87,10 +84,11 @@ public class QueryByExampleBuilder {
     }
 
     @SuppressWarnings("unchecked")
-    private <E> List<Condition<E, ?>> getConditions(QueryElement<? extends Result<E>> root,
-                                                    Object exampleValue,
-                                                    Class<E> probeType,
-                                                    ExampleMatcherAccessor exampleAccessor) {
+    @NotNull
+    private <E> List<Condition<E, ?>> getConditions(@NotNull final QueryElement<? extends Result<E>> root,
+                                                    @NotNull final Object exampleValue,
+                                                    @NotNull final Class<E> probeType,
+                                                    @NotNull final ExampleMatcherAccessor exampleAccessor) {
 
         List<Condition<E, ?>> conditions = new ArrayList<>();
         DirectFieldAccessFallbackBeanWrapper beanWrapper = new DirectFieldAccessFallbackBeanWrapper(exampleValue);
@@ -98,7 +96,7 @@ public class QueryByExampleBuilder {
         List<Field> fields = RequeryUtils.findEntityFields(probeType);
 
         for (Field field : fields) {
-            // Query By Example 에서 지원하지 못하는 Field 들은 제외합니다.
+            // Query By Example을 지원하지 못하는 Field 들은 제외합니다.
             boolean notSupportedField = RequeryUtils.isAssociationField(field) ||
                                         RequeryUtils.isEmbededField(field) ||
                                         RequeryUtils.isTransientField(field);
@@ -127,7 +125,7 @@ public class QueryByExampleBuilder {
                 conditions.add(condition);
 
             } else {
-                Condition<E, ?> condition = (Condition<E, ?>) ((NamedExpression) expr).eq(fieldValue);
+                Condition<E, ?> condition = (Condition<E, ?>) ((NamedExpression<Object>) expr).eq(fieldValue);
                 conditions.add(condition);
             }
         }
@@ -136,34 +134,36 @@ public class QueryByExampleBuilder {
     }
 
     @SuppressWarnings("unchecked")
-    private <E> Condition<E, ?> buildStringCondition(ExampleMatcherAccessor exampleAccessor,
-                                                     NamedExpression<String> expression,
-                                                     String fieldName,
-                                                     String fieldValue) {
+    @NotNull
+    private <E> Condition<E, ?> buildStringCondition(@NotNull final ExampleMatcherAccessor exampleAccessor,
+                                                     @NotNull final NamedExpression<String> expression,
+                                                     @NotNull final String fieldName,
+                                                     @NotNull final String fieldValue) {
         Boolean ignoreCase = exampleAccessor.isIgnoreCaseForPath(fieldName);
 
         log.trace("Matching with ignoreCase? ignoreCase={}", ignoreCase);
 
         StringMatcher matcher = exampleAccessor.getStringMatcherForPath(fieldName);
+        Function<String> lower = expression.function("Lower");
 
         switch (matcher) {
             case DEFAULT:
             case EXACT:
                 return (Condition<E, ?>) (ignoreCase
-                                          ? expression.function("Lower").eq(fieldValue.toLowerCase())
+                                          ? lower.eq(fieldValue.toLowerCase())
                                           : expression.eq(fieldValue));
             case CONTAINING:
                 return (Condition<E, ?>) (ignoreCase
-                                          ? expression.function("Lower").like("%" + fieldValue.toLowerCase() + "%")
+                                          ? lower.like("%" + fieldValue.toLowerCase() + "%")
                                           : expression.like("%" + fieldValue + "%"));
             case STARTING:
                 return (Condition<E, ?>) (ignoreCase
-                                          ? expression.function("Lower").like((fieldValue + "%").toLowerCase())
+                                          ? lower.like((fieldValue + "%").toLowerCase())
                                           : expression.like(fieldValue + "%"));
 
             case ENDING:
                 return (Condition<E, ?>) (ignoreCase
-                                          ? expression.function("Lower").like(("%" + fieldValue).toLowerCase())
+                                          ? lower.like(("%" + fieldValue).toLowerCase())
                                           : expression.like("%" + fieldValue));
             default:
                 throw new IllegalArgumentException("Unsupported StringMatcher " + matcher);

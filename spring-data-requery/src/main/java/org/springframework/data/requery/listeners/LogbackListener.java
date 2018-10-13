@@ -20,11 +20,12 @@ import io.requery.sql.BoundParameters;
 import io.requery.sql.EntityStateListener;
 import io.requery.sql.StatementListener;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.Nullable;
 
 import java.sql.Statement;
 
 /**
- * org.springframework.data.requery.listeners.LogbackListener
+ * Enitty 변화를 감지해서 logging 하는 listener입니다.
  *
  * @author debop
  */
@@ -42,52 +43,54 @@ public class LogbackListener<E> implements EntityStateListener<E>, StatementList
     }
 
     @Override
-    public void postDelete(E entity) {
+    public void postDelete(@Nullable final E entity) {
         log.debug("postDelete {}", entity);
     }
 
     @Override
-    public void postInsert(E entity) {
+    public void postInsert(@Nullable final E entity) {
         log.debug("postInsert {}", entity);
     }
 
     @Override
-    public void postLoad(E entity) {
+    public void postLoad(@Nullable final E entity) {
         log.debug("postLoad {}", entity);
     }
 
     @Override
-    public void postUpdate(E entity) {
+    public void postUpdate(@Nullable final E entity) {
         log.debug("postUpdate {}", entity);
     }
 
     @Override
-    public void preDelete(E entity) {
+    public void preDelete(@Nullable final E entity) {
         log.debug("preDelete {}", entity);
     }
 
     @Override
-    public void preInsert(E entity) {
+    public void preInsert(@Nullable final E entity) {
         log.debug("preInsert {}", entity);
     }
 
     @Override
-    public void preUpdate(E entity) {
+    public void preUpdate(@Nullable final E entity) {
         log.debug("preUpdate {}", entity);
     }
 
     @Override
-    public void beforeExecuteUpdate(Statement statement, String sql, BoundParameters parameters) {
-
+    public void beforeExecuteUpdate(@Nullable final Statement statement,
+                                    @Nullable final String sql,
+                                    @Nullable final BoundParameters parameters) {
+        log.debug("beforeExecuteUpdate ... sql={}", sql);
     }
 
     @Override
-    public void afterExecuteUpdate(Statement statement, int count) {
+    public void afterExecuteUpdate(@Nullable final Statement statement, int count) {
         log.debug("afterExecuteUpdate count={}", count);
     }
 
     @Override
-    public void beforeExecuteBatchUpdate(Statement statement, String sql) {
+    public void beforeExecuteBatchUpdate(@Nullable final Statement statement, @Nullable final String sql) {
         if (statement != null) {
             log.debug("beforeExecuteBatchUpdate SQL:\n{}", sql);
 
@@ -98,12 +101,14 @@ public class LogbackListener<E> implements EntityStateListener<E>, StatementList
     }
 
     @Override
-    public void afterExecuteBatchUpdate(Statement statement, int[] count) {
+    public void afterExecuteBatchUpdate(final Statement statement, int[] count) {
         log.debug("afterExecuteBatchUpdate count={}", count);
     }
 
     @Override
-    public void beforeExecuteQuery(Statement statement, String sql, BoundParameters parameters) {
+    public void beforeExecuteQuery(@Nullable final Statement statement,
+                                   final String sql,
+                                   final BoundParameters parameters) {
         if (statement != null) {
             if (parameters != null && !parameters.isEmpty()) {
                 log.debug("beforeExecuteUpdate SQL:\n{} ({})", sql, parameters);
@@ -118,7 +123,7 @@ public class LogbackListener<E> implements EntityStateListener<E>, StatementList
     }
 
     @Override
-    public void afterExecuteQuery(Statement statement) {
+    public void afterExecuteQuery(@Nullable final Statement statement) {
         log.debug("afterExecuteQuery");
     }
 }

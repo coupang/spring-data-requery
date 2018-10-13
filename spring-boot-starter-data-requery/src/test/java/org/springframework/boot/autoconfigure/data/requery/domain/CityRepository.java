@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.requery.domain;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.Repository;
@@ -27,7 +29,11 @@ import org.springframework.data.repository.Repository;
  */
 public interface CityRepository extends Repository<City, Long> {
 
-    Page<City> findByNameLikeAndCountryLikeAllIgnoringCase(String name, String country, Pageable pageable);
+    @NotNull
+    Page<City> findByNameLikeAndCountryLikeAllIgnoringCase(@NotNull final String name,
+                                                           @NotNull final String country,
+                                                           @NotNull final Pageable pageable);
 
-    City findByNameAndCountryAllIgnoringCase(String name, String country);
+    @Nullable
+    City findByNameAndCountryAllIgnoringCase(@NotNull final String name, @NotNull final String country);
 }

@@ -17,12 +17,12 @@
 package org.springframework.data.requery.converters;
 
 import io.requery.Converter;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.time.LocalTime;
 
 /**
- * org.springframework.data.requery.converters.LocalTimeToLongConverter
+ * {@link LocalTime} 을 {@link Long} (Timestamp) 로 저장하는 Converter
  *
  * @author debop
  */
@@ -44,11 +44,13 @@ public class LocalTimeToLongConverter implements Converter<LocalTime, Long> {
         return null;
     }
 
+    @Nullable
     @Override
-    public Long convertToPersisted(LocalTime value) {
+    public Long convertToPersisted(@Nullable LocalTime value) {
         return (value != null) ? value.toNanoOfDay() : null;
     }
 
+    @Nullable
     @Override
     public LocalTime convertToMapped(Class<? extends LocalTime> type, @Nullable Long value) {
         return (value != null) ? LocalTime.ofNanoOfDay(value) : null;

@@ -19,9 +19,8 @@ package org.springframework.data.requery.domain;
 import java.io.Serializable;
 
 /**
- * org.springframework.data.requery.domain.ValueObject
+ * Value Object 를 표현하는 Interface 입니다.
  *
  * @author debop
  */
-public interface ValueObject extends Serializable {
-}
+public interface ValueObject extends Serializable {}

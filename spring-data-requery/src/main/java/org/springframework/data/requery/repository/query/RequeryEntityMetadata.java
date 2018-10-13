@@ -16,6 +16,7 @@
 
 package org.springframework.data.requery.repository.query;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.repository.core.EntityMetadata;
 
 /**
@@ -29,6 +30,7 @@ public interface RequeryEntityMetadata<T> extends EntityMetadata<T> {
     /**
      * Returns the name of the entity
      */
+    @NotNull
     String getEntityName();
 
     /**

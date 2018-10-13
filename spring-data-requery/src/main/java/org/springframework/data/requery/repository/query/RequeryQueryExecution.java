@@ -79,7 +79,7 @@ public abstract class RequeryQueryExecution {
      *
      * @param conversionService must not be {@literal null}.
      */
-    public static void potentiallyRemoveOptionalConverter(ConfigurableConversionService conversionService) {
+    public static void potentiallyRemoveOptionalConverter(@NotNull final ConfigurableConversionService conversionService) {
 
         ClassLoader classLoader = RequeryQueryExecution.class.getClassLoader();
 
@@ -94,13 +94,13 @@ public abstract class RequeryQueryExecution {
     }
 
     /**
-     * Executes the given {@link DeclaredRequeryQuery} with the given {@link ParameterBinder}.
+     * Executes the given {@link AbstractRequeryQuery} with the given values.
      */
     @Nullable
-    public Object execute(@NotNull AbstractRequeryQuery query, @NotNull Object[] values) {
+    public Object execute(@NotNull final AbstractRequeryQuery query, @NotNull final Object[] values) {
 
-        Assert.notNull(query, "AbstractRequeryQuery must not be null!");
-        Assert.notNull(values, "Values must not be null!");
+        Assert.notNull(query, "query must not be null.");
+        Assert.notNull(values, "values must not be null.");
 
         Object result;
 
@@ -121,7 +121,7 @@ public abstract class RequeryQueryExecution {
      * Method to implement {@link DeclaredRequeryQuery} executions by single enum values.
      */
     @Nullable
-    protected abstract Object doExecute(AbstractRequeryQuery query, Object[] values);
+    protected abstract Object doExecute(@NotNull final AbstractRequeryQuery query, final Object[] values);
 
 
     //
@@ -134,7 +134,7 @@ public abstract class RequeryQueryExecution {
      */
     static class CollectionExecution extends RequeryQueryExecution {
         @Override
-        protected @Nullable Object doExecute(AbstractRequeryQuery query, Object[] values) {
+        protected @Nullable Object doExecute(@NotNull final AbstractRequeryQuery query, final Object[] values) {
             Result<?> result = (Result<?>) query.createQueryElement(values).get();
             return result.toList();
         }
@@ -153,7 +153,7 @@ public abstract class RequeryQueryExecution {
 
         @Override
         @SuppressWarnings("unchecked")
-        protected @Nullable SliceImpl doExecute(AbstractRequeryQuery query, Object[] values) {
+        protected @Nullable SliceImpl doExecute(@NotNull final AbstractRequeryQuery query, final Object[] values) {
             ParametersParameterAccessor accessor = new ParametersParameterAccessor(parameters, values);
             Pageable pageable = accessor.getPageable();
 
@@ -194,7 +194,7 @@ public abstract class RequeryQueryExecution {
 
         @Override
         @SuppressWarnings("unchecked")
-        protected @Nullable Page<?> doExecute(AbstractRequeryQuery query, Object[] values) {
+        protected @Nullable Page<?> doExecute(@NotNull final AbstractRequeryQuery query, final Object[] values) {
             ParameterAccessor accessor = new ParametersParameterAccessor(parameters, values);
             Pageable pageable = accessor.getPageable();
 
@@ -216,7 +216,7 @@ public abstract class RequeryQueryExecution {
         }
 
         @SuppressWarnings("unchecked")
-        private long count(AbstractRequeryQuery query, Object[] values) {
+        private long count(@NotNull final AbstractRequeryQuery query, final Object[] values) {
             QueryElement<?> queryElement = unwrap(query.createQueryElement(values));
             QueryElement<?> selection = (QueryElement<?>) query.getOperations().select(Count.count(query.getDomainClass()));
 

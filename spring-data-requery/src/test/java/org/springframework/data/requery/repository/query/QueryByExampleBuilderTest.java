@@ -102,6 +102,6 @@ public class QueryByExampleBuilderTest extends AbstractDomainTest {
     @SuppressWarnings("unchecked")
     private Return<? extends Result<BasicUser>> buildQueryByExample(Example<BasicUser> example) {
         QueryElement<? extends Result<BasicUser>> root = (QueryElement<? extends Result<BasicUser>>) requeryTemplate.select(BasicUser.class);
-        return QueryByExampleBuilder.getWhereAndOr(root, example);
+        return QueryByExampleBuilder.applyExample(root, example);
     }
 }

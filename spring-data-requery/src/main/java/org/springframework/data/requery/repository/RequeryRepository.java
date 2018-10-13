@@ -17,6 +17,8 @@
 package org.springframework.data.requery.repository;
 
 import io.requery.meta.Attribute;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Sort;
@@ -41,46 +43,47 @@ public interface RequeryRepository<T, ID>
     RequeryOperations getOperations();
 
     @Override
-    List<T> findAll();
+    @NotNull List<T> findAll();
 
     @Override
-    List<T> findAll(Sort sort);
+    @NotNull List<T> findAll(@NotNull final Sort sort);
 
     @Override
-    List<T> findAllById(Iterable<ID> ids);
+    @NotNull List<T> findAllById(@NotNull final Iterable<ID> ids);
 
     @Override
-    <S extends T> List<S> saveAll(Iterable<S> entities);
+    <S extends T> @NotNull List<S> saveAll(@NotNull final Iterable<S> entities);
 
-    <S extends T> S insert(S entity);
+    <S extends T> @NotNull S insert(@NotNull final S entity);
 
-    <S extends T, K> K insert(S entity, Class<K> keyClass);
+    <S extends T, K> @NotNull K insert(@NotNull final S entity, @NotNull final Class<K> keyClass);
 
-    <S extends T> List<S> insert(Iterable<S> entities);
+    <S extends T> @NotNull List<S> insert(@NotNull final Iterable<S> entities);
 
-    <S extends T, K> List<K> insert(Iterable<S> entities, Class<K> keyClass);
+    <S extends T, K> @NotNull List<K> insert(@NotNull final Iterable<S> entities, @NotNull final Class<K> keyClass);
 
-    <S extends T> S upsert(S entity);
+    <S extends T> @NotNull S upsert(@NotNull final S entity);
 
-    <S extends T> List<S> upsertAll(Iterable<S> entities);
+    <S extends T> @NotNull List<S> upsertAll(@NotNull final Iterable<S> entities);
 
-    <S extends T> S refresh(S entity);
+    @SuppressWarnings("UnusedReturnValue")
+    <S extends T> @NotNull S refresh(@NotNull final S entity);
 
     @SuppressWarnings("unchecked")
-    <S extends T> List<S> refresh(Iterable<S> entities, Attribute<S, ?>... attributes);
+    <S extends T> @NotNull List<S> refresh(@NotNull final Iterable<S> entities, final Attribute<S, ?>... attributes);
 
-    <S extends T> S refreshAll(S entity);
+    <S extends T> @NotNull S refreshAll(@NotNull final S entity);
 
-    void deleteInBatch(Iterable<T> entities);
+    void deleteInBatch(@NotNull final Iterable<T> entities);
 
     int deleteAllInBatch();
 
-    T getOne(ID id);
+    @Nullable T getOne(@NotNull final ID id);
 
     @Override
-    <S extends T> List<S> findAll(Example<S> example);
+    <S extends T> @NotNull List<S> findAll(@NotNull final Example<S> example);
 
     @Override
-    <S extends T> List<S> findAll(Example<S> example, Sort sort);
+    <S extends T> @NotNull List<S> findAll(@NotNull final Example<S> example, @NotNull final Sort sort);
 
 }

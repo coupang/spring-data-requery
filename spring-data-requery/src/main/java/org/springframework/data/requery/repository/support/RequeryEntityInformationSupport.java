@@ -26,7 +26,7 @@ import org.springframework.data.requery.repository.query.RequeryEntityMetadata;
 import org.springframework.util.Assert;
 
 /**
- * RequeryEntityInformationSupport
+ * {@link RequeryEntityInformation} 을 구현하여,
  *
  * @author debop
  * @since 18. 6. 7
@@ -35,17 +35,19 @@ import org.springframework.util.Assert;
 public abstract class RequeryEntityInformationSupport<T, ID>
     extends AbstractEntityInformation<T, ID> implements RequeryEntityInformation<T, ID> {
 
-    private RequeryEntityMetadata<T> metadata;
+    @NotNull private final RequeryEntityMetadata<T> metadata;
 
-    public RequeryEntityInformationSupport(Class<T> domainClass) {
+    public RequeryEntityInformationSupport(@NotNull final Class<T> domainClass) {
         super(domainClass);
         this.metadata = DefaultRequeryEntityMetadata.of(domainClass);
     }
 
+    @NotNull
     public String getEntityName() {
         return metadata.getEntityName();
     }
 
+    @NotNull
     public String getModelName() {
         return metadata.getModelName();
     }

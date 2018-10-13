@@ -20,6 +20,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.repository.config.DefaultRepositoryBaseClass;
 import org.springframework.data.repository.query.QueryLookupStrategy;
+import org.springframework.data.requery.repository.RequeryRepository;
 import org.springframework.data.requery.repository.support.RequeryRepositoryFactoryBean;
 
 import java.lang.annotation.Documented;
@@ -30,7 +31,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * EnableRequeryRepositories
+ * {@link RequeryRepository}가 자동으로 instancing 되도록 합니다.
  *
  * @author debop
  * @since 18. 6. 4

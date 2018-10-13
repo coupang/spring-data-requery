@@ -18,6 +18,7 @@ package org.springframework.data.requery.domain;
 
 import io.requery.Convert;
 import io.requery.Lazy;
+import io.requery.Nullable;
 import io.requery.PreInsert;
 import io.requery.PreUpdate;
 import io.requery.Superclass;
@@ -36,9 +37,11 @@ public abstract class AbstractAuditable<ID> extends AbstractPersistable<ID> {
 
     private static final long serialVersionUID = 4027911066590384558L;
 
+    @Nullable
     @Convert(LocalDateTimeConverter.class)
     protected LocalDateTime createdDate;
 
+    @Nullable
     @Lazy
     @Convert(LocalDateTimeConverter.class)
     protected LocalDateTime lastModifiedDate;

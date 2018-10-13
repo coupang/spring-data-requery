@@ -32,22 +32,24 @@ import org.springframework.util.Assert;
 public class RequeryPersistableEntityInformation<T extends Persistable<ID>, ID>
     extends RequeryEntityModelEntityInformation<T, ID> {
 
-    public RequeryPersistableEntityInformation(@NotNull Class<T> domainClass,
-                                               @NotNull EntityModel entityModel) {
+    public RequeryPersistableEntityInformation(@NotNull final Class<T> domainClass,
+                                               @NotNull final EntityModel entityModel) {
         super(domainClass, entityModel);
     }
 
     @Override
-    public boolean isNew(@NotNull T entity) {
+    public boolean isNew(@NotNull final T entity) {
         Assert.notNull(entity, "entity must not be nulll");
-        log.trace("is new entity. entity={}", entity);
+        log.trace("is new entity. entity={}, isNew={}", entity, entity.isNew());
+
         return entity.isNew();
     }
 
     @Override
-    public ID getId(@NotNull T entity) {
+    public ID getId(@NotNull final T entity) {
         Assert.notNull(entity, "entity must not be nulll");
-        log.trace("get id of entity. entity={}", entity);
+        log.trace("get id of entity. entity={}, id={]", entity, entity.getId());
+
         return entity.getId();
     }
 }

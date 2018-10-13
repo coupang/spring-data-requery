@@ -17,8 +17,9 @@
 package org.springframework.data.requery.converters;
 
 import io.requery.Converter;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 /**
@@ -28,6 +29,7 @@ import java.util.ArrayList;
  */
 public class IntArrayListToStringConverter implements Converter<ArrayList<Integer>, String> {
 
+    @SuppressWarnings("unchecked")
     @Override
     public Class<ArrayList<Integer>> getMappedType() {
         return (Class) ArrayList.class;
@@ -44,9 +46,10 @@ public class IntArrayListToStringConverter implements Converter<ArrayList<Intege
         return null;
     }
 
+    @Nullable
     @Override
-    public String convertToPersisted(ArrayList<Integer> value) {
-        if (value != null && value.size() == 0) {
+    public String convertToPersisted(@Nullable ArrayList<Integer> value) {
+        if (value != null && !value.isEmpty()) {
             StringBuilder builder = new StringBuilder();
             for (Integer item : value) {
                 builder.append(item).append(",");
@@ -55,9 +58,10 @@ public class IntArrayListToStringConverter implements Converter<ArrayList<Intege
                    ? builder.substring(0, builder.length() - 1)
                    : builder.toString();
         }
-        return "";
+        return null;
     }
 
+    @NotNull
     @Override
     public ArrayList<Integer> convertToMapped(Class<? extends ArrayList<Integer>> type, @Nullable String value) {
         if (value != null && value.length() > 0) {

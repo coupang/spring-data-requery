@@ -43,20 +43,24 @@ import java.util.stream.Collectors;
 @Slf4j
 public class RequeryEntityModelEntityInformation<T, ID> extends RequeryEntityInformationSupport<T, ID> {
 
-    private final IdMetadata<T> idMetadata;
-    private final Optional<Attribute<? super T, ?>> versionAttribute;
-    private final EntityModel entityModel;
+
+    @NotNull private final IdMetadata<T> idMetadata;
+
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    @NotNull private final Optional<Attribute<? super T, ?>> versionAttribute;
+
+    @NotNull private final EntityModel entityModel;
     @Nullable private final String entityName;
 
 
-    public RequeryEntityModelEntityInformation(@NotNull Class<T> domainClass, @NotNull EntityModel entityModel) {
+    public RequeryEntityModelEntityInformation(@NotNull final Class<T> domainClass, @NotNull final EntityModel entityModel) {
         super(domainClass);
 
         log.debug("Create RequeryEntityModelEntityInformation, domainClass={}, entityModel={}", domainClass, entityModel.getName());
 
         this.entityModel = entityModel;
 
-        Type<T> type = entityModel.typeOf(domainClass);
+        Type<T> type = this.entityModel.typeOf(domainClass);
         if (type == null) {
             throw new IllegalArgumentException("The given domain class can not be found in the given EntityModel!");
         }
@@ -71,6 +75,8 @@ public class RequeryEntityModelEntityInformation<T, ID> extends RequeryEntityInf
         this.versionAttribute = findVersionAttribute(type, entityModel);
     }
 
+    @SuppressWarnings("unchecked")
+    @NotNull
     private static <T> Optional<Attribute<? super T, ?>> findVersionAttribute(Type<T> type, EntityModel entityModel) {
 
         log.debug("Find version attribute, type={}", type);
@@ -93,14 +99,15 @@ public class RequeryEntityModelEntityInformation<T, ID> extends RequeryEntityInf
         }
     }
 
-
+    @NotNull
     @Override
     public String getEntityName() {
         return (entityName != null) ? entityName : super.getEntityName();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public ID getId(T entity) {
+    public ID getId(@NotNull final T entity) {
         log.debug("Get id value. entity={}", entity);
 
         BeanWrapper entityWrapper = new DirectFieldAccessFallbackBeanWrapper(entity);
@@ -153,14 +160,14 @@ public class RequeryEntityModelEntityInformation<T, ID> extends RequeryEntityInf
 
     @Nullable
     @Override
-    public Object getCompositeIdAttributeValue(Object id, String idAttribute) {
+    public Object getCompositeIdAttributeValue(final Object id, final String idAttribute) {
         Assert.isTrue(hasCompositeId(), "Model must have a composite Id!");
 
         return new DirectFieldAccessFallbackBeanWrapper(id).getPropertyValue(idAttribute);
     }
 
     @Override
-    public boolean isNew(T entity) {
+    public boolean isNew(@NotNull final T entity) {
         log.trace("is new entity? ... entity={}", entity);
 
         if (!versionAttribute.isPresent() ||
@@ -169,8 +176,9 @@ public class RequeryEntityModelEntityInformation<T, ID> extends RequeryEntityInf
         }
 
         BeanWrapper wrapper = new DirectFieldAccessFallbackBeanWrapper(entity);
-
-        return versionAttribute.map(it -> wrapper.getPropertyValue(it.getName()) == null).orElse(true);
+        return versionAttribute
+            .map(it -> wrapper.getPropertyValue(it.getName()) == null)
+            .orElse(true);
     }
 
     @Slf4j
@@ -222,6 +230,7 @@ public class RequeryEntityModelEntityInformation<T, ID> extends RequeryEntityInf
             return attributes.iterator().next();
         }
 
+        @NotNull
         public Iterator<Attribute<? super T, ?>> iterator() {
             return attributes.iterator();
         }
@@ -244,8 +253,9 @@ public class RequeryEntityModelEntityInformation<T, ID> extends RequeryEntityInf
          * In addition to the functionality described in {@link BeanWrapperImpl} it is checked whether we have a nested
          * entity that is part of the id key. If this is the case, we need to derive the identifier of the nested entity.
          */
+        @SuppressWarnings("unchecked")
         @Override
-        public void setPropertyValue(String propertyName, Object value) {
+        public void setPropertyValue(@NotNull final String propertyName, final Object value) {
             if (!isIdentifierDerivationNecessary(value)) {
                 super.setPropertyValue(propertyName, value);
                 return;
@@ -257,12 +267,14 @@ public class RequeryEntityModelEntityInformation<T, ID> extends RequeryEntityInf
 
             Object nestedIdPropertyValue = new DirectFieldAccessFallbackBeanWrapper(value)
                 .getPropertyValue(nestedEntityInformation.getRequiredIdAttribute().getName());
+
             super.setPropertyValue(propertyName, nestedIdPropertyValue);
         }
 
 
         @Nullable
-        private Object extractActualIdPropertyValue(@NotNull BeanWrapper sourceIdValueWrapper, String idAttributeName) {
+        private Object extractActualIdPropertyValue(@NotNull final BeanWrapper sourceIdValueWrapper,
+                                                    @NotNull final String idAttributeName) {
 
             Object idPropertyValue = sourceIdValueWrapper.getPropertyValue(idAttributeName);
 
@@ -280,8 +292,8 @@ public class RequeryEntityModelEntityInformation<T, ID> extends RequeryEntityInf
             return null;
         }
 
-        private String tryFindSingularIdAttributeNameOrUseFallback(Class<?> idPropertyValueType,
-                                                                   String fallbackIdTypePropertyName) {
+        private String tryFindSingularIdAttributeNameOrUseFallback(@NotNull final Class<?> idPropertyValueType,
+                                                                   @NotNull final String fallbackIdTypePropertyName) {
             log.debug("idPropertyValueType={}, fallbackIdTypePropertyName={}", idPropertyValueType, fallbackIdTypePropertyName);
             Type<?> idPropertyType = entityModel.typeOf(idPropertyValueType);
             for (Attribute<?, ?> attr : idPropertyType.getAttributes()) {

@@ -23,6 +23,7 @@ import io.requery.sql.EntityDataStore;
 import io.requery.sql.SchemaModifier;
 import io.requery.sql.TableCreationMode;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -52,7 +53,7 @@ public abstract class AbstractRequeryConfiguration {
      * Requery용 EntityModel 을 지정해주셔야 합니다. 기본적으로 Models.DEFAULT 를 지정해주시면 됩니다.
      */
     @Bean
-    abstract public EntityModel getEntityModel();
+    public abstract EntityModel getEntityModel();
 
     /**
      * Schema Generation 옵션입니다. 기본적으로 {@link TableCreationMode#CREATE_NOT_EXISTS} 을 사용합니다.
@@ -63,8 +64,16 @@ public abstract class AbstractRequeryConfiguration {
         return TableCreationMode.CREATE_NOT_EXISTS;
     }
 
+    /**
+     * Requery 용 configuration 정보
+     *
+     * @param dataSource  {@link DataSource} instance
+     * @param entityModel 시스템에서 사용하는 requery의 entity model ({@link EntityModel})
+     * @return Requery용 configuration
+     */
     @Bean
-    public io.requery.sql.Configuration requeryConfiguration(DataSource dataSource, EntityModel entityModel) {
+    public io.requery.sql.Configuration requeryConfiguration(@NotNull DataSource dataSource,
+                                                             @NotNull EntityModel entityModel) {
         Assert.notNull(dataSource, "dataSource must not be null");
         Assert.notNull(getEntityModel(), "enittymodel must not be null");
 
@@ -77,8 +86,14 @@ public abstract class AbstractRequeryConfiguration {
             .build();
     }
 
+    /**
+     * Requery의 {@link EntityDataStore} 인스턴스를 Bean으로 등록합니다.
+     *
+     * @param configuration requery 용 configuration 정보
+     * @return {@link EntityDataStore} instance
+     */
     @Bean(destroyMethod = "close")
-    public EntityDataStore<Object> entityDataStore(io.requery.sql.Configuration configuration) {
+    public EntityDataStore<Object> entityDataStore(@NotNull io.requery.sql.Configuration configuration) {
         log.info("Create EntityDataStore instance.");
         return new EntityDataStore<>(configuration);
     }
@@ -89,7 +104,6 @@ public abstract class AbstractRequeryConfiguration {
         return new RequeryTemplate(entityDataStore, mappingContext);
     }
 
-    // TODO: 꼭 필요한 Class 인지 다시 판단해보자.
     @Bean
     public RequeryMappingContext requeryMappingContext(ApplicationContext applicationContext) {
         RequeryMappingContext context = new RequeryMappingContext();
@@ -103,7 +117,8 @@ public abstract class AbstractRequeryConfiguration {
     }
 
 
-    @Autowired io.requery.sql.Configuration configuration;
+    @Autowired
+    io.requery.sql.Configuration configuration;
 
     /**
      * 사용할 Database에 Requery Entity에 해당하는 Schema 를 생성하는 작업을 수행합니다.

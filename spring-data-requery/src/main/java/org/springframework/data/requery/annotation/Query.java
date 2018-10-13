@@ -25,7 +25,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * org.springframework.data.requery.annotation.Query
+ * Raw SQL Query를 제공하기 위한 annotation 입니다.
  *
  * @author debop
  * @since 18. 6. 6

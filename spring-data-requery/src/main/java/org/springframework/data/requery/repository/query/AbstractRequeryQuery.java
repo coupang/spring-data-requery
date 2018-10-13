@@ -23,7 +23,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.data.repository.query.ParametersParameterAccessor;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.repository.query.ReturnedType;
 import org.springframework.data.requery.core.RequeryOperations;
@@ -65,7 +64,9 @@ public abstract class AbstractRequeryQuery implements RepositoryQuery {
         this.domainClass = method.getEntityInformation().getJavaType();
     }
 
-    public Object execute(Object[] parameters) {
+    @SuppressWarnings("NullableProblems")
+    @Nullable
+    public Object execute(@NotNull final Object[] parameters) {
         return doExecute(getExecution(), parameters);
     }
 
@@ -73,53 +74,56 @@ public abstract class AbstractRequeryQuery implements RepositoryQuery {
     private Object doExecute(@NotNull RequeryQueryExecution execution, Object[] values) {
 
         Object result = execution.execute(this, values);
-        ParametersParameterAccessor accessor = new ParametersParameterAccessor(queryMethod.getParameters(), values);
+        // ParametersParameterAccessor accessor = new ParametersParameterAccessor(queryMethod.getParameters(), values);
 
         log.debug("doExecute ... result={}", result);
         return result;
     }
 
+    @NotNull
     protected RequeryQueryExecution getExecution() {
+
+        RequeryQueryExecution execution;
+
         // NOTE: 검사하는 순서가 중요합니다.
-        //
         if (queryMethod.isStreamQuery()) {
-            log.debug("Create StreamExecution. queryMethod={}", queryMethod);
-            return new StreamExecution(queryMethod.getParameters());
+            execution = new StreamExecution(queryMethod.getParameters());
         } else if (queryMethod.isCollectionQuery()) {
-            log.debug("Create CollectionExecution. queryMethod={}", queryMethod);
-            return new CollectionExecution();
+            execution = new CollectionExecution();
         } else if (queryMethod.isSliceQuery()) {
-            log.debug("Create SliceExecution. queryMethod={}", queryMethod);
-            return new SlicedExecution(queryMethod.getParameters());
+            execution = new SlicedExecution(queryMethod.getParameters());
         } else if (queryMethod.isPageQuery()) {
-            log.debug("Create PagedExecution. queryMethod={}", queryMethod);
-            return new PagedExecution(queryMethod.getParameters());
-//        } else if (queryMethod.isModifyingQuery()) {
-//            return new ModifyingExecution(queryMethod, operations);
+            execution = new PagedExecution(queryMethod.getParameters());
         } else {
-            log.debug("Create SingleEntityExecution. queryMethod={}", queryMethod);
-            return new SingleEntityExecution();
+            execution = new SingleEntityExecution();
         }
+        log.debug("Create RequeryQueryExecution. execution={}, queryMethod={}", execution.getClass().getSimpleName(), queryMethod);
+        return execution;
     }
 
-    protected QueryElement<?> createQueryElement(Object[] values) {
+    @NotNull
+    protected QueryElement<?> createQueryElement(@NotNull final Object[] values) {
         log.debug("Create QueryElement with domainClass={}, values={}", domainClass.getName(), values);
         return doCreateQuery(values);
     }
 
-    protected QueryElement<? extends Scalar<Integer>> createCountQueryElement(Object[] values) {
+    @NotNull
+    protected QueryElement<? extends Scalar<Integer>> createCountQueryElement(@NotNull final Object[] values) {
         return doCreateCountQuery(values);
     }
 
-    protected Optional<Class<?>> getTypeToRead(ReturnedType returnedType) {
+    @NotNull
+    protected Optional<Class<?>> getTypeToRead(@NotNull final ReturnedType returnedType) {
         return returnedType.isProjecting() && !getMetamodel().isRequeryManaged(returnedType.getReturnedType())
                ? Optional.of(Tuple.class)
                : Optional.empty();
     }
 
-    protected abstract QueryElement<?> doCreateQuery(Object[] values);
+    @NotNull
+    protected abstract QueryElement<?> doCreateQuery(@NotNull final Object[] values);
 
-    protected abstract QueryElement<? extends Scalar<Integer>> doCreateCountQuery(Object[] values);
+    @NotNull
+    protected abstract QueryElement<? extends Scalar<Integer>> doCreateCountQuery(@NotNull final Object[] values);
 
 
 }

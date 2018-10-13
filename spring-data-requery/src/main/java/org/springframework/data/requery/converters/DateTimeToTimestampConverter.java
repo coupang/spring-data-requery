@@ -17,9 +17,9 @@
 package org.springframework.data.requery.converters;
 
 import io.requery.Converter;
+import org.jetbrains.annotations.Nullable;
 import org.joda.time.DateTime;
 
-import javax.annotation.Nullable;
 import java.sql.Timestamp;
 
 /**
@@ -45,13 +45,16 @@ public class DateTimeToTimestampConverter implements Converter<DateTime, Timesta
         return null;
     }
 
+    @Nullable
     @Override
-    public Timestamp convertToPersisted(DateTime value) {
+    public Timestamp convertToPersisted(@Nullable DateTime value) {
         return (value != null) ? new Timestamp(value.getMillis()) : null;
     }
 
+    @Nullable
     @Override
-    public DateTime convertToMapped(Class<? extends DateTime> type, @Nullable Timestamp value) {
+    public DateTime convertToMapped(@Nullable Class<? extends DateTime> type,
+                                    @Nullable Timestamp value) {
         return (value != null) ? new DateTime(value.getTime()) : null;
     }
 }

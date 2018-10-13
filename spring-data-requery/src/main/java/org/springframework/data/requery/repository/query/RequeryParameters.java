@@ -36,25 +36,25 @@ import java.util.Objects;
 @Slf4j
 public class RequeryParameters extends Parameters<RequeryParameters, RequeryParameters.RequeryParameter> {
 
-    public RequeryParameters(Method method) {
+    public RequeryParameters(@NotNull final Method method) {
         super(method);
         log.debug("Ctor RequeryParameters. method={}", method);
     }
 
-    public RequeryParameters(List<RequeryParameter> parameters) {
+    public RequeryParameters(@NotNull final List<RequeryParameter> parameters) {
         super(parameters);
         log.debug("Ctor RequeryParameters. parameters={}", parameters);
     }
 
     @NotNull
     @Override
-    protected RequeryParameter createParameter(MethodParameter parameter) {
+    protected RequeryParameter createParameter(@NotNull final MethodParameter parameter) {
         return new RequeryParameter(parameter);
     }
 
     @NotNull
     @Override
-    protected RequeryParameters createFrom(List<RequeryParameter> parameters) {
+    protected RequeryParameters createFrom(@NotNull final List<RequeryParameter> parameters) {
         return new RequeryParameters(parameters);
     }
 
@@ -72,6 +72,7 @@ public class RequeryParameters extends Parameters<RequeryParameters, RequeryPara
     @Slf4j
     static class RequeryParameter extends Parameter {
 
+        @NotNull
         private final MethodParameter parameter;
 
         /**
@@ -79,7 +80,7 @@ public class RequeryParameters extends Parameters<RequeryParameters, RequeryPara
          *
          * @param parameter must not be {@literal null}.
          */
-        public RequeryParameter(MethodParameter parameter) {
+        public RequeryParameter(@NotNull final MethodParameter parameter) {
             super(parameter);
             this.parameter = parameter;
 
@@ -90,6 +91,7 @@ public class RequeryParameters extends Parameters<RequeryParameters, RequeryPara
             return Objects.equals(getType(), Date.class);
         }
 
+        @NotNull
         @Override
         public String toString() {
             return parameter.getParameter().toString();

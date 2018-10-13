@@ -30,6 +30,7 @@ import io.requery.sql.EntityDataStore;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -59,87 +60,88 @@ import static org.springframework.data.requery.utils.RequeryUtils.unwrap;
  * @author debop
  * @since 18. 6. 4
  */
+@SuppressWarnings("ConstantConditions")
 @Slf4j
 @Repository
 @Transactional(readOnly = true)
 public class SimpleRequeryRepository<T, ID> implements RequeryRepositoryImplementation<T, ID> {
 
     @Getter
-    private final RequeryOperations operations;
-    private final RequeryEntityInformation<T, ID> entityInformation;
-    private final Class<T> domainClass;
-    private final String domainClassName;
+    @NotNull private final RequeryOperations operations;
+    @NotNull private final RequeryEntityInformation<T, ID> entityInformation;
 
-    private CrudMethodMetadata crudMethodMetadata;
+    @Nullable private final Class<T> domainClass;
+    @NotNull private final String domainClassName;
 
-    public SimpleRequeryRepository(@NotNull RequeryEntityInformation<T, ID> entityInformation, @NotNull RequeryOperations operations) {
+    @Nullable private CrudMethodMetadata crudMethodMetadata;
+
+    public SimpleRequeryRepository(@NotNull final RequeryEntityInformation<T, ID> entityInformation,
+                                   @NotNull final RequeryOperations operations) {
         log.debug("Create SimpleRequeryRepository. domainClass={}", entityInformation.getJavaType());
 
         this.entityInformation = entityInformation;
         this.domainClass = entityInformation.getJavaType();
         this.domainClassName = (domainClass != null) ? domainClass.getSimpleName() : "Unknown";
-
         this.operations = operations;
     }
 
     @Override
-    public void setRepositoryMethodMetadata(CrudMethodMetadata crudMethodMetadata) {
+    public void setRepositoryMethodMetadata(@Nullable final CrudMethodMetadata crudMethodMetadata) {
         this.crudMethodMetadata = crudMethodMetadata;
     }
 
     @Transactional
     @Override
-    public <S extends T> S insert(S entity) {
+    public <S extends T> @NotNull S insert(@NotNull final S entity) {
         return operations.insert(entity);
     }
 
     @Transactional
     @Override
-    public <S extends T, K> K insert(S entity, Class<K> keyClass) {
+    public <S extends T, K> @NotNull K insert(@NotNull final S entity, @NotNull final Class<K> keyClass) {
         return operations.insert(entity, keyClass);
     }
 
     @Transactional
     @Override
-    public <S extends T> List<S> insert(Iterable<S> entities) {
+    public <S extends T> @NotNull List<S> insert(@NotNull final Iterable<S> entities) {
         return operations.insertAll(entities);
     }
 
     @Transactional
     @Override
-    public <S extends T, K> List<K> insert(Iterable<S> entities, Class<K> keyClass) {
+    public <S extends T, K> @NotNull List<K> insert(@NotNull final Iterable<S> entities, @NotNull final Class<K> keyClass) {
         return operations.insertAll(entities, keyClass);
     }
 
-
     @Transactional
     @Override
-    public <S extends T> S upsert(S entity) {
+    public <S extends T> @NotNull S upsert(@NotNull final S entity) {
         return operations.upsert(entity);
     }
 
     @Transactional
     @Override
-    public <S extends T> List<S> upsertAll(Iterable<S> entities) {
+    public <S extends T> @NotNull List<S> upsertAll(@NotNull final Iterable<S> entities) {
         return operations.upsertAll(entities);
     }
 
-    public <S extends T> S refresh(S entity) {
+    public <S extends T> @NotNull S refresh(@NotNull final S entity) {
         return operations.refresh(entity);
     }
 
-    @SafeVarargs
-    public final <S extends T> List<S> refresh(Iterable<S> entities, Attribute<S, ?>... attributes) {
+    public <S extends T> @NotNull List<S> refresh(@NotNull final Iterable<S> entities, final Attribute<S, ?>... attributes) {
         return operations.refresh(entities, attributes);
     }
 
-    public <S extends T> S refreshAll(S entity) {
+    @NotNull
+    public <S extends T> S refreshAll(@NotNull final S entity) {
         return operations.refreshAllProperties(entity);
     }
 
     @Transactional
     @Override
-    public void deleteInBatch(Iterable<T> entities) {
+    public void deleteInBatch(@NotNull final Iterable<T> entities) {
         operations.deleteAll(entities);
     }
 
@@ -150,13 +152,13 @@ public class SimpleRequeryRepository<T, ID> implements RequeryRepositoryImplemen
     }
 
     @Override
-    public T getOne(ID id) {
+    public T getOne(@NotNull final ID id) {
         return operations.findById(domainClass, id);
     }
 
     @NotNull
     @Override
-    public List<T> findAll(@NotNull Sort sort) {
+    public List<T> findAll(@NotNull final Sort sort) {
 
         log.debug("Find all {} with sort, sort={}", domainClassName, sort);
 
@@ -181,7 +183,7 @@ public class SimpleRequeryRepository<T, ID> implements RequeryRepositoryImplemen
     @SuppressWarnings("unchecked")
     @NotNull
     @Override
-    public Page<T> findAll(@NotNull Pageable pageable) {
+    public Page<T> findAll(@NotNull final Pageable pageable) {
 
         log.debug("Find all {} with paging, pageable={}", domainClassName, pageable);
 
@@ -206,26 +208,26 @@ public class SimpleRequeryRepository<T, ID> implements RequeryRepositoryImplemen
     @Transactional
     @NotNull
     @Override
-    public <S extends T> S save(@NotNull S entity) {
+    public <S extends T> S save(@NotNull final S entity) {
         return operations.upsert(entity);
     }
 
     @Transactional
     @NotNull
     @Override
-    public <S extends T> List<S> saveAll(@NotNull Iterable<S> entities) {
+    public <S extends T> List<S> saveAll(@NotNull final Iterable<S> entities) {
         return operations.upsertAll(entities);
     }
 
     @NotNull
     @Override
-    public Optional<T> findById(@NotNull ID id) {
+    public Optional<T> findById(@NotNull final ID id) {
         return Optional.ofNullable(operations.findById(domainClass, id));
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public boolean existsById(@NotNull ID id) {
+    public boolean existsById(@NotNull final ID id) {
         NamedExpression<ID> keyExpr = (NamedExpression<ID>) getKeyExpression(domainClass);
 
         Tuple result = operations
@@ -246,7 +248,7 @@ public class SimpleRequeryRepository<T, ID> implements RequeryRepositoryImplemen
     @SuppressWarnings("unchecked")
     @NotNull
     @Override
-    public List<T> findAllById(@NotNull Iterable<ID> ids) {
+    public List<T> findAllById(@NotNull final Iterable<ID> ids) {
         HashSet<ID> idSet = new HashSet<>();
         for (ID id : ids) {
             idSet.add(id);
@@ -262,14 +264,18 @@ public class SimpleRequeryRepository<T, ID> implements RequeryRepositoryImplemen
 
     @Override
     public long count() {
-        return operations.count(domainClass).get().value().longValue();
+        return operations
+            .count(domainClass)
+            .get()
+            .value()
+            .longValue();
     }
 
     @SuppressWarnings("unchecked")
     @Transactional
     @Override
-    public void deleteById(@NotNull ID id) {
-        log.debug("Delete {} by id. id={}", domainClassName, id);
+    public void deleteById(@NotNull final ID id) {
+        log.debug("Delete {} entity by id. id={}", domainClassName, id);
 
         NamedExpression<ID> keyExpr = (NamedExpression<ID>) getKeyExpression(domainClass);
 
@@ -279,48 +285,48 @@ public class SimpleRequeryRepository<T, ID> implements RequeryRepositoryImplemen
             .get()
             .value();
 
-        log.debug("Deleted count={}", deletedCount);
+        log.debug("Deleted entity={}, count={}", domainClassName, deletedCount);
     }
 
     @Transactional
     @Override
-    public void delete(@NotNull T entity) {
+    public void delete(@NotNull final T entity) {
         operations.delete(entity);
     }
 
     @Transactional
     @Override
-    public void deleteAll(@NotNull Iterable<? extends T> entities) {
+    public void deleteAll(@NotNull final Iterable<? extends T> entities) {
         operations.deleteAll(entities);
     }
 
     @Transactional
     @Override
     public void deleteAll() {
-        log.debug("Delete All {} ...", domainClassName);
+        log.debug("Delete All entities. entity name={} ...", domainClassName);
 
         Integer deletedCount = operations.delete(domainClass).get().value();
 
-        log.debug("Delete All {}, deleted count={}", domainClassName, deletedCount);
+        log.debug("Delete All entities. entity name={}, deleted count={}", domainClassName, deletedCount);
     }
 
     @NotNull
     @Override
-    public <S extends T> Optional<S> findOne(@NotNull Example<S> example) {
+    public <S extends T> Optional<S> findOne(@NotNull final Example<S> example) {
         return Optional.ofNullable(buildQueryByExample(example).get().firstOrNull());
     }
 
     @SuppressWarnings("unchecked")
     @NotNull
     @Override
-    public <S extends T> List<S> findAll(@NotNull Example<S> example) {
+    public <S extends T> List<S> findAll(@NotNull final Example<S> example) {
         return buildQueryByExample(example).get().toList();
     }
 
     @SuppressWarnings("unchecked")
     @NotNull
     @Override
-    public <S extends T> List<S> findAll(@NotNull Example<S> example, @NotNull Sort sort) {
+    public <S extends T> List<S> findAll(@NotNull final Example<S> example, @NotNull final Sort sort) {
         QueryElement<?> query = applySort(domainClass,
                                           unwrap(buildQueryByExample(example)),
                                           sort);
@@ -330,7 +336,7 @@ public class SimpleRequeryRepository<T, ID> implements RequeryRepositoryImplemen
     @SuppressWarnings("unchecked")
     @NotNull
     @Override
-    public <S extends T> Page<S> findAll(@NotNull Example<S> example, @NotNull Pageable pageable) {
+    public <S extends T> Page<S> findAll(@NotNull final Example<S> example, @NotNull final Pageable pageable) {
 
         QueryElement<?> baseQuery = unwrap(buildQueryByExample(example));
         long total = count((QueryElement<? extends Result<T>>) baseQuery);
@@ -352,41 +358,39 @@ public class SimpleRequeryRepository<T, ID> implements RequeryRepositoryImplemen
     @SuppressWarnings("unchecked")
     @Override
     public <S extends T> boolean exists(@NotNull Example<S> example) {
-        // TODO: 환경설정에서 count 냐 entity loading 이냐로 결정하도록 하자 
-        // count 가 빠를까? 레코드 1개 read 하는게 빠를까?
-        // entity cache 가 있다면, read 가 낫고, 아니라면 count 가 낫겠지 ...
-        //
         return buildQueryByExample(example).limit(1).get().firstOrNull() != null;
-        // return count((QueryElement<? extends Result<T>>) buildQueryByExample(example)) > 0;
     }
 
     @SuppressWarnings("unchecked")
     private <S extends T> QueryElement<? extends Result<S>> buildQueryByExample(@NotNull Example<S> example) {
         QueryElement<? extends Result<S>> root = (QueryElement<? extends Result<S>>) unwrap(operations.select(domainClass));
-        return QueryByExampleBuilder.getWhereAndOr(root, example);
+        return QueryByExampleBuilder.applyExample(root, example);
     }
 
-
+    @NotNull
     @Override
-    public Optional<T> findOne(Return<? extends Result<T>> whereClause) {
+    public Optional<T> findOne(@NotNull final Return<? extends Result<T>> whereClause) {
         List<T> list = whereClause.get().toList();
         if (list.size() == 1) {
             return Optional.ofNullable(list.get(0));
-        } else if (list.size() == 0) {
+        } else if (list.isEmpty()) {
             return Optional.empty();
         } else {
             throw new IncorrectResultSizeDataAccessException(1, list.size());
         }
     }
 
+    @NotNull
     @Override
-    public List<T> findAll(Return<? extends Result<T>> whereClause) {
+    public List<T> findAll(@NotNull final Return<? extends Result<T>> whereClause) {
         return whereClause.get().toList();
     }
 
     @SuppressWarnings("unchecked")
+    @NotNull
     @Override
-    public Page<T> findAll(QueryElement<? extends Result<T>> whereClause, Pageable pageable) {
+    public Page<T> findAll(@NotNull final QueryElement<? extends Result<T>> whereClause,
+                           @NotNull final Pageable pageable) {
 
         int total = count(whereClause);
 
@@ -397,8 +401,10 @@ public class SimpleRequeryRepository<T, ID> implements RequeryRepositoryImplemen
     }
 
     @SuppressWarnings("unchecked")
+    @NotNull
     @Override
-    public List<T> findAll(Iterable<Condition<T, ?>> conditions, Sort sort) {
+    public List<T> findAll(@NotNull final Iterable<Condition<T, ?>> conditions,
+                           @NotNull final Sort sort) {
 
         LogicalCondition<T, ?> condition = foldConditions(conditions);
         QueryElement<?> query = unwrap(operations.select(domainClass).where(condition));
@@ -406,8 +412,9 @@ public class SimpleRequeryRepository<T, ID> implements RequeryRepositoryImplemen
     }
 
     @SuppressWarnings("unchecked")
+    @NotNull
     @Override
-    public List<T> findAll(Iterable<Condition<T, ?>> conditions) {
+    public List<T> findAll(@NotNull final Iterable<Condition<T, ?>> conditions) {
 
         LogicalCondition<T, ?> condition = foldConditions(conditions);
         return operations.select(domainClass).where(condition).get().toList();
@@ -415,14 +422,12 @@ public class SimpleRequeryRepository<T, ID> implements RequeryRepositoryImplemen
 
     @SuppressWarnings("unchecked")
     @Override
-    public int count(QueryElement<? extends Result<T>> whereClause) {
+    public int count(@NotNull final QueryElement<? extends Result<T>> whereClause) {
         return getOperations().count(domainClass, whereClause);
     }
 
     @Override
-    public boolean exists(QueryElement<? extends Result<T>> whereClause) {
+    public boolean exists(@NotNull final QueryElement<? extends Result<T>> whereClause) {
         return getOperations().exists(domainClass, whereClause);
     }
-
-
 }

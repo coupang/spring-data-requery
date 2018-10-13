@@ -21,7 +21,7 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 import org.springframework.data.repository.config.RepositoryBeanDefinitionParser;
 
 /**
- * org.springframework.data.requery.repository.config.RequeryRepositoryNameSpaceHandler
+ * 특정 엔티티의 RequeryRepository에 대한 name space 설정을 처리합니다.
  *
  * @author debop
  * @since 18. 6. 6
@@ -31,14 +31,13 @@ public class RequeryRepositoryNameSpaceHandler extends NamespaceHandlerSupport {
 
     @Override
     public void init() {
-        log.debug("Init and regist BeanDefinitionParser for repositories.");
+        log.info("Init and regist BeanDefinitionParser for repositories.");
 
         RequeryRepositoryConfigurationExtension extension = new RequeryRepositoryConfigurationExtension();
         RepositoryBeanDefinitionParser definitionParser = new RepositoryBeanDefinitionParser(extension);
 
         registerBeanDefinitionParser("repositories", definitionParser);
 
-        // auditing 은 필요없다.
-        // registerBeanDefinitionParser("auditing", new AuditingBeanDefinitionParser());
+        log.info("Regist BeanDefinitionParser for repositories.");
     }
 }

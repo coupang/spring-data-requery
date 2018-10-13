@@ -65,8 +65,9 @@ public class RequeryRepositoryFactoryTest {
 
         factory = new RequeryRepositoryFactory(requeryOperations) {
             @SuppressWarnings("unchecked")
+            @NotNull
             @Override
-            public <T, ID> RequeryEntityInformation<T, ID> getEntityInformation(Class<T> domainClass) {
+            public <T, ID> RequeryEntityInformation<T, ID> getEntityInformation(@NotNull final Class<T> domainClass) {
                 return (RequeryEntityInformation<T, ID>) entityInformation;
             }
         };
@@ -171,7 +172,8 @@ public class RequeryRepositoryFactoryTest {
     private interface SimpleSampleRepository extends RequeryRepository<BasicUser, Long> {
 
         @Transactional
-        Optional<BasicUser> findById(Long id);
+        @NotNull
+        Optional<BasicUser> findById(@NotNull final Long id);
     }
 
     public interface SampleCustomRepository {

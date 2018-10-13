@@ -17,6 +17,7 @@
 package org.springframework.data.requery.repository.support;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mapping.context.MappingContext;
@@ -37,31 +38,32 @@ import org.springframework.util.Assert;
 public class RequeryRepositoryFactoryBean<T extends Repository<S, ID>, S, ID>
     extends TransactionalRepositoryFactoryBeanSupport<T, S, ID> {
 
-    private @Nullable RequeryOperations operations;
+    @Nullable
+    private RequeryOperations operations;
 
-    public RequeryRepositoryFactoryBean(Class<? extends T> repositoryInterface) {
+    public RequeryRepositoryFactoryBean(@NotNull final Class<? extends T> repositoryInterface) {
         super(repositoryInterface);
     }
 
     @Autowired(required = false)
-    public void setOperations(RequeryOperations operations) {
+    public void setOperations(@Nullable final RequeryOperations operations) {
         this.operations = operations;
     }
 
     @Override
-    protected void setMappingContext(MappingContext<?, ?> mappingContext) {
+    protected void setMappingContext(@Nullable final MappingContext<?, ?> mappingContext) {
         super.setMappingContext(mappingContext);
     }
 
+    @NotNull
     @Override
     protected RepositoryFactorySupport doCreateRepositoryFactory() {
-
         Assert.state(operations != null, "RequeryOperations must not be null!");
-
         return createRepositoryFactory(operations);
     }
 
-    protected RepositoryFactorySupport createRepositoryFactory(RequeryOperations requeryOperations) {
+    @NotNull
+    protected RepositoryFactorySupport createRepositoryFactory(@NotNull final RequeryOperations requeryOperations) {
         return new RequeryRepositoryFactory(requeryOperations);
     }
 
@@ -69,7 +71,7 @@ public class RequeryRepositoryFactoryBean<T extends Repository<S, ID>, S, ID>
     public void afterPropertiesSet() {
 //        Assert.state(operations != null, "RequeryOperations must not be null!");
 
-        log.debug("Before afterPropertiesSet");
+        log.debug("Before afterPropertiesSet ...");
         try {
             super.afterPropertiesSet();
         } catch (Exception e) {

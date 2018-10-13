@@ -17,6 +17,7 @@
 package org.springframework.data.requery.domain;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
@@ -24,41 +25,42 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * org.springframework.data.requery.domain.ToStringBuilder
+ * Value Object의 속성 정보를 표현할 때 사용되는 String builder class.
  *
  * @author debop
  */
 public class ToStringBuilder implements Serializable {
 
     @NotNull
-    public static ToStringBuilder of(@NotNull Object obj) {
+    public static ToStringBuilder of(@NotNull final Object obj) {
         Assert.notNull(obj, "obj must not be null");
         return new ToStringBuilder(obj);
     }
 
     @NotNull
-    public static ToStringBuilder of(@NotNull String classname) {
+    public static ToStringBuilder of(@NotNull final String classname) {
         Assert.hasText(classname, "classname must has text");
         return new ToStringBuilder(classname);
     }
 
-    public ToStringBuilder(@NotNull Object obj) {
+    public ToStringBuilder(@NotNull final Object obj) {
         this(obj.getClass().getName());
     }
 
-    public ToStringBuilder(@NotNull String classname) {
+    public ToStringBuilder(@NotNull final String classname) {
         Assert.hasText(classname, "classname must has text.");
         this.classname = classname;
     }
 
     private final String classname;
-    private final Map<String, Object> valueMap = new HashMap<>();
+    private final transient Map<String, Object> valueMap = new HashMap<>();
 
-    public ToStringBuilder add(String name, Object value) {
+    public ToStringBuilder add(@NotNull final String name, @Nullable final Object value) {
         valueMap.put(name, value != null ? value : "<null>");
         return this;
     }
 
+    @NotNull
     @Override
     public String toString() {
 
@@ -75,6 +77,7 @@ public class ToStringBuilder implements Serializable {
         return this.classname + "(" + valueStr + ")";
     }
 
+    @NotNull
     public String toString(int limit) {
         return (limit > 0) ? toString().substring(0, limit) : toString();
     }

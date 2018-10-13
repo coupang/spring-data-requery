@@ -33,12 +33,12 @@ import io.requery.query.element.QueryElement;
 import io.requery.query.function.Count;
 import io.requery.sql.EntityContext;
 import io.requery.sql.EntityDataStore;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.data.requery.mapping.RequeryMappingContext;
 import org.springframework.data.requery.utils.Iterables;
 import org.springframework.data.requery.utils.RequeryUtils;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
@@ -53,10 +53,10 @@ import static org.springframework.data.requery.utils.RequeryUtils.unwrap;
  */
 public interface RequeryOperations {
 
-//    ApplicationContext getApplicationContext();
-
+    @NotNull
     EntityDataStore<Object> getDataStore();
 
+    @NotNull
     RequeryMappingContext getMappingContext();
 
     default EntityModel getEntityModel() {
@@ -68,91 +68,94 @@ public interface RequeryOperations {
         return RequeryUtils.getEntityContext(getDataStore());
     }
 
-    default <E> Selection<? extends Result<E>> select(Class<E> entityType) {
+    default <E> Selection<? extends Result<E>> select(@NotNull final Class<E> entityType) {
         return getDataStore().select(entityType);
     }
 
-    default <E> Selection<? extends Result<E>> select(Class<E> entityType, QueryAttribute<?, ?>... attributes) {
+    default <E> Selection<? extends Result<E>> select(@NotNull final Class<E> entityType,
+                                                      @NotNull final QueryAttribute<?, ?>... attributes) {
         return getDataStore().select(entityType, attributes);
     }
 
-    default Selection<? extends Result<Tuple>> select(Expression<?>... expressions) {
+    default Selection<? extends Result<Tuple>> select(@NotNull final Expression<?>... expressions) {
         return getDataStore().select(expressions);
     }
 
-    default <E, K> E findById(Class<E> entityType, K id) {
+    default <E, K> E findById(@NotNull final Class<E> entityType, @NotNull final K id) {
         return getDataStore().findByKey(entityType, id);
     }
 
-    default <E> List<E> findAll(Class<E> entityType) {
+    default <E> List<E> findAll(@NotNull final Class<E> entityType) {
         return getDataStore().select(entityType).get().toList();
     }
 
-    default <E> E refresh(@NotNull E entity) {
+    default <E> E refresh(@NotNull final E entity) {
         return getDataStore().refresh(entity);
     }
 
-    default <E> E refresh(@NotNull E entity, Attribute<?, ?>... attributes) {
+    @SuppressWarnings("UnusedReturnValue")
+    default <E> E refresh(@NotNull final E entity, @Nullable final Attribute<?, ?>... attributes) {
         return getDataStore().refresh(entity, attributes);
     }
 
-    default <E> List<E> refresh(@NotNull Iterable<E> entities, Attribute<?, ?>... attributes) {
+    default <E> List<E> refresh(@NotNull final Iterable<E> entities, final Attribute<?, ?>... attributes) {
         return Iterables.toList(getDataStore().refresh(entities, attributes));
     }
 
-    default <E> E refreshAllProperties(@NotNull E entity) {
+    default <E> E refreshAllProperties(@NotNull final E entity) {
         return getDataStore().refreshAll(entity);
     }
 
-    default <E> E upsert(@NotNull E entity) {
+    default <E> E upsert(@NotNull final E entity) {
         return getDataStore().upsert(entity);
     }
 
-    default <E> List<E> upsertAll(@NotNull Iterable<E> entities) {
+    default <E> List<E> upsertAll(@NotNull final Iterable<E> entities) {
         return Iterables.toList(getDataStore().upsert(entities));
     }
 
-    default <E> E insert(@NotNull E entity) {
+    default <E> E insert(@NotNull final E entity) {
         return getDataStore().insert(entity);
     }
 
-    default <E, K> K insert(@NotNull E entity, Class<K> keyClass) {
+    default <E, K> K insert(@NotNull final E entity, @NotNull final Class<K> keyClass) {
         return getDataStore().insert(entity, keyClass);
     }
 
-    default <E> Insertion<? extends Result<Tuple>> insert(Class<E> entityType) {
+    default <E> Insertion<? extends Result<Tuple>> insert(@NotNull final Class<E> entityType) {
         return getDataStore().insert(entityType);
     }
 
-    default <E> InsertInto<? extends Result<Tuple>> insert(Class<E> entityType, QueryAttribute<E, ?>... attributes) {
+    default <E> InsertInto<? extends Result<Tuple>> insert(@NotNull final Class<E> entityType, QueryAttribute<E, ?>... attributes) {
         return getDataStore().insert(entityType, attributes);
     }
 
-    default <E> List<E> insertAll(@NotNull Iterable<E> entities) {
+    default <E> List<E> insertAll(@NotNull final Iterable<E> entities) {
         return Iterables.toList(getDataStore().insert(entities));
     }
 
-    default <E, K> List<K> insertAll(@NotNull Iterable<E> entities, Class<K> keyClass) {
+    default <E, K> List<K> insertAll(@NotNull final Iterable<E> entities, @NotNull final Class<K> keyClass) {
         return Iterables.toList(getDataStore().insert(entities, keyClass));
     }
 
+    @NotNull
     default Update<? extends Scalar<Integer>> update() {
         return getDataStore().update();
     }
 
-    default <E> E update(@NotNull E entity) {
+    default <E> E update(@NotNull final E entity) {
         return getDataStore().update(entity);
     }
 
-    default <E> E update(@NotNull E entity, Attribute<?, ?>... attributes) {
+    default <E> E update(@NotNull final E entity, final Attribute<?, ?>... attributes) {
         return getDataStore().update(entity, attributes);
     }
 
-    default <E> Update<? extends Scalar<Integer>> update(Class<E> entityType) {
+    default <E> Update<? extends Scalar<Integer>> update(@NotNull final Class<E> entityType) {
         return getDataStore().update(entityType);
     }
 
-    default <E> List<E> updateAll(@NotNull Iterable<E> entities) {
+    default <E> List<E> updateAll(@NotNull final Iterable<E> entities) {
         return Iterables.toList(getDataStore().update(entities));
     }
 
@@ -160,58 +163,62 @@ public interface RequeryOperations {
         return getDataStore().delete();
     }
 
-    default <E> Deletion<? extends Scalar<Integer>> delete(Class<E> entityType) {
+    default <E> Deletion<? extends Scalar<Integer>> delete(@NotNull final Class<E> entityType) {
         return getDataStore().delete(entityType);
     }
 
-    default <E> void delete(E entity) {
+    default <E> void delete(@NotNull final E entity) {
         getDataStore().delete(entity);
     }
 
-    default <E> void deleteAll(Iterable<E> entities) {
+    default <E> void deleteAll(@NotNull final Iterable<E> entities) {
         getDataStore().delete(entities);
     }
 
-    default <E> Integer deleteAll(Class<E> entityType) {
+    default <E> Integer deleteAll(@NotNull final Class<E> entityType) {
         return getDataStore().delete(entityType).get().value();
     }
 
-    default <E> Selection<? extends Scalar<Integer>> count(Class<E> entityType) {
+    default <E> Selection<? extends Scalar<Integer>> count(@NotNull final Class<E> entityType) {
         return getDataStore().count(entityType);
     }
 
-    default <E> Selection<? extends Scalar<Integer>> count(QueryAttribute<?, ?>... attributes) {
+    default <E> Selection<? extends Scalar<Integer>> count(final QueryAttribute<?, ?>... attributes) {
         return getDataStore().count(attributes);
     }
 
     @SuppressWarnings("unchecked")
-    default <E> int count(Class<E> entityType, QueryElement<? extends Result<E>> whereClause) {
+    default <E> int count(@NotNull final Class<E> entityType,
+                          @NotNull final QueryElement<? extends Result<E>> whereClause) {
         QueryElement<?> query = RequeryUtils.applyWhereClause(unwrap(select(Count.count(entityType))), whereClause.getWhereElements());
         Tuple tuple = ((QueryElement<? extends Result<Tuple>>) query).get().first();
         return tuple.<Integer>get(0);
     }
 
-    default <E> boolean exists(Class<E> entityType, QueryElement<? extends Result<E>> whereClause) {
+    default <E> boolean exists(@NotNull final Class<E> entityType,
+                               @NotNull final QueryElement<? extends Result<E>> whereClause) {
         return whereClause.limit(1).get().firstOrNull() != null;
     }
 
-    default Result<Tuple> raw(String query, Object... parameters) {
+    default Result<Tuple> raw(@NotNull final String query, final Object... parameters) {
         return getDataStore().raw(query, parameters);
     }
 
-    default <E> Result<E> raw(Class<E> entityType, String query, Object... parameters) {
+    default <E> Result<E> raw(@NotNull final Class<E> entityType,
+                              @NotNull final String query,
+                              final Object... parameters) {
         return getDataStore().raw(entityType, query, parameters);
     }
 
-    default <V> V runInTransaction(Callable<V> callable) {
+    default <V> V runInTransaction(@NotNull final Callable<V> callable) {
         return runInTransaction(callable, null);
     }
 
-    <V> V runInTransaction(Callable<V> callable, @Nullable TransactionIsolation isolation);
+    <V> V runInTransaction(@NotNull final Callable<V> callable, @Nullable final TransactionIsolation isolation);
 
-    default <V> V withTransaction(Function<EntityDataStore<Object>, V> block) {
+    default <V> V withTransaction(@NotNull final Function<EntityDataStore<Object>, V> block) {
         return withTransaction(block, null);
     }
 
-    <V> V withTransaction(Function<EntityDataStore<Object>, V> block, @Nullable TransactionIsolation isolation);
+    <V> V withTransaction(@NotNull final Function<EntityDataStore<Object>, V> block, @Nullable final TransactionIsolation isolation);
 }

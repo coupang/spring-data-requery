@@ -17,13 +17,13 @@
 package org.springframework.data.requery.converters;
 
 import io.requery.Converter;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
 /**
- * org.springframework.data.requery.converters.OffsetDateTimeToStringConverter
+ * {@link OffsetDateTime} 을 문자열로 저장하는 Converter
  *
  * @author debop
  */
@@ -45,13 +45,15 @@ public class OffsetDateTimeToStringConverter implements Converter<OffsetDateTime
         return null;
     }
 
+    @Nullable
     @Override
-    public String convertToPersisted(OffsetDateTime value) {
+    public String convertToPersisted(@Nullable OffsetDateTime value) {
         return (value != null)
                ? Java8Times.toIsoOffsetDateTimeString(value)
                : null;
     }
 
+    @Nullable
     @Override
     public OffsetDateTime convertToMapped(Class<? extends OffsetDateTime> type, @Nullable String value) {
         return (StringUtils.hasText(value))

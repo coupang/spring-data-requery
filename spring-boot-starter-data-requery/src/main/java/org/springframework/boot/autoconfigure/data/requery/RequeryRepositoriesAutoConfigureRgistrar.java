@@ -16,9 +16,9 @@
 
 package org.springframework.boot.autoconfigure.data.requery;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.data.AbstractRepositoryConfigurationSourceSupport;
+import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
 import org.springframework.data.requery.repository.config.EnableRequeryRepositories;
 import org.springframework.data.requery.repository.config.RequeryRepositoryConfigurationExtension;
@@ -26,14 +26,13 @@ import org.springframework.data.requery.repository.config.RequeryRepositoryConfi
 import java.lang.annotation.Annotation;
 
 /**
- * org.springframework.boot.autoconfigure.data.requery.RequeryRepositoriesAutoConfigureRgistrar
+ * Requery 를 위한 {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data Repositories.
  *
  * @author debop
  */
+@Slf4j
 public class RequeryRepositoriesAutoConfigureRgistrar
     extends AbstractRepositoryConfigurationSourceSupport {
-
-    private static final Logger log = LoggerFactory.getLogger(RequeryRepositoriesAutoConfigureRgistrar.class);
 
     @Override
     protected Class<? extends Annotation> getAnnotation() {

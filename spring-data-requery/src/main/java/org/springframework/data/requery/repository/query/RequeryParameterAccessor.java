@@ -16,16 +16,18 @@
 
 package org.springframework.data.requery.repository.query;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.repository.query.ParameterAccessor;
 
 /**
- * RequeryParameterAccessor
+ * Interface to access method parameters. Allows dedicated access to parameters of special types
  *
  * @author debop
  * @since 18. 6. 8
  */
 public interface RequeryParameterAccessor extends ParameterAccessor {
 
+    @NotNull
     RequeryParameters getParameters();
 
 }

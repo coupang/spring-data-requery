@@ -19,7 +19,7 @@ package org.springframework.data.requery.repository.support;
 import java.lang.reflect.Method;
 
 /**
- * org.springframework.data.requery.repository.support.CrudMethodMetadata
+ * CRUD Method의 Metadata를 제공합니다.
  *
  * @author debop
  * @since 18. 6. 6

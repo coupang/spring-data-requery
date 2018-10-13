@@ -17,9 +17,10 @@
 package org.springframework.data.requery.domain;
 
 import io.requery.Persistable;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * org.springframework.data.requery.domain.AbstractValueObject
+ * Value Object 를 나타내는 최상위 추상 클래스 
  *
  * @author debop
  */
@@ -29,7 +30,7 @@ public class AbstractValueObject implements ValueObject, Persistable {
 
     @Override
     public boolean equals(Object obj) {
-        return super.equals(obj);
+        return obj != null && getClass() == obj.getClass() && hashCode() == obj.hashCode();
     }
 
     @Override
@@ -42,10 +43,12 @@ public class AbstractValueObject implements ValueObject, Persistable {
         return buildStringHelper().toString();
     }
 
+    @NotNull
     public String toString(int limit) {
         return buildStringHelper().toString(limit);
     }
 
+    @NotNull
     protected ToStringBuilder buildStringHelper() {
         return ToStringBuilder.of(this);
     }

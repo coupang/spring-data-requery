@@ -17,8 +17,8 @@
 package org.springframework.boot.autoconfigure.data.requery;
 
 import io.requery.sql.EntityDataStore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -36,18 +36,17 @@ import javax.sql.DataSource;
  *
  * @author debop
  */
+@Slf4j
 @Configuration
 @ConditionalOnBean({ DataSource.class, EntityDataStore.class })
 @AutoConfigureAfter(RequeryAutoConfiguration.class)
 public class RequeryDataAutoConfiguration {
 
-    private static final Logger log = LoggerFactory.getLogger(RequeryDataAutoConfiguration.class);
-
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnBean(EntityDataStore.class)
-    public RequeryOperations requeryOperations(EntityDataStore<Object> entityDataStore,
-                                               RequeryMappingContext mappingContext) {
+    public RequeryOperations requeryOperations(@NotNull final EntityDataStore<Object> entityDataStore,
+                                               @NotNull final RequeryMappingContext mappingContext) {
 
         log.info("Create RequeryOperations ...");
         try {
@@ -59,7 +58,7 @@ public class RequeryDataAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public RequeryMappingContext mappingContext(ApplicationContext applicationContext) {
+    public RequeryMappingContext mappingContext(@NotNull final ApplicationContext applicationContext) {
         RequeryMappingContext mappingContext = new RequeryMappingContext();
         mappingContext.setApplicationContext(applicationContext);
         return mappingContext;

@@ -25,7 +25,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * Abstract Entity class
+ * Entity를 표현하는 최상위 추상 클래스
  *
  * @author debop
  * @since 18. 6. 4
@@ -34,7 +34,7 @@ import java.util.Objects;
 public abstract class AbstractPersistable<ID> extends AbstractValueObject implements Persistable, Serializable {
 
     @Nullable
-    abstract public ID getId();
+    public abstract ID getId();
 
     @io.requery.Transient
     public boolean isNew() {
@@ -42,7 +42,7 @@ public abstract class AbstractPersistable<ID> extends AbstractValueObject implem
     }
 
     @Override
-    public boolean equals(@Nullable Object other) {
+    public boolean equals(@Nullable final Object other) {
         if (other == null)
             return false;
 

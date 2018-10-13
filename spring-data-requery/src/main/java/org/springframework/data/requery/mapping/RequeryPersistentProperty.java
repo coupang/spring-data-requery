@@ -19,23 +19,41 @@ package org.springframework.data.requery.mapping;
 import org.springframework.data.mapping.PersistentProperty;
 
 /**
- * org.springframework.data.requery.mapping.RequeryPersistentProperty
+ * Requery Entity의 Property로부터 여러가지 정보를 가져옵니다.
  *
  * @author debop
  * @since 18. 6. 7
  */
 public interface RequeryPersistentProperty extends PersistentProperty<RequeryPersistentProperty> {
 
+    /**
+     * 현재 속성이 Identifier 속성안가?
+     */
     boolean isIdProperty();
 
+    /**
+     * 현재 속성이 transient 인가?
+     */
     boolean isTransient();
 
+    /**
+     * 현재 속성이 association을 나타내는 속성인가?
+     */
     boolean isAssociation();
 
+    /**
+     * 현재 속성이 embedded 속성인가?
+     */
     boolean isEmbedded();
 
+    /**
+     * 현 속성이 index를 가지는가?
+     */
     boolean hasIndex();
 
+    /**
+     * 현 속성의 field name을 가져옵니다.
+     */
     String getFieldName();
 
 }

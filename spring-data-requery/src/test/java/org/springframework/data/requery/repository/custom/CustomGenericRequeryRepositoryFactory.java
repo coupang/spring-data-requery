@@ -43,7 +43,8 @@ public class CustomGenericRequeryRepositoryFactory extends RequeryRepositoryFact
 
     @SuppressWarnings("unchecked")
     @Override
-    protected SimpleRequeryRepository<?, ?> getTargetRepository(RepositoryInformation information, RequeryOperations operations) {
+    protected SimpleRequeryRepository<?, ?> getTargetRepository(@NotNull final RepositoryInformation information,
+                                                                @NotNull final RequeryOperations operations) {
 
         RequeryEntityInformation<Object, Serializable> entityMetadata = mock(RequeryEntityInformation.class);
         when(entityMetadata.getJavaType()).thenReturn((Class<Object>) information.getDomainType());

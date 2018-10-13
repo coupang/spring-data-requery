@@ -30,18 +30,22 @@ import org.springframework.data.repository.query.ParametersParameterAccessor;
 @Slf4j
 public class RequeryParametersParameterAccessor extends ParametersParameterAccessor implements RequeryParameterAccessor {
 
+    @NotNull
     private final RequeryParameters parameters;
 
-    public RequeryParametersParameterAccessor(@NotNull RequeryQueryMethod method, Object[] values) {
+    public RequeryParametersParameterAccessor(@NotNull final RequeryQueryMethod method,
+                                              @NotNull final Object[] values) {
         this(method.getParameters(), values);
     }
 
-    public RequeryParametersParameterAccessor(RequeryParameters parameters, Object[] values) {
+    public RequeryParametersParameterAccessor(@NotNull final RequeryParameters parameters,
+                                              @NotNull final Object[] values) {
         super(parameters, values);
         this.parameters = parameters;
     }
 
     @Override
+    @NotNull
     public RequeryParameters getParameters() {
         return parameters;
     }

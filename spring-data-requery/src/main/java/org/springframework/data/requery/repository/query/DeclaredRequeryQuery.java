@@ -46,19 +46,21 @@ public class DeclaredRequeryQuery extends AbstractRequeryQuery {
         super(method, operations);
     }
 
+    @NotNull
     @Override
-    protected QueryElement<? extends Result<?>> doCreateQuery(Object[] values) {
+    protected QueryElement<? extends Result<?>> doCreateQuery(@NotNull final Object[] values) {
         throw new UnsupportedOperationException("Unsupported operation in DeclaredRequeryQuery is defined");
     }
 
+    @NotNull
     @Override
-    protected QueryElement<? extends Scalar<Integer>> doCreateCountQuery(Object[] values) {
+    protected QueryElement<? extends Scalar<Integer>> doCreateCountQuery(@NotNull final Object[] values) {
         throw new UnsupportedOperationException("Unsupported operation in @Query is defined");
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public Object execute(Object[] parameters) {
+    public Object execute(@NotNull final Object[] parameters) {
 
         String query = getRawQuery();
 
@@ -79,7 +81,8 @@ public class DeclaredRequeryQuery extends AbstractRequeryQuery {
 
             Object[] values = (pageableIndex >= 0) ? new Object[parameters.length - 1] : parameters;
 
-            for (int i = 0, j = 0; i < parameters.length; i++) {
+            int j = 0;
+            for (int i = 0; i < parameters.length; i++) {
                 if (i == pageableIndex) {
                     continue;
                 }
@@ -118,7 +121,7 @@ public class DeclaredRequeryQuery extends AbstractRequeryQuery {
 
     @SuppressWarnings("unchecked")
     @Nullable
-    private Object castResult(Result<?> result, Pageable pageable, Long totals) {
+    private Object castResult(@NotNull final Result<?> result, @NotNull final Pageable pageable, final Long totals) {
         // TODO: List<Tuple> 인 경우 returned type 으로 변경해야 한다.
 
         if (getQueryMethod().isCollectionQuery()) {

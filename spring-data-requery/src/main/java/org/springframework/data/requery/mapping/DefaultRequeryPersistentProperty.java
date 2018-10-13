@@ -17,6 +17,8 @@
 package org.springframework.data.requery.mapping;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.data.mapping.Association;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.model.AnnotationBasedPersistentProperty;
@@ -29,7 +31,7 @@ import org.springframework.util.StringUtils;
 import java.util.Optional;
 
 /**
- * DefaultRequeryPersistentProperty
+ * Default {@link RequeryPersistentProperty}
  *
  * @author debop
  * @since 18. 6. 8
@@ -44,14 +46,18 @@ public class DefaultRequeryPersistentProperty
     /**
      * Creates a new {@link AnnotationBasedPersistentProperty}.
      */
-    public DefaultRequeryPersistentProperty(Property property,
-                                            PersistentEntity<?, RequeryPersistentProperty> owner,
-                                            SimpleTypeHolder simpleTypeHolder,
-                                            FieldNamingStrategy fieldNamingStrategy) {
+    public DefaultRequeryPersistentProperty(@NotNull final Property property,
+                                            @NotNull final PersistentEntity<?, RequeryPersistentProperty> owner,
+                                            @NotNull final SimpleTypeHolder simpleTypeHolder,
+                                            @Nullable final FieldNamingStrategy fieldNamingStrategy) {
         super(property, owner, simpleTypeHolder);
-        this.fieldNamingStrategy = (fieldNamingStrategy != null) ? fieldNamingStrategy : PropertyNameFieldNamingStrategy.INSTANCE;
+
+        this.fieldNamingStrategy = (fieldNamingStrategy != null)
+                                   ? fieldNamingStrategy
+                                   : PropertyNameFieldNamingStrategy.INSTANCE;
     }
 
+    @NotNull
     @Override
     protected Association<RequeryPersistentProperty> createAssociation() {
         return new Association<>(this, null);
@@ -92,12 +98,9 @@ public class DefaultRequeryPersistentProperty
 
     @Override
     public String getFieldName() {
-        final String fieldName;
-        if (isIdProperty()) {
-            fieldName = getProperty().getName();
-        } else {
-            fieldName = getAnnotatedColumnName().orElse(fieldNamingStrategy.getFieldName(this));
-        }
+        final String fieldName = (isIdProperty())
+                                 ? getProperty().getName()
+                                 : getAnnotatedColumnName().orElse(fieldNamingStrategy.getFieldName(this));
         log.debug("property={}, fieldName={}", getProperty(), fieldName);
         return fieldName;
     }
@@ -106,6 +109,4 @@ public class DefaultRequeryPersistentProperty
         return Optional.ofNullable(findAnnotation(io.requery.Column.class))
             .map(name -> StringUtils.hasText(name.value()) ? name.value() : null);
     }
-
-
 }

@@ -17,13 +17,13 @@
 package org.springframework.data.requery.converters;
 
 import io.requery.Converter;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 /**
- * org.springframework.data.requery.converters.LocalDateTimeToLongConverter
+ * {@link LocalDateTime} 을 Long (Timestamp 값) 으로 저장하는 Converter입니다.
  *
  * @author debop
  */
@@ -46,13 +46,15 @@ public class LocalDateTimeToLongConverter implements Converter<LocalDateTime, Lo
         return null;
     }
 
+    @Nullable
     @Override
-    public Long convertToPersisted(LocalDateTime value) {
+    public Long convertToPersisted(@Nullable LocalDateTime value) {
         return (value != null)
                ? value.toEpochSecond(ZoneOffset.UTC) * Java8Times.NANO_IN_SECONDS + value.getNano()
                : null;
     }
 
+    @Nullable
     @Override
     public LocalDateTime convertToMapped(Class<? extends LocalDateTime> type, @Nullable Long value) {
         if (value != null) {

@@ -19,6 +19,8 @@ package org.springframework.data.requery.repository.query;
 import io.requery.sql.EntityDataStore;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.NamedQueries;
 import org.springframework.data.repository.core.RepositoryMetadata;
@@ -42,9 +44,10 @@ import static org.springframework.data.repository.query.QueryLookupStrategy.Key;
 @UtilityClass
 public final class RequeryQueryLookupStrategy {
 
-    public static QueryLookupStrategy create(RequeryOperations operations,
-                                             Key key,
-                                             EvaluationContextProvider evaluationContextProvider) {
+    @NotNull
+    public static QueryLookupStrategy create(@NotNull final RequeryOperations operations,
+                                             @Nullable final Key key,
+                                             @NotNull final EvaluationContextProvider evaluationContextProvider) {
         log.debug("Create Query Lookup Strategy with key={}", key);
 
         switch (key != null ? key : Key.CREATE_IF_NOT_FOUND) {

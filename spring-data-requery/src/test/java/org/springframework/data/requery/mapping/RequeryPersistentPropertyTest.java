@@ -236,7 +236,7 @@ public class RequeryPersistentPropertyTest {
         @io.requery.ManyToOne Api api;
     }
 
-    static interface Api {}
+    interface Api {}
 
     static class Implementation {}
 

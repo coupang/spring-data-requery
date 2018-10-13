@@ -21,6 +21,7 @@ import io.requery.query.Scalar;
 import io.requery.query.element.QueryElement;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.ResultProcessor;
 import org.springframework.data.repository.query.ReturnedType;
@@ -55,8 +56,8 @@ public class PartTreeRequeryQuery extends AbstractRequeryQuery {
     private final RequeryMappingContext context;
 
 
-    public PartTreeRequeryQuery(@NotNull RequeryQueryMethod method,
-                                @NotNull RequeryOperations operations) {
+    public PartTreeRequeryQuery(@NotNull final RequeryQueryMethod method,
+                                @NotNull final RequeryOperations operations) {
         super(method, operations);
 
         this.operations = operations;
@@ -74,18 +75,20 @@ public class PartTreeRequeryQuery extends AbstractRequeryQuery {
         }
     }
 
-
+    @NotNull
     @Override
-    protected QueryElement<?> doCreateQuery(Object[] values) {
+    protected QueryElement<?> doCreateQuery(@NotNull final Object[] values) {
         return queryPreparer.createQuery(values);
     }
 
     @SuppressWarnings("unchecked")
+    @NotNull
     @Override
-    protected QueryElement<? extends Scalar<Integer>> doCreateCountQuery(Object[] values) {
+    protected QueryElement<? extends Scalar<Integer>> doCreateCountQuery(@NotNull final Object[] values) {
         return (QueryElement<? extends Scalar<Integer>>) countQueryPreparer.createQuery(values);
     }
 
+    @NotNull
     @Override
     protected RequeryQueryExecution getExecution() {
         if (tree.isDelete()) {
@@ -99,7 +102,8 @@ public class PartTreeRequeryQuery extends AbstractRequeryQuery {
     }
 
     @SuppressWarnings("unchecked")
-    protected QueryElement<?> prepareQuery(RequeryParameterAccessor accessor) {
+    @NotNull
+    protected QueryElement<?> prepareQuery(@NotNull final RequeryParameterAccessor accessor) {
         QueryElement<?> query = unwrap(getOperations().select(getDomainClass()));
 
         query = buildWhereClause(query, accessor);
@@ -115,8 +119,9 @@ public class PartTreeRequeryQuery extends AbstractRequeryQuery {
     }
 
     @SuppressWarnings("unchecked")
-    protected QueryElement<?> buildWhereClause(QueryElement<?> baseQuery,
-                                               RequeryParameterAccessor accessor) {
+    @NotNull
+    protected QueryElement<?> buildWhereClause(@NotNull final QueryElement<?> baseQuery,
+                                               @NotNull RequeryParameterAccessor accessor) {
 
         final RequeryParameters bindableParams = accessor.getParameters().getBindableParameters();
         final int bindableParamsSize = bindableParams.getNumberOfParameters();
@@ -152,20 +157,26 @@ public class PartTreeRequeryQuery extends AbstractRequeryQuery {
             }
         }
 
-        public QueryElement<?> createQuery(Object[] values) {
+        @NotNull
+        public QueryElement<?> createQuery(@NotNull final Object[] values) {
 
             RequeryParametersParameterAccessor accessor = new RequeryParametersParameterAccessor(parameters, values);
             RequeryQueryCreator creator = createCreator(accessor);
 
-            QueryElement<?> query = creator.createQuery(getDynamicSort(values));
+            if (creator != null) {
+                QueryElement<?> query = creator.createQuery(getDynamicSort(values));
 
-            if (getQueryMethod().isPageQuery()) {
-                query = RequeryUtils.applyPageable(getDomainClass(), query, accessor.getPageable());
+                if (getQueryMethod().isPageQuery()) {
+                    query = RequeryUtils.applyPageable(getDomainClass(), query, accessor.getPageable());
+                }
+                return restrictMaxResultsIfNecessary(query);
             }
-            return restrictMaxResultsIfNecessary(query);
+            throw new IllegalStateException("Fail to create RequeryQueryCreator.");
         }
 
-        private QueryElement<?> restrictMaxResultsIfNecessary(QueryElement<?> baseQuery) {
+        @SuppressWarnings("ConstantConditions")
+        @NotNull
+        private QueryElement<?> restrictMaxResultsIfNecessary(@NotNull final QueryElement<?> baseQuery) {
 
             QueryElement<?> query = baseQuery;
 
@@ -195,7 +206,8 @@ public class PartTreeRequeryQuery extends AbstractRequeryQuery {
             return query;
         }
 
-        protected RequeryQueryCreator createCreator(final RequeryParametersParameterAccessor accessor) {
+        @Nullable
+        protected RequeryQueryCreator createCreator(@Nullable final RequeryParametersParameterAccessor accessor) {
 
             ParameterMetadataProvider provider = (accessor != null)
                                                  ? new ParameterMetadataProvider(accessor)
@@ -223,7 +235,7 @@ public class PartTreeRequeryQuery extends AbstractRequeryQuery {
     private class CountQueryPreparer extends QueryPreparer {
 
         @Override
-        protected RequeryCountQueryCreator createCreator(RequeryParametersParameterAccessor accessor) {
+        protected RequeryCountQueryCreator createCreator(@Nullable final RequeryParametersParameterAccessor accessor) {
             ParameterMetadataProvider provider = (accessor != null)
                                                  ? new ParameterMetadataProvider(accessor)
                                                  : new ParameterMetadataProvider(parameters);

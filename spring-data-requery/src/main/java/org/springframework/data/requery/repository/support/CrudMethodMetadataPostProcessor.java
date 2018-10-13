@@ -19,6 +19,7 @@ package org.springframework.data.requery.repository.support;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.aop.TargetSource;
 import org.springframework.aop.framework.ProxyFactory;
@@ -44,16 +45,17 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class CrudMethodMetadataPostProcessor implements RepositoryProxyPostProcessor, BeanClassLoaderAware {
 
-    private @Nullable
-    ClassLoader classLoader = ClassUtils.getDefaultClassLoader();
+    @Nullable
+    private ClassLoader classLoader = ClassUtils.getDefaultClassLoader();
 
     @Override
-    public void setBeanClassLoader(ClassLoader classLoader) {
+    public void setBeanClassLoader(@Nullable final ClassLoader classLoader) {
         this.classLoader = classLoader;
     }
 
     @Override
-    public void postProcess(ProxyFactory factory, RepositoryInformation repositoryInformation) {
+    public void postProcess(@NotNull final ProxyFactory factory,
+                            @NotNull final RepositoryInformation repositoryInformation) {
         factory.addAdvice(CrudMethodMetadataPopulatingMethodInterceptor.INSTANCE);
     }
 
@@ -102,10 +104,8 @@ public class CrudMethodMetadataPostProcessor implements RepositoryProxyPostProce
     private static class DefaultCrudMethodMetadata implements CrudMethodMetadata {
         private final Method method;
 
-        DefaultCrudMethodMetadata(Method method) {
+        DefaultCrudMethodMetadata(@NotNull final Method method) {
             Assert.notNull(method, "Method must not be null!");
-
-
             this.method = method;
         }
 
@@ -128,13 +128,13 @@ public class CrudMethodMetadataPostProcessor implements RepositoryProxyPostProce
         }
 
         @Override
-        public Object getTarget() throws Exception {
+        public Object getTarget() {
             MethodInvocation invocation = ExposeInvocationInterceptor.currentInvocation();
             return TransactionSynchronizationManager.getResource(invocation.getMethod());
         }
 
         @Override
-        public void releaseTarget(Object target) throws Exception {
+        public void releaseTarget(@NotNull final Object target) {
             // Nothing to do.
         }
     }

@@ -17,11 +17,10 @@
 package org.springframework.data.requery.converters;
 
 import io.requery.Converter;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * org.springframework.data.requery.converters.IntArrayToStringConverter
+ * <code>int[]</code> 를 string 으로 저장하는 converter
  *
  * @author debop
  */
@@ -42,8 +41,9 @@ public class IntArrayToStringConverter implements Converter<int[], String> {
         return null;
     }
 
+    @Nullable
     @Override
-    public String convertToPersisted(int[] value) {
+    public String convertToPersisted(@Nullable int[] value) {
         if (value != null && value.length > 0) {
             StringBuilder builder = new StringBuilder();
             for (int item : value) {
@@ -56,6 +56,7 @@ public class IntArrayToStringConverter implements Converter<int[], String> {
         return null;
     }
 
+    @Nullable
     @Override
     public int[] convertToMapped(Class<? extends int[]> type, @Nullable String value) {
         if (value != null && value.length() > 0) {

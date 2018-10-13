@@ -16,12 +16,13 @@
 
 package org.springframework.data.requery.repository.support;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 /**
- * DataStoreBeanDefinitionRegistrarPostProcessor
+ * Requery DataStore를 Bean으로 등록한 후 후처리를 수행한다
  *
  * @author debop
  * @since 18. 6. 14
@@ -29,7 +30,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 public class DataStoreBeanDefinitionRegistrarPostProcessor implements BeanFactoryPostProcessor {
 
     @Override
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-
+    public void postProcessBeanFactory(@NotNull final ConfigurableListableBeanFactory beanFactory) throws BeansException {
+        // Nothing to do
     }
 }

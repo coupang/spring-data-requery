@@ -23,14 +23,14 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 
 /**
- * org.springframework.data.requery.converters.Java8Times
+ * java times (JDK 8 Times) 용 Utility class 입니다.
  *
  * @author debop
  */
 @UtilityClass
 public class Java8Times {
 
-    public static long NANO_IN_SECONDS = 1_000_000_000L;
+    public static final long NANO_IN_SECONDS = 1_000_000_000L;
 
     @NotNull
     public static String toIsoOffsetDateTimeString(@NotNull TemporalAccessor accessor) {

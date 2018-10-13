@@ -16,6 +16,7 @@
 
 package org.springframework.data.requery.repository.config;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.instrument.classloading.ShadowingClassLoader;
 
 /**
@@ -27,7 +28,7 @@ import org.springframework.instrument.classloading.ShadowingClassLoader;
  */
 public class InspectionClassLoader extends ShadowingClassLoader {
 
-    public InspectionClassLoader(ClassLoader parent) {
+    public InspectionClassLoader(@NotNull final ClassLoader parent) {
         super(parent, true);
         excludePackage("org.springframework.");
     }

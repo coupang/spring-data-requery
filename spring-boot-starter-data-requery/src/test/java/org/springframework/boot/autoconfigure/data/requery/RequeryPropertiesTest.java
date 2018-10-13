@@ -31,9 +31,11 @@ public class RequeryPropertiesTest {
     @Test
     public void instancingEntityModel() throws Exception {
 
-        String modelFullName = Models.class.getName() + ".DEFAULT";
-        String className = StringUtils.stripFilenameExtension(modelFullName);
-        String modelName = StringUtils.getFilenameExtension(modelFullName);
+        final String modelFullName = Models.class.getName() + ".DEFAULT";
+        final String className = StringUtils.stripFilenameExtension(modelFullName);
+        final String modelName = StringUtils.getFilenameExtension(modelFullName);
+
+        log.debug("model full name={}, className={}, modelName={}", modelFullName, className, modelName);
 
         assertThat(className).isNotEmpty();
         assertThat(modelName).isNotEmpty();

@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.requery;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -29,10 +30,11 @@ import org.springframework.data.requery.repository.config.RequeryRepositoryConfi
 import org.springframework.data.requery.repository.support.RequeryRepositoryFactoryBean;
 
 /**
- * org.springframework.boot.autoconfigure.data.requery.RequeryRepositoriesAutoConfiguration
+ * Requery Repository 를 위한 auto configuration
  *
  * @author debop
  */
+@Slf4j
 @Configuration
 @ConditionalOnBean({ RequeryOperations.class })
 @ConditionalOnClass({ RequeryRepository.class })
@@ -41,6 +43,4 @@ import org.springframework.data.requery.repository.support.RequeryRepositoryFact
 @Import(RequeryRepositoriesAutoConfigureRgistrar.class)
 @AutoConfigureAfter(RequeryDataAutoConfiguration.class)
 public class RequeryRepositoriesAutoConfiguration {
-
-    // private static final Logger log = LoggerFactory.getLogger(RequeryRepositoriesAutoConfiguration.class);
 }

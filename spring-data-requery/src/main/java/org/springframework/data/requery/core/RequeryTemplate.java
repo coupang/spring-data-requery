@@ -38,33 +38,30 @@ import java.util.function.Function;
 @Getter
 public class RequeryTemplate implements RequeryOperations {
 
-    //    private final ApplicationContext applicationContext;
     private final EntityDataStore<Object> dataStore;
     private final RequeryMappingContext mappingContext;
 
-    public RequeryTemplate(/*@NotNull ApplicationContext applicationContext,*/
-        @NotNull EntityDataStore<Object> dataStore,
-        @NotNull RequeryMappingContext mappingContext) {
-
-//        Assert.notNull(applicationContext, "applicationContext must not be null");
+    public RequeryTemplate(@NotNull EntityDataStore<Object> dataStore,
+                           @NotNull RequeryMappingContext mappingContext) {
         Assert.notNull(dataStore, "dataStore must not be null");
         Assert.notNull(mappingContext, "mappingContext must not be null");
 
-//        this.applicationContext = applicationContext;
         this.dataStore = dataStore;
         this.mappingContext = mappingContext;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <V> V runInTransaction(Callable<V> callable, @Nullable TransactionIsolation isolation) {
+    public <V> V runInTransaction(@NotNull final Callable<V> callable,
+                                  @Nullable final TransactionIsolation isolation) {
         Assert.notNull(callable, "Callable must not be null.");
         return dataStore.runInTransaction(callable, isolation);
     }
 
     @Override
-    public <V> V withTransaction(Function<EntityDataStore<Object>, V> block,
-                                 @Nullable TransactionIsolation isolation) {
+    public <V> V withTransaction(@NotNull final Function<EntityDataStore<Object>, V> block,
+                                 @Nullable final TransactionIsolation isolation) {
+        Assert.notNull(block, "block must not be null.");
         return getDataStore().runInTransaction(() -> block.apply(dataStore), isolation);
     }
 }

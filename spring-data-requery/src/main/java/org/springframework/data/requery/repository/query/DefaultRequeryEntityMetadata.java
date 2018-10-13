@@ -45,6 +45,7 @@ public class DefaultRequeryEntityMetadata<T> implements RequeryEntityMetadata<T>
         this.domainClass = domainClass;
     }
 
+    @NotNull
     @Override
     public String getEntityName() {
         Entity entity = AnnotatedElementUtils.findMergedAnnotation(domainClass, Entity.class);

@@ -18,6 +18,7 @@ package org.springframework.data.requery.repository.sample;
 
 import io.requery.query.Result;
 import io.requery.query.Return;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.requery.domain.sample.Role;
 import org.springframework.data.requery.repository.RequeryRepository;
 
@@ -32,13 +33,16 @@ import java.util.Optional;
  */
 public interface RoleRepository extends RequeryRepository<Role, Integer> {
 
+    @NotNull
     List<Role> findAll();
 
-    Optional<Role> findById(Integer id);
+    @NotNull
+    Optional<Role> findById(@NotNull final Integer id);
 
 
     @Override
-    Optional<Role> findOne(Return<? extends Result<Role>> whereClause);
+    @NotNull
+    Optional<Role> findOne(@NotNull final Return<? extends Result<Role>> whereClause);
 
 
     Long countByName(String name);

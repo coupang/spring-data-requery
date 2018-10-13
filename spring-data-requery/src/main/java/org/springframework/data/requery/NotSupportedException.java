@@ -17,7 +17,7 @@
 package org.springframework.data.requery;
 
 /**
- * org.springframework.data.requery.NotSupportedException
+ * 지원하지 않는 기능을 사용하려고 할 때 발생하는 exception.
  *
  * @author debop
  * @since 18. 6. 22
@@ -26,15 +26,15 @@ public class NotSupportedException extends RuntimeException {
 
     public NotSupportedException() {}
 
-    public NotSupportedException(String message) {
+    public NotSupportedException(final String message) {
         super(message);
     }
 
-    public NotSupportedException(String message, Throwable cause) {
+    public NotSupportedException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
-    public NotSupportedException(Throwable cause) {
+    public NotSupportedException(final Throwable cause) {
         super(cause);
     }
 

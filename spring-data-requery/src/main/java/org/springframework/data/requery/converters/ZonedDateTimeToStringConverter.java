@@ -17,13 +17,13 @@
 package org.springframework.data.requery.converters;
 
 import io.requery.Converter;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.Nullable;
 import java.time.ZonedDateTime;
 
 /**
- * org.springframework.data.requery.converters.ZonedDateTimeToStringConverter
+ * {@link ZonedDateTime} 을 DB에 문자열로 저장하기 위한 Converter
  *
  * @author debop
  */
@@ -45,13 +45,15 @@ public class ZonedDateTimeToStringConverter implements Converter<ZonedDateTime, 
         return null;
     }
 
+    @Nullable
     @Override
-    public String convertToPersisted(ZonedDateTime value) {
+    public String convertToPersisted(@Nullable ZonedDateTime value) {
         return (value != null)
                ? Java8Times.toIsoZonedDateTimeString(value)
                : null;
     }
 
+    @Nullable
     @Override
     public ZonedDateTime convertToMapped(Class<? extends ZonedDateTime> type, @Nullable String value) {
         return (StringUtils.hasText(value))

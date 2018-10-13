@@ -22,7 +22,7 @@ import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.data.requery.repository.query.RequeryEntityMetadata;
 
 /**
- * RequeryEntityInformation
+ * Requery용 Entity의 정보를 제공합니다.
  *
  * @author debop
  * @since 18. 6. 7
@@ -36,7 +36,7 @@ public interface RequeryEntityInformation<T, ID> extends EntityInformation<T, ID
     Attribute<? super T, ?> getIdAttribute();
 
 
-    default Attribute<? super T, ?> getRequiredIdAttribute() throws IllegalArgumentException {
+    default Attribute<? super T, ?> getRequiredIdAttribute() {
         Attribute<? super T, ?> id = getIdAttribute();
         if (id != null) {
             return id;
@@ -51,6 +51,6 @@ public interface RequeryEntityInformation<T, ID> extends EntityInformation<T, ID
     Iterable<String> getIdAttributeNames();
 
     @Nullable
-    Object getCompositeIdAttributeValue(Object id, String idAttribute);
+    Object getCompositeIdAttributeValue(final Object id, final String idAttribute);
 
 }

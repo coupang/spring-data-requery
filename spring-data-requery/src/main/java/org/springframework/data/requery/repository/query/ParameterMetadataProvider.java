@@ -20,6 +20,7 @@ import io.requery.query.Expression;
 import io.requery.query.FieldExpression;
 import io.requery.query.NamedExpression;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.ParametersParameterAccessor;
@@ -29,7 +30,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 
-import javax.persistence.criteria.ParameterExpression;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -51,7 +51,7 @@ public class ParameterMetadataProvider {
     private final List<ParameterMetadata<?>> expressions;
     private final @Nullable Iterator<Object> bindableParameterValues;
 
-    public ParameterMetadataProvider(ParametersParameterAccessor accessor) {
+    public ParameterMetadataProvider(@NotNull final ParametersParameterAccessor accessor) {
         this(accessor.iterator(), accessor.getParameters());
     }
 
@@ -87,7 +87,11 @@ public class ParameterMetadataProvider {
         return (ParameterMetadata<T>) next(part, typeToUse, parameter);
     }
 
-    private <T> ParameterMetadata<T> next(Part part, Class<T> type, Parameter parameter) {
+    @SuppressWarnings("unchecked")
+    @NotNull
+    private <T> ParameterMetadata<T> next(final Part part,
+                                          @NotNull final Class<T> type,
+                                          final Parameter parameter) {
         log.debug("get next parameter ... part={}, type={}, parameter={}", part, type, parameter);
 
         Assert.notNull(type, "Type must not be null!");
@@ -104,7 +108,9 @@ public class ParameterMetadataProvider {
                                         ? NamedExpression.of(name.get(), reifiedType)
                                         : NamedExpression.of(String.valueOf(parameter.getIndex()), reifiedType);
 
-        Object value = bindableParameterValues == null ? ParameterMetadata.PLACEHOLDER : bindableParameterValues.next();
+        Object value = bindableParameterValues == null
+                       ? ParameterMetadata.PLACEHOLDER
+                       : bindableParameterValues.next();
 
         ParameterMetadata metadata = new ParameterMetadata(expression, part.getType(), value);
         expressions.add(metadata);
@@ -135,7 +141,7 @@ public class ParameterMetadataProvider {
         }
 
         /**
-         * Returns the {@link ParameterExpression}.
+         * Returns the {@link FieldExpression}.
          *
          * @return the expression
          */
@@ -155,7 +161,7 @@ public class ParameterMetadataProvider {
         }
 
         /**
-         * Prepares the object before it's actually bound to the {@link javax.persistence.Query;}.
+         * Prepares the object before it's actually bound to the {@link io.requery.query.element.QueryElement}.
          *
          * @param value must not be {@literal null}.
          */
@@ -183,9 +189,6 @@ public class ParameterMetadataProvider {
             }
 
             return value;
-//            return Collection.class.isAssignableFrom(expressionType) //
-//                   ? persistenceProvider.potentiallyConvertEmptyCollection(toCollection(value)) //
-//                   : value;
         }
 
         /**
@@ -196,11 +199,11 @@ public class ParameterMetadataProvider {
          * @param value the value to be converted to a {@link Collection}.
          * @return the object itself as a {@link Collection} or a {@link Collection} constructed from the value.
          */
-        @Nullable
+        @NotNull
         private static Collection<?> toCollection(@Nullable Object value) {
 
             if (value == null) {
-                return null;
+                return Collections.emptyList();
             }
 
             if (value instanceof Collection) {

@@ -109,6 +109,7 @@ public class RequeryRepositoryFactoryBeanTest {
             super(repositoryInterface);
         }
 
+        @NotNull
         @Override
         protected RepositoryFactorySupport doCreateRepositoryFactory() {
             return factory;
