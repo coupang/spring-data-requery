@@ -31,7 +31,6 @@ import org.springframework.data.requery.kotlin.coroutines.KotlinCoroutineRequery
 import org.springframework.data.requery.kotlin.repository.CoroutineRequeryRepository
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
 import kotlin.reflect.KClass
 
 /**
@@ -70,10 +69,6 @@ class SimpleCoroutineRequeryRepository<E : Any, ID : Any> @Autowired constructor
     }
 
     override suspend fun findAll(pageable: Pageable): Page<E> {
-        TODO("not implemented")
-    }
-
-    override suspend fun <S : E> findAll(example: Example<S>): List<S> {
         TODO("not implemented")
     }
 
@@ -197,7 +192,7 @@ class SimpleCoroutineRequeryRepository<E : Any, ID : Any> @Autowired constructor
         TODO("not implemented")
     }
 
-    override suspend fun <S : E> findOne(example: Example<S>): Optional<S> {
+    override suspend fun <S : E> findOne(example: Example<S>): S? {
         TODO("not implemented")
     }
 

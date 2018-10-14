@@ -79,7 +79,5 @@ interface CoroutineRequeryRepository<E : Any, ID : Any>
 
     suspend fun getOne(id: ID): E?
 
-    override suspend fun <S : E> findAll(example: Example<S>): List<S>
-
     override suspend fun <S : E> findAll(example: Example<S>, sort: Sort): List<S>
 }

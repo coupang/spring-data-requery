@@ -37,16 +37,7 @@ interface CoroutineQueryByExampleExecutor<E : Any> {
      * @return a single entity matching the given [Example] or [Optional.empty] if none was found.
      * @throws org.springframework.dao.IncorrectResultSizeDataAccessException if the Example yields more than one result.
      */
-    suspend fun <S : E> findOne(example: Example<S>): Optional<S>
-
-    /**
-     * Returns all entities matching the given [Example]. In case no match could be found an empty [Iterable]
-     * is returned.
-     *
-     * @param example must not be null.
-     * @return all entities matching the given [Example].
-     */
-    suspend fun <S : E> findAll(example: Example<S>): Iterable<S>
+    suspend fun <S : E> findOne(example: Example<S>): S?
 
     /**
      * Returns all entities matching the given [Example] applying the given [Sort]. In case no match could be
@@ -57,7 +48,7 @@ interface CoroutineQueryByExampleExecutor<E : Any> {
      * @return all entities matching the given [Example].
      * @since 1.10
      */
-    suspend fun <S : E> findAll(example: Example<S>, sort: Sort): Iterable<S>
+    suspend fun <S : E> findAll(example: Example<S>, sort: Sort = Sort.unsorted()): Iterable<S>
 
     /**
      * Returns a [Page] of entities matching the given [Example]. In case no match could be found, an empty
