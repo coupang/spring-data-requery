@@ -25,7 +25,9 @@ import org.cache2k.configuration.Cache2kConfiguration
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * org.springframework.data.requery.kotlin.cache.Cache2kEntityCache
+ * Cache2k를 이용하여 Requery entity를 cache 합니다.
+ * Requery Entity는 분산환경에서의 Cache는 사용할 수 없습니다 (DTO로 만든 후 캐시해야 합니다)
+ *
  * @author debop
  * @since 18. 7. 2
  */

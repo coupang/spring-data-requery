@@ -41,7 +41,11 @@ import mu.KotlinLogging
 import kotlin.reflect.KClass
 
 /**
- * Kotlin Coroutines 를 이용하여 [io.requery.sql.EntityDataStore]를 구현한 클래스입니다.
+ * Kotlin Coroutine을 이용하여 [io.requery.sql.EntityDataStore]를 구현한 클래스입니다.
+ * TODO: 이 클래스를 단독으로 쓸 것인지, [KotlinCoroutineRequeryOperations] 처럼 suspend 만 붙일 것인지 결정해야 한다
+ *
+ * 비동기 방식이지만, Coroutine은 Lightweight thread이므로 Transaction에 안정하게 구현됩니다.
+ * 다만 Dispatchers.Default를 쓰면 안되고, caller thread에 속해서 작동해야 하므로 [Dispatchers.Unconfined]를 사용해야 합니다.
  *
  * @author debop
  * @since 18. 5. 16
@@ -184,6 +188,12 @@ class KotlinCoroutineEntityStore<T : Any>(private val dataStore: BlockingEntityS
                             body: BlockingEntityStore<T>.() -> V): Deferred<V> =
         execute { dataStore.withTransaction(isolation, body) }
 
+    /**
+     * [KotlinCoroutineEntityStore]에서 제공하는 모든 메소드는 이 함수를 통해서 실행됩니다.
+     *
+     * @param V return value type
+     * @param block code block of requery operations
+     */
     inline fun <V> execute(crossinline block: KotlinCoroutineEntityStore<T>.() -> V): Deferred<V> {
         return GlobalScope.async(coroutineDispatcher) {
             block.invoke(this@KotlinCoroutineEntityStore)

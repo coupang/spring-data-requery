@@ -42,7 +42,8 @@ open class DefaultRequeryPersistentProperty @JvmOverloads constructor(
         private val log = KotlinLogging.logger { }
     }
 
-    open override fun createAssociation(): Association<RequeryPersistentProperty> = Association(this, null)
+    open override fun createAssociation(): Association<RequeryPersistentProperty> =
+        Association<RequeryPersistentProperty>(this, null)
 
     open override fun isIdProperty(): Boolean = findAnnotation(io.requery.Key::class.java) != null
 
@@ -61,20 +62,16 @@ open class DefaultRequeryPersistentProperty @JvmOverloads constructor(
     open override fun isVersionProperty(): Boolean = findAnnotation(io.requery.Version::class.java) != null
 
     open override fun getFieldName(): String {
-        return when {
-            isIdProperty -> property.name
-            else -> getAnnotatedColumnName() ?: fieldNamingStrategy.getFieldName(this)
+        return if(isIdProperty) {
+            property.name
+        } else {
+            getAnnotatedColumnName() ?: fieldNamingStrategy.getFieldName(this)
         }
     }
 
-
     private fun getAnnotatedColumnName(): String? {
-
-        return findAnnotation(io.requery.Column::class.java)?.let {
-            when {
-                it.value.isBlank() -> null
-                else -> it.value
-            }
+        return findAnnotation(io.requery.Column::class.java)?.let { column ->
+            if(column.value.isNotBlank()) column.value else null
         }
     }
 }

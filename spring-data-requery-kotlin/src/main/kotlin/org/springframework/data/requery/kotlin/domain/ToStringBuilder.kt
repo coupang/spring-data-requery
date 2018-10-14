@@ -45,10 +45,9 @@ class ToStringBuilder(val className: String) : Serializable {
 
     private fun toStringValue(limit: Int): String {
         if(cachedToString == null) {
-            val props = map.entries
-                .joinToString(separator = ",", limit = limit) {
-                    "${it.key}=${it.value.asString()}"
-                }
+            val props = map.entries.joinToString(separator = ",", limit = limit) {
+                "${it.key}=${it.value.asString()}"
+            }
             cachedToString = "$className($props)"
         }
         return cachedToString!!

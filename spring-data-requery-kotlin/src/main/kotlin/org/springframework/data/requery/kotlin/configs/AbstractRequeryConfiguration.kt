@@ -37,7 +37,7 @@ import javax.annotation.PostConstruct
 import javax.sql.DataSource
 
 /**
- * AbstractRequeryConfiguration
+ * Spring 용 Requery 환경설정 파일입니다.
  *
  * @author debop
  * @since 18. 7. 2
@@ -99,7 +99,7 @@ abstract class AbstractRequeryConfiguration {
      */
     @PostConstruct
     protected fun buildSchema() {
-        log.info { "Create Database Schema..." }
+        log.info { "Create Database Schema ..." }
         try {
             val schema = SchemaModifier(configuration)
             log.debug { schema.createTablesString(getTableCreationMode()) }

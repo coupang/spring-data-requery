@@ -31,22 +31,19 @@ class DefaultRequeryPersistentEntity<E>(information: TypeInformation<E>)
 
     private val name: String
 
-    override val idProperties = arrayListOf<RequeryPersistentProperty>()
-    override val embeddedProperties = arrayListOf<RequeryPersistentProperty>()
-    override val indexes = arrayListOf<RequeryPersistentProperty>()
+    override val idProperties: MutableList<RequeryPersistentProperty> = mutableListOf()
+    override val embeddedProperties: MutableList<RequeryPersistentProperty> = mutableListOf()
+    override val indexes: MutableList<RequeryPersistentProperty> = mutableListOf()
 
     override val singleIdProperty: RequeryPersistentProperty?
         get() = idProperties.firstOrNull()
 
-    private val annotationCache: MutableMap<Class<out Annotation>, Annotation?> = linkedMapOf()
-    private val repeatableAnnotationCache: MutableMap<Class<out Annotation>, Set<Annotation>> = linkedMapOf()
+    private val annotationCache: MutableMap<Class<out Annotation>, Annotation?> = mutableMapOf()
+    private val repeatableAnnotationCache: MutableMap<Class<out Annotation>, Set<Annotation>> = mutableMapOf()
 
     init {
-        this.name = findAnnotation(io.requery.Entity::class.java)?.let {
-            when {
-                it.name.isNotBlank() -> it.name
-                else -> information.type.simpleName
-            }
+        name = findAnnotation(io.requery.Entity::class.java)?.let { entity ->
+            if(entity.name.isNotBlank()) entity.name else information.type.simpleName
         } ?: information.type.simpleName
     }
 

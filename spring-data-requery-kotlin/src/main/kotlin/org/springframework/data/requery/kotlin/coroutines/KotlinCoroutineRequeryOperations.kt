@@ -32,7 +32,7 @@ import io.requery.sql.KotlinEntityDataStore
 import kotlin.reflect.KClass
 
 /**
- * Kotlin Coroutines를 활용한 [RequeryOperations] 입니다.
+ * Kotlin Coroutines 환경 하에서 실행되는 RequeryOperations 입니다.
 
  * @author debop
  */

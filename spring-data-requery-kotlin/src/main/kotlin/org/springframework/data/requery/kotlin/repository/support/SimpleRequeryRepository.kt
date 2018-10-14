@@ -44,7 +44,7 @@ import java.util.*
 import kotlin.reflect.KClass
 
 /**
- * SimpleRequeryRepository
+ * [RequeryRepository] 의 기본 구현체
  *
  * @author debop
  */
@@ -60,8 +60,8 @@ class SimpleRequeryRepository<E : Any, ID : Any> @Autowired constructor(
         private val log = KotlinLogging.logger { }
     }
 
-    override final val domainKlass: KClass<E> = entityInformation.kotlinType
-    override final val domainClass: Class<E> = entityInformation.javaType
+    final override val domainKlass: KClass<E> = entityInformation.kotlinType
+    final override val domainClass: Class<E> = entityInformation.javaType
     final val domainClassName: String = domainClass.simpleName ?: "Unknown"
 
     private var crudMethodMetadata: CrudMethodMetadata? = null

@@ -19,7 +19,7 @@ package org.springframework.data.requery.kotlin.annotation
 import org.springframework.data.annotation.QueryAnnotation
 
 /**
- * Query
+ * Raw SQL Query를 제공하기 위한 annotation 입니다.
  *
  * @author debop
  * @since 18. 7. 2
