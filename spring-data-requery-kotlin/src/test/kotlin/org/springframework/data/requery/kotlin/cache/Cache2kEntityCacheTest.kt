@@ -16,6 +16,10 @@
 
 package org.springframework.data.requery.kotlin.cache
 
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.experimental.withContext
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -98,7 +102,7 @@ class Cache2kEntityCacheTest {
         val userId = 1
 
         val role = RoleEntity()
-        val roleId = 1
+        val roleId = 2
 
         entityCache.put(User::class.java, userId, user)
         assertThat(entityCache.contains(User::class.java, userId)).isTrue()
@@ -110,5 +114,29 @@ class Cache2kEntityCacheTest {
         entityCache.clear()
         assertThat(entityCache.contains(User::class.java, userId)).isFalse()
         assertThat(entityCache.contains(Role::class.java, roleId)).isFalse()
+    }
+
+    @Test
+    fun `caching in multithread env`() = runBlocking {
+        withContext(Dispatchers.Default) {
+
+            val job1 = launch {
+                val user = RandomData.randomUser()
+                val userId = 42
+                entityCache.put(User::class.java, userId, user)
+                assertTrue { entityCache.contains(User::class.java, userId) }
+            }
+
+            val job2 = launch {
+                val role = RoleEntity()
+                val roleId = 43
+
+                entityCache.put(Role::class.java, roleId, role)
+                assertTrue { entityCache.contains(Role::class.java, roleId) }
+            }
+
+            job1.join()
+            job2.join()
+        }
     }
 }

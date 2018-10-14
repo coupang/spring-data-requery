@@ -22,6 +22,7 @@ import mu.KLogging
 import org.cache2k.Cache
 import org.cache2k.Cache2kBuilder
 import org.cache2k.configuration.Cache2kConfiguration
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * org.springframework.data.requery.kotlin.cache.Cache2kEntityCache
@@ -44,7 +45,7 @@ class Cache2kEntityCache @JvmOverloads constructor(
                 maxRetryInterval = 1000L
             }
 
-        private val cacheManager: MutableMap<Class<*>, Cache<Any, Any?>> = LinkedHashMap()
+        private val cacheManager: MutableMap<Class<*>, Cache<Any, Any?>> = ConcurrentHashMap()
         private val syncObj: Any = Any()
     }
 
@@ -52,25 +53,17 @@ class Cache2kEntityCache @JvmOverloads constructor(
 
     val Class<*>.cache: Cache<Any, Any?>
         get() {
-            synchronized(syncObj) {
-                var cache = cacheManager[this]
-
-                if(cache == null) {
+            return cacheManager.computeIfAbsent(this) { clazz ->
+                synchronized(syncObj) {
                     logger.debug { "Create Cache2k cache for type [${this.name}]" }
 
-                    val cacheBuilder = Cache2kBuilder.of(configuration)
-                        .name(this.name)
-
-                    dataStore?.let {
-                        cacheBuilder.loader { key ->
-                            dataStore?.findByKey(this, key)
+                    Cache2kBuilder.of(configuration).name(clazz.name).run {
+                        if(dataStore != null) {
+                            loader { dataStore!!.findByKey(clazz, it) }
                         }
+                        build()
                     }
-
-                    cache = cacheBuilder.build()
-                    cacheManager[this] = cache
                 }
-                return cache!!
             }
         }
 
@@ -95,7 +88,7 @@ class Cache2kEntityCache @JvmOverloads constructor(
     }
 
     override fun <T : Any?> put(type: Class<T>?, key: Any?, value: T) {
-        value?.let {
+        value?.let { _ ->
             key?.let { type?.cache?.put(key, value) }
         } ?: invalidate(type, key)
     }

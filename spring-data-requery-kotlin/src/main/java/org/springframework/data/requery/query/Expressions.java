@@ -36,14 +36,16 @@ public final class Expressions {
     private Expressions() {}
 
     @SuppressWarnings("unchecked")
-    public static <V> LogicalCondition<? extends Expression<V>, Collection<V>> in(@NotNull FieldExpression<V> expression,
-                                                                                  @NotNull Collection<V> values) {
+    @NotNull
+    public static <V> LogicalCondition<? extends Expression<V>, Collection<V>> in(@NotNull final FieldExpression<V> expression,
+                                                                                  @NotNull final Collection<V> values) {
         return expression.in(values);
     }
 
     @SuppressWarnings("unchecked")
-    public static <V> LogicalCondition<? extends Expression<V>, Collection<V>> notIn(@NotNull FieldExpression<V> expression,
-                                                                                     @NotNull Collection<V> values) {
+    @NotNull
+    public static <V> LogicalCondition<? extends Expression<V>, Collection<V>> notIn(@NotNull final FieldExpression<V> expression,
+                                                                                     @NotNull final Collection<V> values) {
         return expression.notIn(values);
     }
 }
