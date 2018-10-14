@@ -26,11 +26,9 @@ import org.springframework.data.requery.kotlin.core.RequeryOperations
 import kotlin.reflect.KClass
 
 /**
- * [org.springframework.data.repository.Repository] for Requery
+ * Requery를 사용하는 Spring Data Repository의 기본 Interface
  *
  * @author debop
- *
- * // TODO: suspend 함수를 처리할 수 있는 RequeryQueryExecution도 추가하자. 이를 SuspendableRequeryRepository 로 하자
  */
 @NoRepositoryBean
 interface RequeryRepository<E : Any, ID : Any> : PagingAndSortingRepository<E, ID>,

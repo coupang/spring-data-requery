@@ -44,7 +44,8 @@ import java.util.*
 import kotlin.reflect.KClass
 
 /**
- * [RequeryRepository] 의 기본 구현체
+ *
+ * [org.springframework.data.requery.kotlin.repository.RequeryRepository] 의 기본 구현체
  *
  * @author debop
  */

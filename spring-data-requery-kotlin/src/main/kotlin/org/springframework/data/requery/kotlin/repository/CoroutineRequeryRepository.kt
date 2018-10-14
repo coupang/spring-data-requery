@@ -27,7 +27,7 @@ import org.springframework.data.requery.kotlin.repository.query.CoroutineQueryBy
 import kotlin.reflect.KClass
 
 /**
- * Requery 를 Coroutine 환경에서 작업하기 위한 Interface 입니다.
+ * Requery를 Coroutine 환경에서 실행하는 Spring Data Repository의 기본 Interface
  *
  * @author debop
  * @since 18. 10. 14

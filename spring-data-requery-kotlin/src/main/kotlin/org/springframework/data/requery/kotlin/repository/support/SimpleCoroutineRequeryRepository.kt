@@ -29,6 +29,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.requery.kotlin.coroutines.KotlinCoroutineRequeryOperations
 import org.springframework.data.requery.kotlin.repository.CoroutineRequeryRepository
+import org.springframework.data.requery.kotlin.unwrap
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import kotlin.reflect.KClass
@@ -59,6 +60,7 @@ class SimpleCoroutineRequeryRepository<E : Any, ID : Any> @Autowired constructor
         TODO("not implemented")
     }
 
+    suspend fun select(): QueryElement<out Result<E>> = operations.select(domainKlass).unwrap()
 
     override suspend fun findAll(): List<E> {
         TODO("not implemented")

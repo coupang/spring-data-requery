@@ -22,7 +22,7 @@ import org.springframework.data.repository.NoRepositoryBean
 import org.springframework.data.repository.Repository
 
 /**
- * Coroutine 환경에서 사용하는 [Repository]의 기본 Interface 입니다.
+ * Coroutine 환경에서 실행되는 Spring Data [Repository]의 기본 Interface 입니다.
  *
  * @author debop
  * @since 18. 10. 14

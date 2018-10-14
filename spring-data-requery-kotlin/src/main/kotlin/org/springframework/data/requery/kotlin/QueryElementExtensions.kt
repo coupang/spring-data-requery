@@ -19,6 +19,7 @@
 package org.springframework.data.requery.kotlin
 
 import io.requery.query.Condition
+import io.requery.query.FieldExpression
 import io.requery.query.LogicalCondition
 import io.requery.query.NamedExpression
 import io.requery.query.OrderingExpression
@@ -35,27 +36,50 @@ import org.springframework.data.domain.Sort
 
 private val log = KotlinLogging.logger { }
 
+/**
+ * Spring Framework의 [Sort.Direction]에 따른 [OrderingExpression]을 생성합니다.
+ *
+ * @param direction 정렬 방향을 나타냅니다. (Spring framework의 [Sort.Direction] enum 값
+ */
+fun FieldExpression<out Any>.getOrderExpression(direction: Sort.Direction): OrderingExpression<out Any> =
+    if(direction.isAscending) this.asc() else desc()
+
+/**
+ * 지정한 Entity에 저장한 이름의 [NamedExpression]을 생성합니다.
+ *
+ * @param V type of field
+ * @param name name of field
+ */
+inline fun <reified V : Any> namedExpressionOf(name: String): NamedExpression<V> =
+    NamedExpression.of(name, V::class.java)
+
+/**
+ * 지정한 Entity에 저장한 이름의 [NamedExpression]을 생성합니다.
+ *
+ * @param name name of field
+ * @param type field type
+ */
 fun <V : Any> namedExpressionOf(name: String, type: Class<V>): NamedExpression<V> =
     NamedExpression.of(name, type)
 
 @Suppress("UNCHECKED_CAST")
-fun <T : Any> Return<T>.unwrap(): QueryElement<T> {
-    return if(this is QueryWrapper<*>) {
-        this.unwrapQuery() as QueryElement<T>
-    } else {
-        this as QueryElement<T>
-    }
-}
+fun <T : Any> Return<T>.unwrap(): QueryElement<T> = when {
+    this is QueryWrapper<*> -> this.unwrapQuery()
+    else -> this
+} as QueryElement<T>
 
-fun <T : Any> Return<T>.unwrapAny(): QueryElement<out Any> {
-    return if(this is QueryWrapper<*>) {
-        this.unwrapQuery() as QueryElement<out Any>
-    } else {
-        this as QueryElement<out Any>
-    }
-}
+fun <T : Any> Return<T>.unwrapAny(): QueryElement<out Any> = when {
+    this is QueryWrapper<*> -> this.unwrapQuery()
+    else -> this
+} as QueryElement<out Any>
 
-fun <T : Any> Return<T>.applyPageable(domainClass: Class<out Any>, pageable: Pageable): QueryElement<T> {
+/**
+ * 지정한 Domain class 를 조회하는 [QueryElement]에 Paging 을 설정합니다.
+ *
+ * @param domainClass domain class
+ * @param pageable [Pageable] instance
+ */
+fun <T : Any> Return<T>.applyPageable(domainClass: Class<out Any>, pageable: Pageable = Pageable.unpaged()): QueryElement<T> {
 
     log.trace { "Apply paging .. domainClass=${domainClass.simpleName}, pageable=$pageable" }
 
@@ -64,21 +88,26 @@ fun <T : Any> Return<T>.applyPageable(domainClass: Class<out Any>, pageable: Pag
     if(pageable.isUnpaged) {
         return query
     }
-
     if(pageable.sort.isSorted) {
         query = query.applySort(domainClass, pageable.sort)
     }
-
     if(pageable.pageSize > 0 && query.limit == null) {
         query = query.limit(pageable.pageSize).unwrap()
     }
     if(pageable.offset > 0 && query.offset == null) {
         query = query.offset(pageable.offset.toInt()).unwrap()
     }
+
     return query
 }
 
-fun <T : Any> Return<T>.applySort(domainClass: Class<out Any>, sort: Sort): QueryElement<T> {
+/**
+ * 지정한 Domain class 를 조회하는 [QueryElement]에 정렬 설정합니다.
+ *
+ * @param domainClass domain class
+ * @param pageable [Pageable] instance
+ */
+fun <T : Any> Return<T>.applySort(domainClass: Class<out Any>, sort: Sort = Sort.unsorted()): QueryElement<T> {
 
     log.trace { "Apply sort, domainClass=${domainClass.simpleName}, sort=$sort" }
 
@@ -89,7 +118,6 @@ fun <T : Any> Return<T>.applySort(domainClass: Class<out Any>, sort: Sort): Quer
     }
 
     sort.forEach { order ->
-
         val propertyName = order.property
         val direction = order.direction
 
@@ -98,7 +126,7 @@ fun <T : Any> Return<T>.applySort(domainClass: Class<out Any>, sort: Sort): Quer
 
         if(orderExpr == null) {
             domainClass.getExpression(propertyName)?.let { expr ->
-                query = query.orderBy(if(direction.isAscending) expr.asc() else expr.desc()).unwrap()
+                query = query.orderBy(expr.getOrderExpression(direction)).unwrap()
             }
         }
     }
@@ -106,7 +134,11 @@ fun <T : Any> Return<T>.applySort(domainClass: Class<out Any>, sort: Sort): Quer
     return query
 }
 
-
+/**
+ * Requery 질의에 조건 들을 설정합니다.
+ * @param T
+ * @param conditionElements 질의 조건들
+ */
 fun <T : Any> Return<T>.applyWhereConditions(conditionElements: Set<WhereConditionElement<out Any>>): QueryElement<T> {
 
     val query = this.unwrap()
@@ -114,7 +146,6 @@ fun <T : Any> Return<T>.applyWhereConditions(conditionElements: Set<WhereConditi
     if(conditionElements.isEmpty()) {
         return query
     }
-
     if(conditionElements.size == 1) {
         return query.where(conditionElements.first().condition).unwrap()
     }
@@ -129,8 +160,8 @@ fun <T : Any> Return<T>.applyWhereConditions(conditionElements: Set<WhereConditi
 
             log.trace { "Apply where condition=$condition, operator=$operator" }
 
-            operator?.let {
-                whereElement = when(it) {
+            if(operator != null) {
+                whereElement = when(operator) {
                     LogicalOperator.AND -> whereElement.and(condition)
                     LogicalOperator.OR -> whereElement.or(condition)
                     LogicalOperator.NOT -> whereElement.and(condition).not()
@@ -141,14 +172,31 @@ fun <T : Any> Return<T>.applyWhereConditions(conditionElements: Set<WhereConditi
     return whereElement.unwrap()
 }
 
+/**
+ * [Return] 인스턴스의 결과를 받아 [Result] 인스턴스로 변환합니다.
+ */
 @Suppress("UNCHECKED_CAST")
 fun Return<out Any>.getAsResult(): Result<out Any> = this.get() as Result<out Any>
 
+/**
+ * [Return] 인스턴스로부터 결과를 domain entity 수형의 [Result] 로 변환합니다.
+ * @param E
+ */
 @Suppress("UNCHECKED_CAST")
 fun <E : Any> Return<out Any>.getAsResultEntity(): Result<E> = this.get() as Result<E>
 
+
+/**
+ * [Return] 인스턴스로부터 결과를 [Scalar<Int>]로 변환한다
+ */
 @Suppress("UNCHECKED_CAST")
 fun Return<out Any>.getAsScalarInt(): Scalar<Int> = this.get() as Scalar<Int>
+
+/**
+ * [Return] 인스턴스로부터 결과를 [Scalar<ㅣㅐㅜㅎ>]로 변환한다
+ */
+@Suppress("UNCHECKED_CAST")
+fun Return<out Any>.getAsScalarLong(): Scalar<Long> = this.get() as Scalar<Long>
 
 fun Class<out Any>.getOrderingExpressions(sort: Sort): Array<OrderingExpression<out Any>> {
 
@@ -156,16 +204,18 @@ fun Class<out Any>.getOrderingExpressions(sort: Sort): Array<OrderingExpression<
         return emptyArray()
     }
 
-    return sort.mapNotNull { order ->
-        val propertyName = order.property
+    return sort
+        .mapNotNull { order ->
+            val propertyName = order.property
 
-        this.getExpression(propertyName)?.let { expr ->
-            when(order.direction) {
-                Sort.Direction.ASC -> expr.asc()
-                else -> expr.desc()
+            this.getExpression(propertyName)?.let { expr ->
+                when(order.direction) {
+                    Sort.Direction.ASC -> expr.asc()
+                    else -> expr.desc()
+                }
             }
         }
-    }.toTypedArray()
+        .toTypedArray()
 }
 
 @Suppress("UNCHECKED_CAST")
