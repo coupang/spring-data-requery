@@ -18,7 +18,7 @@ package org.springframework.data.requery.kotlin.coroutines
 
 import io.requery.TransactionIsolation
 import io.requery.sql.KotlinEntityDataStore
-import mu.KotlinLogging
+import mu.KLogging
 
 /**
  * [CoroutineRequeryOperations]의 구현체 입니다.
@@ -28,9 +28,7 @@ import mu.KotlinLogging
  */
 class CoroutineRequeryTemplate(override val dataStore: KotlinEntityDataStore<Any>) : CoroutineRequeryOperations {
 
-    companion object {
-        private val log = KotlinLogging.logger { }
-    }
+    companion object : KLogging()
 
     /**
      * Transaction 환경 하에서 지정된 block을 실행합니다.
@@ -40,14 +38,9 @@ class CoroutineRequeryTemplate(override val dataStore: KotlinEntityDataStore<Any
      */
     override suspend fun <T : Any> withTransaction(isolation: TransactionIsolation?,
                                                    block: CoroutineRequeryOperations.() -> T): T {
-        //        return isolation?.let {
-        //            dataStore.withTransaction(isolation) {
-        //                block.invoke(this@CoroutineRequeryTemplate)
-        //            }
-        //        } ?: dataStore.withTransaction { block.invoke(this@CoroutineRequeryTemplate) }
         val operations = this@CoroutineRequeryTemplate
 
-        log.trace { "Execution in transaction. isolation=$isolation" }
+        logger.trace { "Execution in transaction. isolation=$isolation" }
         return if(isolation == null) {
             dataStore.withTransaction { block.invoke(operations) }
         } else {

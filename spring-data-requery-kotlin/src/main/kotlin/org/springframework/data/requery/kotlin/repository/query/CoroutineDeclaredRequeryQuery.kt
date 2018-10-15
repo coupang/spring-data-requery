@@ -30,7 +30,7 @@ import org.springframework.data.requery.kotlin.NotSupportedException
 import org.springframework.data.requery.kotlin.coroutines.CoroutineRequeryOperations
 
 /**
- * CoroutineDeclaredRequeryQuery
+ * Coroutine을 이용하여 RAW Query를 실행하는 [AbstractCoroutineRequeryQuery]의 구현체입니다.
  *
  * @author debop
  * @since 18. 10. 16
