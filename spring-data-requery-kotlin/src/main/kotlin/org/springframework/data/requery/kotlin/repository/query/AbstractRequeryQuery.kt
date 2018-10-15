@@ -25,6 +25,7 @@ import org.springframework.data.repository.query.RepositoryQuery
 import org.springframework.data.repository.query.ReturnedType
 import org.springframework.data.requery.kotlin.core.RequeryOperations
 import org.springframework.data.requery.kotlin.utils.RequeryMetamodel
+import kotlin.reflect.KClass
 
 /**
  * Abstract base class to implement [RepositoryQuery]s.
@@ -39,8 +40,8 @@ abstract class AbstractRequeryQuery(val queryMethod: RequeryQueryMethod,
     }
 
     val metamodel = RequeryMetamodel(operations.entityModel)
-    val domainKlass = queryMethod.entityInformation.kotlinType
-    val domainClass = queryMethod.entityInformation.javaType as Class<out Any>
+    val domainKlass: KClass<out Any> = queryMethod.entityInformation.kotlinType
+    val domainClass: Class<out Any> = queryMethod.entityInformation.javaType
 
     override fun getQueryMethod(): QueryMethod = queryMethod
 

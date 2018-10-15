@@ -30,7 +30,7 @@ import java.util.*
 /**
  * Requery specific generic repository factory.
  *
- * @author debop
+ * @author debop (Sunghyouk Bae)
  */
 open class RequeryRepositoryFactory(val operations: RequeryOperations) : RepositoryFactorySupport() {
 
@@ -83,6 +83,4 @@ open class RequeryRepositoryFactory(val operations: RequeryOperations) : Reposit
         return RequeryEntityInformationSupport.getEntityInformation<E, ID>(domainClass.kotlin, operations)
             as RequeryEntityInformationSupport<E, ID>
     }
-
-
 }

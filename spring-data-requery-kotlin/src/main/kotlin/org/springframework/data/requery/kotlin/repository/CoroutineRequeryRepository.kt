@@ -22,7 +22,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.repository.NoRepositoryBean
-import org.springframework.data.requery.kotlin.coroutines.KotlinCoroutineRequeryOperations
+import org.springframework.data.requery.kotlin.coroutines.CoroutineRequeryOperations
 import org.springframework.data.requery.kotlin.repository.query.CoroutineQueryByExampleExecutor
 import kotlin.reflect.KClass
 
@@ -38,7 +38,7 @@ interface CoroutineRequeryRepository<E : Any, ID : Any>
       CoroutineQueryByExampleExecutor<E>,
       CoroutineRequeryConditionExecutor<E> {
 
-    val operations: KotlinCoroutineRequeryOperations
+    val operations: CoroutineRequeryOperations
     val domainKlass: KClass<E>
 
     override suspend fun findAll(): List<E>

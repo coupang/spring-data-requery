@@ -24,14 +24,18 @@ import io.requery.kotlin.QueryableAttribute
 import io.requery.kotlin.Selection
 import io.requery.kotlin.Update
 import io.requery.meta.Attribute
+import io.requery.meta.EntityModel
 import io.requery.query.Expression
 import io.requery.query.Result
 import io.requery.query.Scalar
 import io.requery.query.Tuple
 import io.requery.query.element.QueryElement
 import io.requery.query.function.Count
+import io.requery.sql.EntityContext
 import io.requery.sql.KotlinEntityDataStore
 import org.springframework.data.requery.kotlin.applyWhereConditions
+import org.springframework.data.requery.kotlin.getEntityContext
+import org.springframework.data.requery.kotlin.getEntityModel
 import kotlin.reflect.KClass
 
 /**
@@ -39,9 +43,17 @@ import kotlin.reflect.KClass
 
  * @author debop
  */
-interface KotlinCoroutineRequeryOperations {
+interface CoroutineRequeryOperations {
 
     val dataStore: KotlinEntityDataStore<Any>
+
+    @JvmDefault
+    val entityModel: EntityModel
+        get() = dataStore.getEntityModel()
+
+    @JvmDefault
+    val entityContext: EntityContext<out Any>
+        get() = dataStore.getEntityContext()
 
     @JvmDefault
     suspend infix fun <T : Any> select(entityType: KClass<T>): Selection<out Result<T>> =
@@ -190,10 +202,10 @@ interface KotlinCoroutineRequeryOperations {
         dataStore.raw(entityType, query, *parameters)
 
     @JvmDefault
-    suspend fun <T : Any> withTransaction(block: KotlinCoroutineRequeryOperations.() -> T): T =
+    suspend fun <T : Any> withTransaction(block: CoroutineRequeryOperations.() -> T): T =
         withTransaction(null, block)
 
-    suspend fun <T : Any> withTransaction(isolation: TransactionIsolation?, block: KotlinCoroutineRequeryOperations.() -> T): T
+    suspend fun <T : Any> withTransaction(isolation: TransactionIsolation?, block: CoroutineRequeryOperations.() -> T): T
 
     @JvmDefault
     suspend fun <T : Any> withDataStore(block: KotlinEntityDataStore<Any>.() -> T): T =

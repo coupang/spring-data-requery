@@ -42,7 +42,7 @@ import kotlin.reflect.KClass
 
 /**
  * Kotlin Coroutine을 이용하여 [io.requery.sql.EntityDataStore]를 구현한 클래스입니다.
- * TODO: DeferredResult를 이용할 것인지, [KotlinCoroutineRequeryOperations] 처럼 suspend 으로 할 것인지
+ * TODO: DeferredResult를 이용할 것인지, [CoroutineRequeryOperations] 처럼 suspend 으로 할 것인지
  *
  * 비동기 방식이지만, Coroutine은 Lightweight thread이므로 Transaction에 안정하게 구현됩니다.
  * 다만 Dispatchers.Default를 쓰면 안되고, caller thread에 속해서 작동해야 하므로 [Dispatchers.Unconfined]를 사용해야 합니다.
@@ -50,8 +50,8 @@ import kotlin.reflect.KClass
  * @author debop
  * @since 18. 5. 16
  */
-class KotlinCoroutineEntityStore<T : Any>(private val dataStore: BlockingEntityStore<T>,
-                                          val coroutineDispatcher: CoroutineDispatcher = Dispatchers.Unconfined) : EntityStore<T, Any> {
+class CoroutineEntityStore<T : Any>(private val dataStore: BlockingEntityStore<T>,
+                                    val coroutineDispatcher: CoroutineDispatcher = Dispatchers.Unconfined) : EntityStore<T, Any> {
 
     companion object {
         private val log = KotlinLogging.logger { }
@@ -189,14 +189,14 @@ class KotlinCoroutineEntityStore<T : Any>(private val dataStore: BlockingEntityS
         execute { dataStore.withTransaction(isolation, body) }
 
     /**
-     * [KotlinCoroutineEntityStore]에서 제공하는 모든 메소드는 이 함수를 통해서 실행됩니다.
+     * [CoroutineEntityStore]에서 제공하는 모든 메소드는 이 함수를 통해서 실행됩니다.
      *
      * @param V return value type
      * @param block code block of requery operations
      */
-    inline fun <V> execute(crossinline block: suspend KotlinCoroutineEntityStore<T>.() -> V): Deferred<V> {
+    inline fun <V> execute(crossinline block: suspend CoroutineEntityStore<T>.() -> V): Deferred<V> {
         return GlobalScope.async(coroutineDispatcher) {
-            block.invoke(this@KotlinCoroutineEntityStore)
+            block.invoke(this@CoroutineEntityStore)
         }
     }
 

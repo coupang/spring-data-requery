@@ -23,7 +23,7 @@ import io.requery.query.element.QueryElement
 import mu.KotlinLogging
 import org.springframework.data.domain.Example
 import org.springframework.data.requery.kotlin.core.RequeryOperations
-import org.springframework.data.requery.kotlin.coroutines.KotlinCoroutineRequeryOperations
+import org.springframework.data.requery.kotlin.coroutines.CoroutineRequeryOperations
 import org.springframework.data.requery.kotlin.repository.query.applyExample
 import kotlin.reflect.KClass
 
@@ -54,7 +54,7 @@ fun <S : E, E : Any> Example<S>.buildQueryElement(operations: RequeryOperations,
  * @param domainKlass domain kotlin class
  */
 @Suppress("UNCHECKED_CAST")
-suspend fun <S : E, E : Any> Example<S>.buildQueryElement(coroutineOperations: KotlinCoroutineRequeryOperations,
+suspend fun <S : E, E : Any> Example<S>.buildQueryElement(coroutineOperations: CoroutineRequeryOperations,
                                                           domainKlass: KClass<E>): QueryElement<out Result<S>> {
 
     log.debug { "Build query element from Example. domainKlass=$domainKlass" }

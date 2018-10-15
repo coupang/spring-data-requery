@@ -35,8 +35,8 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.requery.kotlin.applyPageable
 import org.springframework.data.requery.kotlin.applySort
 import org.springframework.data.requery.kotlin.buildQueryElement
-import org.springframework.data.requery.kotlin.coroutines.KotlinCoroutineEntityStore
-import org.springframework.data.requery.kotlin.coroutines.KotlinCoroutineRequeryOperations
+import org.springframework.data.requery.kotlin.coroutines.CoroutineEntityStore
+import org.springframework.data.requery.kotlin.coroutines.CoroutineRequeryOperations
 import org.springframework.data.requery.kotlin.foldConditions
 import org.springframework.data.requery.kotlin.getAsResultEntity
 import org.springframework.data.requery.kotlin.getKeyExpression
@@ -56,7 +56,7 @@ import kotlin.reflect.KClass
 @Transactional
 class SimpleCoroutineRequeryRepository<E : Any, ID : Any> @Autowired constructor(
     val entityInformation: RequeryEntityInformation<E, ID>,
-    override val operations: KotlinCoroutineRequeryOperations
+    override val operations: CoroutineRequeryOperations
 ) : CoroutineRequeryRepositoryImplementation<E, ID> {
 
     companion object : KLogging()
@@ -68,7 +68,7 @@ class SimpleCoroutineRequeryRepository<E : Any, ID : Any> @Autowired constructor
     final override val domainKlass: KClass<E> get() = entityInformation.kotlinType
     final val domainClassName: String = domainKlass.simpleName ?: "Unknown"
 
-    val coroutineEntityStore: KotlinCoroutineEntityStore<Any> by lazy { KotlinCoroutineEntityStore(operations.dataStore) }
+    val coroutineEntityStore: CoroutineEntityStore<Any> by lazy { CoroutineEntityStore(operations.dataStore) }
 
     private var crudMethodMetadata: CrudMethodMetadata? = null
 
