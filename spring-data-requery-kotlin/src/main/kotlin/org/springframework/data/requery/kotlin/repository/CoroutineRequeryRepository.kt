@@ -43,7 +43,7 @@ interface CoroutineRequeryRepository<E : Any, ID : Any>
 
     override suspend fun findAll(): List<E>
 
-    override suspend fun findAll(sort: Sort): MutableIterable<E>
+    override suspend fun findAll(sort: Sort): List<E>
 
     override suspend fun findAll(pageable: Pageable): Page<E>
 
@@ -53,13 +53,13 @@ interface CoroutineRequeryRepository<E : Any, ID : Any>
      * 엔티티 저장 후 생성된 Key 값을 반환합니다.
      * @param K key type
      * @param entity entity to save
-     * @param keyClass class of entity key
+     * @param keyKlass class of entity key
      */
-    suspend fun <K : Any> insert(entity: E, keyClass: KClass<K>): K
+    suspend fun <K : Any> insert(entity: E, keyKlass: KClass<K>): K
 
     suspend fun insertAll(entities: Iterable<E>): List<E>
 
-    suspend fun <K : Any> insertAll(entities: Iterable<E>, keyClass: KClass<K>): List<K>
+    suspend fun <K : Any> insertAll(entities: Iterable<E>, keyKlass: KClass<K>): List<K>
 
     suspend fun upsert(entity: E): E
 

@@ -21,13 +21,25 @@ import io.requery.query.Condition
 import io.requery.query.Result
 import io.requery.query.Return
 import io.requery.query.element.QueryElement
+import kotlinx.coroutines.experimental.Deferred
+import kotlinx.coroutines.experimental.GlobalScope
+import kotlinx.coroutines.experimental.async
 import mu.KLogging
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.dao.IncorrectResultSizeDataAccessException
 import org.springframework.data.domain.Example
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
+import org.springframework.data.requery.kotlin.applyPageable
+import org.springframework.data.requery.kotlin.applySort
+import org.springframework.data.requery.kotlin.buildQueryElement
+import org.springframework.data.requery.kotlin.coroutines.KotlinCoroutineEntityStore
 import org.springframework.data.requery.kotlin.coroutines.KotlinCoroutineRequeryOperations
+import org.springframework.data.requery.kotlin.foldConditions
+import org.springframework.data.requery.kotlin.getAsResultEntity
+import org.springframework.data.requery.kotlin.getKeyExpression
 import org.springframework.data.requery.kotlin.repository.CoroutineRequeryRepository
 import org.springframework.data.requery.kotlin.unwrap
 import org.springframework.stereotype.Repository
@@ -56,157 +68,244 @@ class SimpleCoroutineRequeryRepository<E : Any, ID : Any> @Autowired constructor
     final override val domainKlass: KClass<E> get() = entityInformation.kotlinType
     final val domainClassName: String = domainKlass.simpleName ?: "Unknown"
 
+    val coroutineEntityStore: KotlinCoroutineEntityStore<Any> by lazy { KotlinCoroutineEntityStore(operations.dataStore) }
+
+    private var crudMethodMetadata: CrudMethodMetadata? = null
+
     override fun setRepositoryMethodMetadata(crudMethodMetadata: CrudMethodMetadata?) {
-        TODO("not implemented")
+        this.crudMethodMetadata = crudMethodMetadata
     }
 
     suspend fun select(): QueryElement<out Result<E>> = operations.select(domainKlass).unwrap()
 
-    override suspend fun findAll(): List<E> {
-        TODO("not implemented")
+    private inline fun <T : Any> async(crossinline block: suspend () -> T): Deferred<T> {
+        return GlobalScope.async(coroutineDispatcher) {
+            block.invoke()
+        }
     }
 
-    override suspend fun findAll(sort: Sort): MutableIterable<E> {
-        TODO("not implemented")
+    override suspend fun findAll(): List<E> {
+        return operations.findAll(domainKlass)
+    }
+
+    override suspend fun findAll(sort: Sort): List<E> {
+        return if(sort.isSorted) {
+            select()
+                .applySort(domainKlass, sort)
+                .get()
+                .toList()
+        } else {
+            findAll()
+        }
     }
 
     override suspend fun findAll(pageable: Pageable): Page<E> {
-        TODO("not implemented")
+        return if(pageable.isPaged) {
+            val content = async {
+                select().applyPageable(domainKlass, pageable).getAsResultEntity<E>().toList()
+            }
+            val totals = async { operations.count(domainKlass).get().value().toLong() }
+
+            PageImpl(content.await(), pageable, totals.await())
+        } else {
+            val content = async { select().get().toList() }
+            PageImpl(content.await())
+        }
     }
 
     override suspend fun <S : E> findAll(example: Example<S>, sort: Sort): List<S> {
-        TODO("not implemented")
+
+        val queryElement = example
+            .buildQueryElement(operations, domainKlass)
+            .applySort(domainKlass, sort)
+
+        return coroutineEntityStore.execute {
+            queryElement.get().toList()
+        }.await()
     }
 
     override suspend fun <S : E> findAll(example: Example<S>, pageable: Pageable): Page<S> {
-        TODO("not implemented")
+        val queryElement = example
+            .buildQueryElement(operations, domainKlass)
+            .unwrapQuery()
+
+        return if(pageable.isPaged) {
+            val contents = async { queryElement.get().toList() }
+            val totals = async { count(example) }
+            PageImpl<S>(contents.await(), pageable, totals.await())
+        } else {
+            val contents = async { queryElement.get().toList() }
+            PageImpl<S>(contents.await())
+        }
+    }
+
+    override suspend fun findAll(filter: Return<out Result<E>>): List<E> {
+        return filter.get().toList()
     }
 
     override suspend fun findAll(filter: Return<out Result<E>>, sort: Sort): List<E> {
-        TODO("not implemented")
+        return filter.applySort(domainKlass, sort).get().toList()
     }
 
     override suspend fun findAll(filter: Return<out Result<E>>, pageable: Pageable): Page<E> {
-        TODO("not implemented")
+        return if(pageable.isPaged) {
+            val contents = async { filter.applyPageable(domainKlass, pageable).get().toList() }
+            val totals = async { count(filter.unwrap()) }
+            PageImpl<E>(contents.await(), pageable, totals.await())
+        } else {
+            PageImpl<E>(findAll(filter))
+        }
+    }
+
+    override suspend fun findAll(conditions: Iterable<Condition<E, *>>): List<E> {
+        val whereClause = conditions.foldConditions()
+        return whereClause?.let {
+            async { select().where(it).get().toList() }.await()
+        } ?: emptyList()
     }
 
     override suspend fun findAll(conditions: Iterable<Condition<E, *>>, sort: Sort): List<E> {
-        TODO("not implemented")
+        val whereClause = conditions.foldConditions()
+        val baseQuery = whereClause?.let { select().where(it).unwrap() } ?: select()
+
+        return baseQuery.applySort(domainKlass, sort).get().toList()
     }
 
     override suspend fun findAll(conditions: Iterable<Condition<E, *>>, pageable: Pageable): Page<E> {
-        TODO("not implemented")
+        return if(pageable.isPaged) {
+            val whereClause = conditions.foldConditions()
+            val baseQuery = whereClause?.let { select().where(it).unwrap() } ?: select()
+
+            val contents = async { baseQuery.applyPageable(domainKlass, pageable).get().toList() }
+            val totals = async { count(baseQuery) }
+
+            PageImpl<E>(contents.await(), pageable, totals.await())
+        } else {
+            PageImpl<E>(findAll(conditions))
+        }
     }
 
     override suspend fun <S : E> saveAll(entities: Iterable<S>): List<S> {
-        TODO("not implemented")
+        return operations.upsertAll(entities)
     }
 
-    override suspend fun <K : Any> insert(entity: E, keyClass: KClass<K>): K {
-        TODO("not implemented")
+    override suspend fun <K : Any> insert(entity: E, keyKlass: KClass<K>): K {
+        return operations.insert(entity, keyKlass)
     }
 
     override suspend fun insertAll(entities: Iterable<E>): List<E> {
-        TODO("not implemented")
+        return operations.insertAll(entities)
     }
 
-    override suspend fun <K : Any> insertAll(entities: Iterable<E>, keyClass: KClass<K>): List<K> {
-        TODO("not implemented")
+    override suspend fun <K : Any> insertAll(entities: Iterable<E>, keyKlass: KClass<K>): List<K> {
+        return operations.insertAll(entities, keyKlass)
     }
 
-    override suspend fun upsert(entity: E): E {
-        TODO("not implemented")
-    }
+    override suspend fun upsert(entity: E): E =
+        operations.upsert(entity)
 
     override suspend fun upsertAll(entities: Iterable<E>): List<E> {
-        TODO("not implemented")
+        if(entities.none())
+            return emptyList()
+
+        return operations.upsertAll(entities)
     }
 
-    override suspend fun refresh(entity: E): E {
-        TODO("not implemented")
-    }
+    override suspend fun refresh(entity: E): E = operations.refresh(entity)
 
-    override suspend fun refreshAllProperties(entity: E): E {
-        TODO("not implemented")
-    }
+    override suspend fun refreshAllProperties(entity: E): E =
+        operations.refreshAllProperties(entity)
 
-    override suspend fun refreshAll(entities: Iterable<E>, vararg attributes: Attribute<E, *>): List<E> {
-        TODO("not implemented")
-    }
+    override suspend fun refreshAll(entities: Iterable<E>, vararg attributes: Attribute<E, *>): List<E> =
+        operations.refreshAll(entities, *attributes)
 
-    override suspend fun refreshAllEntities(entities: Iterable<E>, vararg attributes: Attribute<E, *>): List<E> {
-        TODO("not implemented")
-    }
+    override suspend fun refreshAllEntities(entities: Iterable<E>, vararg attributes: Attribute<E, *>): List<E> =
+        operations.refreshAllEntities(entities, *attributes)
 
     override suspend fun deleteInBatch(entities: Iterable<E>) {
-        TODO("not implemented")
+        if(!entities.none()) {
+            operations.deleteAll(entities)
+        }
     }
 
-    override suspend fun deleteAllInBatch(): Int {
-        TODO("not implemented")
+    override suspend fun deleteAllInBatch(): Int =
+        operations.deleteAll(domainKlass)
+
+    override suspend fun getOne(id: ID): E? =
+        operations.findById(domainKlass, id)
+
+    override suspend fun <S : E> save(entity: S): S =
+        operations.upsert(entity)
+
+    override suspend fun findById(id: ID): E? =
+        operations.findById(domainKlass, id)
+
+    override suspend fun existsById(id: ID): Boolean =
+        findById(id) != null
+
+    override suspend fun findAllById(ids: Iterable<ID>): List<E> {
+        val keyExpr = domainKlass.getKeyExpression<ID>()
+
+        return select()
+            .where(keyExpr.`in`(ids.toSet()))
+            .get()
+            .toList()
     }
 
-    override suspend fun getOne(id: ID): E? {
-        TODO("not implemented")
-    }
+    override suspend fun count(): Long =
+        operations.count(domainKlass).get().value().toLong()
 
-    override suspend fun <S : E> save(entity: S): S {
-        TODO("not implemented")
-    }
-
-    override suspend fun findById(id: ID): E? {
-        TODO("not implemented")
-    }
-
-    override suspend fun existsById(id: ID): Boolean {
-        TODO("not implemented")
-    }
-
-    override suspend fun findAllById(ids: Iterable<ID>): Iterable<E> {
-        TODO("not implemented")
-    }
-
-    override suspend fun count(): Long {
-        TODO("not implemented")
-    }
-
+    @Suppress("UNCHECKED_CAST")
     override suspend fun <S : E> count(example: Example<S>): Long {
-        TODO("not implemented")
+        return count(example.buildQueryElement(operations, domainKlass))
     }
 
-    override suspend fun count(queryElement: QueryElement<out Result<E>>): Long {
-        TODO("not implemented")
-    }
+    @Suppress("UNCHECKED_CAST")
+    override suspend fun <S : E> count(queryElement: QueryElement<out Result<S>>): Long =
+        operations.count(domainKlass as KClass<S>, queryElement).toLong()
 
     override suspend fun deleteById(id: ID) {
-        TODO("not implemented")
+        val keyExpr = domainKlass.getKeyExpression<ID>()
+
+        val deletedCount = operations
+            .delete(domainKlass)
+            .where(keyExpr.eq(id))
+            .get()
+            .value()
+        logger.trace { "Delete $domainClassName by id=[$id]. deleted count=$deletedCount" }
     }
 
     override suspend fun delete(entity: E) {
-        TODO("not implemented")
+        operations.delete(entity)
     }
 
     override suspend fun deleteAll(entities: Iterable<E>) {
-        TODO("not implemented")
+        if(!entities.none()) {
+            operations.deleteAll(entities)
+        }
     }
 
     override suspend fun deleteAll() {
-        TODO("not implemented")
+        operations.deleteAll(domainKlass)
     }
 
     override suspend fun <S : E> findOne(example: Example<S>): S? {
-        TODO("not implemented")
+        return findOne(example.buildQueryElement(operations, domainKlass))
     }
 
-    override suspend fun findOne(filter: Return<out Result<E>>): E? {
-        TODO("not implemented")
+    override suspend fun <S : E> findOne(filter: Return<out Result<S>>): S? {
+        val count = count(filter.unwrap()).toInt()
+        if(count > 1) {
+            throw IncorrectResultSizeDataAccessException(1, count)
+        }
+        return filter.get().firstOrNull()
     }
 
     override suspend fun <S : E> exists(example: Example<S>): Boolean {
-        TODO("not implemented")
+        return exists(example.buildQueryElement(operations, domainKlass))
     }
 
-    override suspend fun exists(queryElement: QueryElement<out Result<E>>): Boolean {
-        TODO("not implemented")
-    }
+    @Suppress("UNCHECKED_CAST")
+    override suspend fun <S : E> exists(queryElement: QueryElement<out Result<S>>): Boolean =
+        operations.exists(domainKlass as KClass<S>, queryElement)
 }

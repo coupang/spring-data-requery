@@ -28,7 +28,10 @@ import io.requery.query.Expression
 import io.requery.query.Result
 import io.requery.query.Scalar
 import io.requery.query.Tuple
+import io.requery.query.element.QueryElement
+import io.requery.query.function.Count
 import io.requery.sql.KotlinEntityDataStore
+import org.springframework.data.requery.kotlin.applyWhereConditions
 import kotlin.reflect.KClass
 
 /**
@@ -57,7 +60,7 @@ interface KotlinCoroutineRequeryOperations {
         dataStore.findByKey(entityType, id)
 
     @JvmDefault
-    suspend infix fun <T : Any> findAll(entityType: KClass<T>): Iterable<T> =
+    suspend infix fun <T : Any> findAll(entityType: KClass<T>): List<T> =
         dataStore.select(entityType).get().toList()
 
     @JvmDefault
@@ -69,28 +72,35 @@ interface KotlinCoroutineRequeryOperations {
         dataStore.refresh(entity, *attributes)
 
     @JvmDefault
-    suspend fun <T : Any> refresh(entities: Iterable<T>, vararg attributes: Attribute<*, *>): Iterable<T> =
-        dataStore.refresh<T>(entities, *attributes)
+    suspend fun <T : Any> refreshAll(entities: Iterable<T>, vararg attributes: Attribute<*, *>): List<T> =
+        dataStore.refresh<T>(entities, *attributes).toList()
 
     @JvmDefault
-    suspend infix fun <T : Any> refreshAll(entity: T): T =
+    suspend fun <T : Any> refreshAllProperties(entity: T): T =
         dataStore.refreshAll(entity)
 
     @JvmDefault
-    suspend infix fun <T : Any> refreshAll(entities: Iterable<T>): Iterable<T> =
-        entities.map { dataStore.refreshAll(it) }
+    suspend fun <T : Any> refreshAllEntities(entities: Iterable<T>, vararg attributes: Attribute<T, *>): List<T> =
+        entities.map { refreshAllProperties(it) }
 
     @JvmDefault
     suspend infix fun <T : Any> upsert(entity: T): T =
         dataStore.upsert(entity)
 
     @JvmDefault
-    suspend infix fun <T : Any> upsertAll(entities: Iterable<T>): Iterable<T> =
-        dataStore.upsert<T>(entities)
+    suspend infix fun <T : Any> upsertAll(entities: Iterable<T>): List<T> {
+        if(entities.none())
+            return emptyList()
+
+        return dataStore.upsert<T>(entities).toList()
+    }
 
     @JvmDefault
     suspend infix fun <T : Any> insert(entity: T): T =
         dataStore.insert(entity)
+
+    suspend fun <T : Any, K : Any> insert(entity: T, keyKlass: KClass<K>): K =
+        dataStore.insert(entity, keyKlass)
 
     @JvmDefault
     suspend infix fun <T : Any> insert(entityType: KClass<T>): Insertion<Result<Tuple>> =
@@ -101,12 +111,12 @@ interface KotlinCoroutineRequeryOperations {
         dataStore.insert(entityType, *attributes)
 
     @JvmDefault
-    suspend infix fun <T : Any> insertAll(entities: Iterable<T>): Iterable<T> =
-        dataStore.insert<T>(entities)
+    suspend infix fun <T : Any> insertAll(entities: Iterable<T>): List<T> =
+        dataStore.insert<T>(entities).toList()
 
     @JvmDefault
-    suspend fun <T : Any, K : Any> insertAll(entities: Iterable<T>, keyClass: KClass<K>): Iterable<K> =
-        dataStore.insert<K, T>(entities, keyClass)
+    suspend fun <T : Any, K : Any> insertAll(entities: Iterable<T>, keyKlass: KClass<K>): List<K> =
+        dataStore.insert<K, T>(entities, keyKlass).toList()
 
     @JvmDefault
     suspend fun <T : Any> update(): Update<Scalar<Int>> =
@@ -121,8 +131,8 @@ interface KotlinCoroutineRequeryOperations {
         dataStore.update<T>(entityType)
 
     @JvmDefault
-    suspend infix fun <T : Any> updateAll(entities: Iterable<T>): Iterable<T> =
-        dataStore.update<T>(entities)
+    suspend infix fun <T : Any> updateAll(entities: Iterable<T>): List<T> =
+        dataStore.update<T>(entities).toList()
 
     @JvmDefault
     suspend fun delete(): Deletion<Scalar<Int>> =
@@ -143,12 +153,33 @@ interface KotlinCoroutineRequeryOperations {
     }
 
     @JvmDefault
-    suspend infix fun <T : Any> deleteAll(entityType: KClass<T>): Long =
-        dataStore.delete<T>(entityType).get().value().toLong()
+    suspend infix fun <T : Any> deleteAll(entityType: KClass<T>): Int =
+        dataStore.delete<T>(entityType).get().value()
 
     @JvmDefault
     suspend infix fun <T : Any> count(entityType: KClass<T>): Selection<Scalar<Int>> =
         dataStore.count(entityType)
+
+    @JvmDefault
+    suspend fun <E : Any> count(vararg attributes: QueryableAttribute<Any, *>): Selection<out Scalar<Int>> =
+        dataStore.count(*attributes)
+
+
+    @Suppress("UNCHECKED_CAST")
+    @JvmDefault
+    suspend fun <E : Any> count(entityType: KClass<E>, whereClause: QueryElement<out Result<E>>): Int {
+
+        val query = select(Count.count(entityType.java))
+            .applyWhereConditions(whereClause.whereElements)
+            .unwrapQuery() as QueryElement<out Result<Tuple>>
+
+        val tuple = query.get().first()
+        return tuple.get(0)
+    }
+
+    @JvmDefault
+    suspend fun <E : Any> exists(entityType: KClass<E>, whereClause: QueryElement<out Result<E>>): Boolean =
+        whereClause.limit(1).get().firstOrNull() != null
 
     @JvmDefault
     suspend fun raw(query: String, vararg parameters: Any): Result<Tuple> =

@@ -33,6 +33,7 @@ import io.requery.query.element.WhereConditionElement
 import mu.KotlinLogging
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
+import kotlin.reflect.KClass
 
 private val log = KotlinLogging.logger { }
 
@@ -76,6 +77,16 @@ fun <T : Any> Return<T>.unwrapAny(): QueryElement<out Any> = when {
 /**
  * 지정한 Domain class 를 조회하는 [QueryElement]에 Paging 을 설정합니다.
  *
+ * @param domainKlass kotlin type of domain class
+ * @param pageable [Pageable] instance
+ */
+fun <T : Any> Return<T>.applyPageable(domainKlass: KClass<out Any>, pageable: Pageable = Pageable.unpaged()): QueryElement<T> {
+    return applyPageable(domainKlass.java, pageable)
+}
+
+/**
+ * 지정한 Domain class 를 조회하는 [QueryElement]에 Paging 을 설정합니다.
+ *
  * @param domainClass domain class
  * @param pageable [Pageable] instance
  */
@@ -99,6 +110,10 @@ fun <T : Any> Return<T>.applyPageable(domainClass: Class<out Any>, pageable: Pag
     }
 
     return query
+}
+
+fun <T : Any> Return<T>.applySort(domainKlass: KClass<out Any>, sort: Sort = Sort.unsorted()): QueryElement<T> {
+    return if(sort.isSorted) applySort(domainKlass.java, sort) else this.unwrap()
 }
 
 /**

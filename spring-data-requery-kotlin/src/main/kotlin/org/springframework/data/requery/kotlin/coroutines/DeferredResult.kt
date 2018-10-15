@@ -33,10 +33,10 @@ import kotlinx.coroutines.experimental.async
  * @since 18. 5. 16
  */
 class DeferredResult<E>(delegate: Result<E>,
-                        val coroutineDispatcher: CoroutineDispatcher = Dispatchers.Default)
+                        val coroutineDispatcher: CoroutineDispatcher = Dispatchers.Unconfined)
     : ResultDelegate<E>(delegate), QueryWrapper<E> {
 
-    inline fun <V> toDefered(crossinline block: DeferredResult<E>.() -> V): Deferred<V> {
+    inline fun <reified V : Any> toDefered(crossinline block: DeferredResult<E>.() -> V): Deferred<V> {
         return GlobalScope.async(coroutineDispatcher) { block() }
     }
 

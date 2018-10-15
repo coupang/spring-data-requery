@@ -23,16 +23,42 @@ import io.requery.query.element.QueryElement
 import mu.KotlinLogging
 import org.springframework.data.domain.Example
 import org.springframework.data.requery.kotlin.core.RequeryOperations
+import org.springframework.data.requery.kotlin.coroutines.KotlinCoroutineRequeryOperations
 import org.springframework.data.requery.kotlin.repository.query.applyExample
 import kotlin.reflect.KClass
 
 private val log = KotlinLogging.logger { }
 
+/**
+ * [Example]을 Requery [QueryElement]로 빌드합니다.
+ * @param S
+ * @param E
+ * @param operations Requery operations
+ * @param domainKlass domain kotlin class
+ */
 @Suppress("UNCHECKED_CAST")
-fun <S : E, E : Any> Example<S>.buildQueryElement(operations: RequeryOperations, domainClass: KClass<E>): QueryElement<out Result<S>> {
+fun <S : E, E : Any> Example<S>.buildQueryElement(operations: RequeryOperations,
+                                                  domainKlass: KClass<E>): QueryElement<out Result<S>> {
 
-    log.debug { "Build query element from Example. domainClass=$domainClass" }
+    log.debug { "Build query element from Example. domainKlass=$domainKlass" }
 
-    val root = operations.select(domainClass).unwrap()
+    val root = operations.select(domainKlass).unwrap()
+    return root.applyExample(this) as QueryElement<out Result<S>>
+}
+
+/**
+ * [Example]을 Requery [QueryElement]로 빌드합니다.
+ * @param S
+ * @param E
+ * @param coroutineOperations Coroutine용 RequeryOptions
+ * @param domainKlass domain kotlin class
+ */
+@Suppress("UNCHECKED_CAST")
+suspend fun <S : E, E : Any> Example<S>.buildQueryElement(coroutineOperations: KotlinCoroutineRequeryOperations,
+                                                          domainKlass: KClass<E>): QueryElement<out Result<S>> {
+
+    log.debug { "Build query element from Example. domainKlass=$domainKlass" }
+
+    val root = coroutineOperations.select(domainKlass).unwrap()
     return root.applyExample(this) as QueryElement<out Result<S>>
 }

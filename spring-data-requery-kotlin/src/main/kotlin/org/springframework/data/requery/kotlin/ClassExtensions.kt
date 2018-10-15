@@ -27,6 +27,7 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.reflect.KClass
 
 private val log = KotlinLogging.logger {}
 
@@ -238,6 +239,9 @@ fun AnnotatedElement.isAssociatedAnnotatedElement(): Boolean =
 
 private val classKeyExpressions = ConcurrentHashMap<Class<*>, NamedExpression<*>>()
 var UNKNOWN_KEY_EXPRESSION: NamedExpression<*> = NamedExpression.of("Unknown", Any::class.java)
+
+fun <V : Any> KClass<*>.getKeyExpression(): NamedExpression<V> =
+    this.java.getKeyExpression()
 
 @Suppress("UNCHECKED_CAST")
 fun <V : Any> Class<*>.getKeyExpression(): NamedExpression<V> {

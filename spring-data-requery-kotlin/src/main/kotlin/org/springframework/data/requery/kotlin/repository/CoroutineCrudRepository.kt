@@ -76,7 +76,7 @@ interface CoroutineCrudRepository<E : Any, ID : Any> : CoroutineRepository<E, ID
      * @param ids
      * @return
      */
-    suspend fun findAllById(ids: Iterable<ID>): Iterable<E>
+    suspend fun findAllById(ids: Iterable<ID>): List<E>
 
     /**
      * Returns the number of entities available.

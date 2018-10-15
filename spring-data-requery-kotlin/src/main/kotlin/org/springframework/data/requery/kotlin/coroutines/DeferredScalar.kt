@@ -29,13 +29,10 @@ import kotlinx.coroutines.experimental.Dispatchers
  * @since 18. 5. 16
  */
 class DeferredScalar<E>(delegate: Scalar<E>,
-                        private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.Default)
+                        private val dispatcher: CoroutineDispatcher = Dispatchers.Unconfined)
     : ScalarDelegate<E>(delegate) {
 
-    fun toDeferred(): Deferred<E> =
-        toCompletableFuture().toDeferred(coroutineDispatcher)
-
-    fun toDeferred(dispatcher: CoroutineDispatcher): Deferred<E> =
+    fun toDeferred(dispatcher: CoroutineDispatcher = this.dispatcher): Deferred<E> =
         toCompletableFuture().toDeferred(dispatcher)
 
 }

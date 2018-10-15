@@ -16,11 +16,13 @@
 
 package org.springframework.data.requery.kotlin.coroutines
 
+import kotlinx.coroutines.experimental.CoroutineDispatcher
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.withTimeout
+import java.time.Duration
 import java.util.concurrent.CancellationException
 import java.util.concurrent.CompletionStage
 import java.util.concurrent.Future
@@ -28,27 +30,33 @@ import java.util.concurrent.TimeUnit
 import java.util.stream.Stream
 import kotlin.coroutines.experimental.CoroutineContext
 
-fun <T : Any?> T.toDeferred(context: CoroutineContext = Dispatchers.Default): Deferred<T> {
+/**
+ * Requery 사용 시 사용하는 기본 [CoroutineDispatcher]입니다.
+ * Transaction이 thread bound 이므로 [Dispatchers.Unconfined] 를 사용합니다.
+ */
+internal val defaultCoroutineDispatcher: CoroutineDispatcher = Dispatchers.Unconfined
+
+fun <T : Any?> T.toDeferred(context: CoroutineContext = defaultCoroutineDispatcher): Deferred<T> {
     return GlobalScope.async(context) { this@toDeferred }
 }
 
-fun <T> Future<T>.asDeferred(context: CoroutineContext = Dispatchers.Default): Deferred<T> {
+fun <T> Future<T>.asDeferred(context: CoroutineContext = defaultCoroutineDispatcher): Deferred<T> {
     return GlobalScope.async(context) { this@asDeferred.get() }
 }
 
-fun <T> CompletionStage<T>.toDeferred(context: CoroutineContext = Dispatchers.Default): Deferred<T> {
+fun <T> CompletionStage<T>.toDeferred(context: CoroutineContext = defaultCoroutineDispatcher): Deferred<T> {
     return GlobalScope.async(context) { this@toDeferred.toCompletableFuture().join() }
 }
 
-fun <T> CompletionStage<T>.asDeferred(context: CoroutineContext = Dispatchers.Default): Deferred<T> {
+fun <T> CompletionStage<T>.asDeferred(context: CoroutineContext = defaultCoroutineDispatcher): Deferred<T> {
     return GlobalScope.async(context) { this@asDeferred.toCompletableFuture().join() }
 }
 
-suspend fun <T> Iterable<Deferred<T>>.flatten(context: CoroutineContext = Dispatchers.Default): Deferred<List<T>> {
+suspend fun <T> Iterable<Deferred<T>>.flatten(context: CoroutineContext = defaultCoroutineDispatcher): Deferred<List<T>> {
     return this@flatten.map { it.await() }.toDeferred(context)
 }
 
-fun <T> Stream<Deferred<T>>.flatten(context: CoroutineContext = Dispatchers.Default): Deferred<Stream<T>> {
+fun <T> Stream<Deferred<T>>.flatten(context: CoroutineContext = defaultCoroutineDispatcher): Deferred<Stream<T>> {
     return GlobalScope.async(context) {
         this@flatten.map {
             it.getCompleted()
@@ -56,20 +64,36 @@ fun <T> Stream<Deferred<T>>.flatten(context: CoroutineContext = Dispatchers.Defa
     }
 }
 
-suspend fun <T : Any?> Deferred<T>.await(time: Long, unit: TimeUnit = TimeUnit.MILLISECONDS): T =
+suspend fun <T : Any> Deferred<T>.await(time: Long, unit: TimeUnit = TimeUnit.MILLISECONDS): T? =
     withTimeout(unit.toMillis(time)) { await() }
 
-@Suppress("UNCHECKED_CAST")
-suspend fun <T : Any?> Deferred<T>.awaitSilence(time: Long, unit: TimeUnit = TimeUnit.MILLISECONDS): T =
+suspend fun <T : Any> Deferred<T>.await(duration: Duration): T? =
+    withTimeout(duration.toMillis()) { await() }
+
+suspend fun <T : Any> Deferred<T>.awaitOrNull(time: Long, unit: TimeUnit = TimeUnit.MILLISECONDS): T? =
     try {
         withTimeout(unit.toMillis(time)) { await() }
     } catch(e: Exception) {
-        null as T
+        null
     }
 
-suspend fun <T : Any?> Deferred<T>.awaitOrDefault(defaultValue: T, time: Long, unit: TimeUnit = TimeUnit.MILLISECONDS): T =
+suspend fun <T : Any> Deferred<T>.awaitOrNull(duration: Duration): T? =
+    try {
+        withTimeout(duration.toMillis()) { await() }
+    } catch(e: Exception) {
+        null
+    }
+
+suspend fun <T : Any> Deferred<T>.awaitOrDefault(defaultValue: T?, time: Long, unit: TimeUnit = TimeUnit.MILLISECONDS): T? =
     try {
         withTimeout(unit.toMillis(time)) { await() }
+    } catch(e: CancellationException) {
+        defaultValue
+    }
+
+suspend fun <T : Any> Deferred<T>.awaitOrDefault(defaultValue: T?, duration: Duration): T? =
+    try {
+        withTimeout(duration.toMillis()) { await() }
     } catch(e: CancellationException) {
         defaultValue
     }

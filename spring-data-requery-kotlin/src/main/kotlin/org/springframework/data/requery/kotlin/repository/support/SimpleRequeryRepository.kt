@@ -121,17 +121,14 @@ class SimpleRequeryRepository<E : Any, ID : Any> @Autowired constructor(
 
         val queryElement = example.buildQueryElement(operations, domainKlass).unwrap()
 
-        return when {
-            pageable.isPaged -> {
-                val totals = count(example)
-                val contents = queryElement.applyPageable(domainClass, pageable).get().toList()
+        return if(pageable.isPaged) {
+            val totals = count(example)
+            val contents = queryElement.applyPageable(domainClass, pageable).get().toList()
 
-                PageImpl<S>(contents, pageable, totals)
-            }
-            else -> {
-                val contents = queryElement.get().toList()
-                PageImpl<S>(contents)
-            }
+            PageImpl<S>(contents, pageable, totals)
+        } else {
+            val contents = queryElement.get().toList()
+            PageImpl<S>(contents)
         }
     }
 
@@ -186,10 +183,9 @@ class SimpleRequeryRepository<E : Any, ID : Any> @Autowired constructor(
 
         log.trace { "Find all by id. ids=$ids" }
 
-        val keyExpr = domainClass.getKeyExpression<ID>()
+        val keyExpr = domainKlass.getKeyExpression<ID>()
 
-        return operations
-            .select(domainKlass)
+        return select()
             .where(keyExpr.`in`(ids.toSet()))
             .get()
             .toList()

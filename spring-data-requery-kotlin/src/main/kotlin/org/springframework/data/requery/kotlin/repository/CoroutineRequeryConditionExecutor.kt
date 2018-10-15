@@ -32,18 +32,22 @@ import org.springframework.data.domain.Sort
  */
 interface CoroutineRequeryConditionExecutor<E : Any> {
 
-    suspend fun findOne(filter: Return<out Result<E>>): E?
+    suspend fun <S : E> findOne(filter: Return<out Result<S>>): S?
 
-    suspend fun findAll(filter: Return<out Result<E>>, sort: Sort = Sort.unsorted()): List<E>
+    suspend fun findAll(filter: Return<out Result<E>>): List<E>
+
+    suspend fun findAll(filter: Return<out Result<E>>, sort: Sort): List<E>
 
     suspend fun findAll(filter: Return<out Result<E>>, pageable: Pageable): Page<E>
 
-    suspend fun findAll(conditions: Iterable<Condition<E, *>>, sort: Sort = Sort.unsorted()): List<E>
+    suspend fun findAll(conditions: Iterable<Condition<E, *>>): List<E>
+
+    suspend fun findAll(conditions: Iterable<Condition<E, *>>, sort: Sort): List<E>
 
     suspend fun findAll(conditions: Iterable<Condition<E, *>>, pageable: Pageable): Page<E>
 
-    suspend fun count(queryElement: QueryElement<out Result<E>>): Long
+    suspend fun <S : E> count(queryElement: QueryElement<out Result<S>>): Long
 
-    suspend fun exists(queryElement: QueryElement<out Result<E>>): Boolean
+    suspend fun <S : E> exists(queryElement: QueryElement<out Result<S>>): Boolean
 
 }
