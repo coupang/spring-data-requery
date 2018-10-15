@@ -1,13 +1,31 @@
+/*
+ * Copyright 2018 Coupang Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.springframework.data.requery.kotlin.repository.support
 
 import mu.KLogging
+import org.springframework.data.repository.core.EntityInformation
 import org.springframework.data.repository.core.RepositoryInformation
+import org.springframework.data.repository.core.RepositoryMetadata
 import org.springframework.data.repository.core.support.RepositoryFactorySupport
 import org.springframework.data.repository.query.EvaluationContextProvider
 import org.springframework.data.repository.query.QueryLookupStrategy
 import org.springframework.data.repository.query.QueryLookupStrategy.Key
 import org.springframework.data.requery.kotlin.coroutines.CoroutineRequeryOperations
-import org.springframework.data.requery.kotlin.repository.query.RequeryQueryLookupStrategy
+import org.springframework.data.requery.kotlin.repository.query.CoroutineRequeryQueryLookupStrategy
 import java.util.*
 
 /**
@@ -53,6 +71,14 @@ open class CoroutineRequeryRepositoryFactory(private val operations: CoroutineRe
     override fun getQueryLookupStrategy(key: Key?,
                                         evaluationContextProvider: EvaluationContextProvider): Optional<QueryLookupStrategy> {
         logger.debug { "Create QueryLookupStrategy by key=$key" }
-        return Optional.ofNullable(RequeryQueryLookupStrategy.create(operations, key, evaluationContextProvider))
+        return Optional.ofNullable(CoroutineRequeryQueryLookupStrategy.create(operations, key, evaluationContextProvider))
+    }
+
+    override fun <T : Any?, ID : Any?> getEntityInformation(domainClass: Class<T>): EntityInformation<T, ID> {
+        TODO("not implemented")
+    }
+
+    override fun getRepositoryBaseClass(metadata: RepositoryMetadata): Class<*> {
+        TODO("not implemented")
     }
 }
