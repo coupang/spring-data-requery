@@ -1,3 +1,19 @@
+/*
+ * Copyright 2018 Coupang Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.springframework.data.requery.kotlin.repository.query
 
 import io.requery.query.Result
@@ -27,6 +43,7 @@ abstract class AbstractCoroutineRequeryQuery(val queryMethod: RequeryQueryMethod
     val metamodel = RequeryMetamodel(operations.entityModel)
     val domainKlass: KClass<out Any> = queryMethod.entityInformation.kotlinType
     val domainClass: Class<out Any> = queryMethod.entityInformation.javaType
+    val domainClassName: String = domainClass.simpleName
 
     override fun getQueryMethod(): QueryMethod = queryMethod
 
@@ -35,14 +52,14 @@ abstract class AbstractCoroutineRequeryQuery(val queryMethod: RequeryQueryMethod
             GlobalScope.async { doExecute(getExecution(), parameters) }.await()
         }
 
-    private suspend fun doExecute(execution: AbstractCoroutineRequeryQueryExecution, values: Array<Any>): Any? {
+    private suspend fun doExecute(execution: AbstractCoroutineQueryExecution, values: Array<Any>): Any? {
         val result = execution.execute(this, values)
         logger.trace { "doExecute ... result=[$result]" }
 
         return result
     }
 
-    protected open fun getExecution(): AbstractCoroutineRequeryQueryExecution {
+    protected open fun getExecution(): AbstractCoroutineQueryExecution {
         TODO("Not implemented")
     }
 

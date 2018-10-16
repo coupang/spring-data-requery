@@ -56,15 +56,15 @@ interface CoroutineRequeryOperations {
         get() = dataStore.getEntityContext()
 
     @JvmDefault
-    suspend infix fun <T : Any> select(entityType: KClass<T>): Selection<out Result<T>> =
+    infix fun <T : Any> select(entityType: KClass<T>): Selection<out Result<T>> =
         dataStore.select(entityType)
 
     @JvmDefault
-    suspend fun <T : Any> select(entityType: KClass<T>, vararg attributes: QueryableAttribute<T, *>): Selection<out Result<T>> =
+    fun <T : Any> select(entityType: KClass<T>, vararg attributes: QueryableAttribute<T, *>): Selection<out Result<T>> =
         dataStore.select(entityType, *attributes)
 
     @JvmDefault
-    suspend fun select(vararg expressions: Expression<*>): Selection<Result<Tuple>> =
+    fun select(vararg expressions: Expression<*>): Selection<Result<Tuple>> =
         dataStore.select(*expressions)
 
     @JvmDefault
@@ -115,11 +115,11 @@ interface CoroutineRequeryOperations {
         dataStore.insert(entity, keyKlass)
 
     @JvmDefault
-    suspend infix fun <T : Any> insert(entityType: KClass<T>): Insertion<Result<Tuple>> =
+    infix fun <T : Any> insert(entityType: KClass<T>): Insertion<Result<Tuple>> =
         dataStore.insert<T>(entityType)
 
     @JvmDefault
-    suspend fun <T : Any> insert(entityType: KClass<T>, vararg attributes: QueryableAttribute<T, *>): InsertInto<out Result<Tuple>> =
+    fun <T : Any> insert(entityType: KClass<T>, vararg attributes: QueryableAttribute<T, *>): InsertInto<out Result<Tuple>> =
         dataStore.insert(entityType, *attributes)
 
     @JvmDefault
@@ -131,7 +131,7 @@ interface CoroutineRequeryOperations {
         dataStore.insert<K, T>(entities, keyKlass).toList()
 
     @JvmDefault
-    suspend fun <T : Any> update(): Update<Scalar<Int>> =
+    fun <T : Any> update(): Update<Scalar<Int>> =
         dataStore.update()
 
     @JvmDefault
@@ -139,7 +139,7 @@ interface CoroutineRequeryOperations {
         dataStore.update(entity)
 
     @JvmDefault
-    suspend infix fun <T : Any> update(entityType: KClass<T>): Update<Scalar<Int>> =
+    infix fun <T : Any> update(entityType: KClass<T>): Update<Scalar<Int>> =
         dataStore.update<T>(entityType)
 
     @JvmDefault
@@ -147,7 +147,7 @@ interface CoroutineRequeryOperations {
         dataStore.update<T>(entities).toList()
 
     @JvmDefault
-    suspend fun delete(): Deletion<Scalar<Int>> =
+    fun delete(): Deletion<Scalar<Int>> =
         dataStore.delete()
 
     @JvmDefault
@@ -156,7 +156,7 @@ interface CoroutineRequeryOperations {
     }
 
     @JvmDefault
-    suspend infix fun <T : Any> delete(entityType: KClass<T>): Deletion<Scalar<Int>> =
+    infix fun <T : Any> delete(entityType: KClass<T>): Deletion<Scalar<Int>> =
         dataStore.delete<T>(entityType)
 
     @JvmDefault
@@ -169,11 +169,11 @@ interface CoroutineRequeryOperations {
         dataStore.delete<T>(entityType).get().value()
 
     @JvmDefault
-    suspend infix fun <T : Any> count(entityType: KClass<T>): Selection<Scalar<Int>> =
+    infix fun <T : Any> count(entityType: KClass<T>): Selection<Scalar<Int>> =
         dataStore.count(entityType)
 
     @JvmDefault
-    suspend fun <E : Any> count(vararg attributes: QueryableAttribute<Any, *>): Selection<out Scalar<Int>> =
+    fun <E : Any> count(vararg attributes: QueryableAttribute<Any, *>): Selection<out Scalar<Int>> =
         dataStore.count(*attributes)
 
 

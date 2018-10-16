@@ -16,12 +16,12 @@
 
 package org.springframework.data.requery.kotlin.repository.query
 
-import mu.KotlinLogging
+import mu.KLogging
 
 /**
- * org.springframework.data.requery.repository.query.CommandType
+ * Requery Command Types
  *
- * @author debop
+ * @author debop (Sunghyouk Bae)
  */
 enum class CommandType {
 
@@ -33,8 +33,7 @@ enum class CommandType {
     DELETE,
     REFRESH;
 
-    companion object {
-        private val log = KotlinLogging.logger { }
+    companion object : KLogging() {
 
         fun parse(command: String?): CommandType {
             if(command.isNullOrBlank())

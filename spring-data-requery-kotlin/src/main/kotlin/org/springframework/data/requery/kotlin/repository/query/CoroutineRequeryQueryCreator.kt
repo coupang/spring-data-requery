@@ -21,9 +21,6 @@ import io.requery.query.LogicalCondition
 import io.requery.query.NamedExpression
 import io.requery.query.element.QueryElement
 import io.requery.query.function.Count
-import kotlinx.coroutines.experimental.Dispatchers
-import kotlinx.coroutines.experimental.runBlocking
-import kotlinx.coroutines.experimental.withContext
 import mu.KLogging
 import org.springframework.data.domain.Sort
 import org.springframework.data.repository.query.ReturnedType
@@ -54,6 +51,7 @@ import org.springframework.data.repository.query.parser.Part.Type.STARTING_WITH
 import org.springframework.data.repository.query.parser.Part.Type.TRUE
 import org.springframework.data.repository.query.parser.PartTree
 import org.springframework.data.requery.kotlin.NotSupportedException
+import org.springframework.data.requery.kotlin.Requery
 import org.springframework.data.requery.kotlin.applySort
 import org.springframework.data.requery.kotlin.coroutines.CoroutineRequeryOperations
 import org.springframework.data.requery.kotlin.unwrap
@@ -71,11 +69,12 @@ open class CoroutineRequeryQueryCreator(val operations: CoroutineRequeryOperatio
                                         val provider: ParameterMetadataProvider,
                                         val returnedType: ReturnedType,
                                         val tree: PartTree)
-    : AbstractQueryCreator<QueryElement<out Any>, LogicalCondition<out Any, *>>(tree) {
+    : AbstractQueryCreator<Requery, LogicalCondition<out Any, *>>(tree) {
 
     companion object : KLogging()
 
     protected val domainKlass: KClass<out Any>
+    protected val domainClass: Class<out Any>
     protected val domainClassName: String
 
     init {
@@ -85,30 +84,27 @@ open class CoroutineRequeryQueryCreator(val operations: CoroutineRequeryOperatio
         }
 
         domainKlass = returnedType.domainType.kotlin
+        domainClass = returnedType.domainType
         domainClassName = returnedType.domainType.simpleName
     }
 
     @Suppress("LeakingThis")
-    private val root: QueryElement<out Any> by lazy { createQueryElement(returnedType) }
+    private val root: Requery by lazy { createQueryElement(returnedType) }
 
     val parameterExpressions: List<ParameterMetadata<out Any>>
         get() = provider.getExpressions()
 
 
-    protected open fun createQueryElement(type: ReturnedType): QueryElement<out Any> {
+    protected open fun createQueryElement(type: ReturnedType): Requery {
 
         val typeToRead = type.typeToRead
         logger.debug { "Create QueryElement instance. returnedType=$type, typeToRead=$typeToRead" }
 
-        return runBlocking {
-            withContext(Dispatchers.Unconfined) {
-                when {
-                    tree.isCountProjection -> operations.select(Count.count(type.domainType)).unwrap()
-                    tree.isExistsProjection -> operations.select(type.domainType.kotlin).unwrap()
-                    tree.isDelete -> operations.delete(type.domainType.kotlin).unwrap()
-                    else -> operations.select(type.domainType.kotlin).unwrap()
-                }
-            }
+        return when {
+            tree.isCountProjection -> operations.select(Count.count(type.domainType)).unwrap()
+            tree.isExistsProjection -> operations.select(type.domainType.kotlin).unwrap()
+            tree.isDelete -> operations.delete(type.domainType.kotlin).unwrap()
+            else -> operations.select(type.domainType.kotlin).unwrap()
         }
     }
 
@@ -129,13 +125,13 @@ open class CoroutineRequeryQueryCreator(val operations: CoroutineRequeryOperatio
         return base.or(criteria)
     }
 
-    override fun complete(criteria: LogicalCondition<out Any, *>?, sort: Sort): QueryElement<out Any> {
+    override fun complete(criteria: LogicalCondition<out Any, *>?, sort: Sort): Requery {
         return complete(criteria, sort, root)
     }
 
     open fun complete(criteria: LogicalCondition<out Any, *>?,
                       sort: Sort,
-                      base: QueryElement<out Any>): QueryElement<out Any> {
+                      base: Requery): Requery {
 
         logger.trace { "Complete build query ..." }
 

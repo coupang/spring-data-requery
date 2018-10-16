@@ -19,41 +19,57 @@ package org.springframework.data.requery.kotlin.repository.query
 import io.requery.query.Tuple
 import mu.KLogging
 
-
+/**
+ * Requery의 Query 결과 값을 원하는 수형으로 변환하는 기능을 제공합니다.
+ */
 object RequeryResultConverter : KLogging() {
 
+    /**
+     * Requery 퀄리 결과를 원하는 수형으로 변환합니다.
+     * 결과가 Entity가 아니라 Tuple 인 경우에 count 나 aggregate 를 표현할 수 있으므로 그 값을 추출흡니다.
+     *
+     * @param result query result
+     * @param defaultValue default value if convert is failed
+     */
     fun convert(result: Any?, defaultValue: Any? = null): Any? {
 
         logger.trace { "Convert result. result=$result, defaultValue=$defaultValue" }
 
         return try {
-            if(result is Tuple) {
-                if(result.count() == 1) {
-                    val column = result.get<Any>(0)
-                    (column as? Number)?.toInt() ?: column.toString()
-                } else {
-                    result
+            when(result) {
+                is Tuple -> when {
+                    result.count() == 1 -> {
+                        val column = result.get<Any>(0)
+                        (column as? Number)?.toInt() ?: column.toString()
+                    }
+                    else -> result
                 }
-            } else result
+                else -> result
+            }
         } catch(ignored: Exception) {
             logger.warn(ignored) { "Fail to convert result[$result], return [$defaultValue]" }
             defaultValue
         }
     }
 
-    inline fun <reified T : Any> convertGeneric(result: Any?, defaultValue: T? = null): T? {
+    /**
+     * Requery 퀄리 결과를 원하는 수형으로 변환합니다.
+     * 결과가 Entity가 아니라 Tuple 인 경우에 count 나 aggregate 를 표현할 수 있으므로 그 값을 추출흡니다.
+     *
+     * @param result query result
+     * @param defaultValue default value if convert is failed
+     */
+    inline fun <reified T : Any> asValue(result: Any?, defaultValue: T? = null): T? {
         logger.trace { "Convert result. result=$result, defaultValue=$defaultValue" }
 
         return try {
-            if(result is Tuple) {
-                if(result.count() == 1) {
-                    // val column = result.get<T>(0)
-                    // (column as? Number)?.toInt() ?: column.toString()
-                    result.get<T>(0)
-                } else {
-                    result as? T
+            when(result) {
+                is Tuple -> when {
+                    result.count() == 1 -> result.get<T>(0)
+                    else -> result as? T
                 }
-            } else result as? T
+                else -> result as? T
+            }
         } catch(ignored: Exception) {
             logger.warn(ignored) { "Fail to convert result[$result], return [$defaultValue]" }
             defaultValue
