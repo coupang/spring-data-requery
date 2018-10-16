@@ -17,35 +17,45 @@
 package org.springframework.data.requery.kotlin.repository.query
 
 import io.requery.query.Tuple
-import mu.KotlinLogging
+import mu.KLogging
 
 
-object RequeryResultConverter {
-
-    private val log = KotlinLogging.logger { }
+object RequeryResultConverter : KLogging() {
 
     fun convert(result: Any?, defaultValue: Any? = null): Any? {
 
-        log.trace { "Convert result. result=$result" }
+        logger.trace { "Convert result. result=$result, defaultValue=$defaultValue" }
 
-        // TODO: 원하는 수형으로 변환하도록 해야 한다.
         return try {
-            when(result) {
-                is Tuple ->
-                    when {
-                        result.count() == 1 -> {
-                            val column = result.get<Any>(0)
-                            when(column) {
-                                is Number -> column.toInt()
-                                else -> column.toString()
-                            }
-                        }
-                        else -> result
-                    }
-                else -> result
-            }
+            if(result is Tuple) {
+                if(result.count() == 1) {
+                    val column = result.get<Any>(0)
+                    (column as? Number)?.toInt() ?: column.toString()
+                } else {
+                    result
+                }
+            } else result
         } catch(ignored: Exception) {
-            log.warn(ignored) { "Fail to convert result[$result], return [$defaultValue]" }
+            logger.warn(ignored) { "Fail to convert result[$result], return [$defaultValue]" }
+            defaultValue
+        }
+    }
+
+    inline fun <reified T : Any> convertGeneric(result: Any?, defaultValue: T? = null): T? {
+        logger.trace { "Convert result. result=$result, defaultValue=$defaultValue" }
+
+        return try {
+            if(result is Tuple) {
+                if(result.count() == 1) {
+                    // val column = result.get<T>(0)
+                    // (column as? Number)?.toInt() ?: column.toString()
+                    result.get<T>(0)
+                } else {
+                    result as? T
+                }
+            } else result as? T
+        } catch(ignored: Exception) {
+            logger.warn(ignored) { "Fail to convert result[$result], return [$defaultValue]" }
             defaultValue
         }
     }
