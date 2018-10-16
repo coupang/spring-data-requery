@@ -17,12 +17,12 @@
 package org.springframework.data.requery.domain.hierarchy;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.requery.domain.AbstractDomainTest;
 
-import javax.validation.constraints.NotNull;
 import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;

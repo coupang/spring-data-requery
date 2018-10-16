@@ -43,7 +43,6 @@ idea {
     }
 }
 
-
 dependencies {
     compile "io.requery:requery"
     optional "io.requery:requery-jackson"
@@ -56,14 +55,8 @@ dependencies {
     annotationProcessor "io.requery:requery-processor"
     testAnnotationProcessor "io.requery:requery-processor"
 
-    implementation "org.jetbrains:annotations"
-
-    implementation "javax.inject:javax.inject:1"
-    implementation "javax.cache:cache-api"
-    implementation "javax.annotation:javax.annotation-api"
-    implementation "javax.interceptor:javax.interceptor-api"
-    implementation "javax.persistence:persistence-api:1.0.2"
-    implementation "javax.validation:validation-api"
+    compile "org.jetbrains:annotations"
+    compile "javax.inject:javax.inject:1"
 
     // spring framework
     compile "org.springframework:spring-beans"
@@ -75,9 +68,6 @@ dependencies {
     optional "org.threeten:threetenbp"
     optional "joda-time:joda-time"
 
+    testImplementation "javax.cache:cache-api"
     testImplementation "org.eclipse.persistence:javax.persistence"
-
-    compile "org.slf4j:slf4j-api"
-    testImplementation "ch.qos.logback:logback-classic"
 }
-

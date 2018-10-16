@@ -104,7 +104,7 @@ subprojects {
 
             dependency "com.zaxxer:HikariCP:3.1.0"
 
-            dependency "org.jetbrains:annotations:16.0.2"
+            dependency "org.jetbrains:annotations:16.0.3"
             dependency "com.google.code.findbugs:jsr305:3.0.2"
 
             dependency "javax.cache:cache-api:1.1.0"
@@ -139,14 +139,14 @@ subprojects {
 
     dependencies {
 
-        compile "org.slf4j:slf4j-api"
-        testCompile "ch.qos.logback:logback-classic"
+        implementation "org.slf4j:slf4j-api"
+        testImplementation "ch.qos.logback:logback-classic"
 
         testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
         testRuntime "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
 
-        testCompile "org.assertj:assertj-core"
-        testCompile "org.mockito:mockito-core"
+        testImplementation "org.assertj:assertj-core"
+        testImplementation "org.mockito:mockito-core"
 
         testImplementation "com.fasterxml.jackson.core:jackson-core"
         testImplementation "com.fasterxml.jackson.core:jackson-databind"
@@ -163,14 +163,14 @@ subprojects {
         testRuntime "org.junit.platform:junit-platform-launcher:$junit_platform_version"
         testRuntime "org.junit.platform:junit-platform-console-standalone:$junit_platform_version"
 
-        testCompile "org.springframework.boot:spring-boot-starter-jdbc"
-        testCompile "org.springframework.boot:spring-boot-starter-test"
+        testImplementation "org.springframework.boot:spring-boot-starter-jdbc"
+        testImplementation "org.springframework.boot:spring-boot-starter-test"
 
-        testCompile "com.zaxxer:HikariCP"
-        testCompile "mysql:mysql-connector-java"
+        testImplementation "com.zaxxer:HikariCP"
+        testImplementation "mysql:mysql-connector-java"
 
-        testCompile "com.h2database:h2"
-        testCompile "org.testcontainers:mysql"
+        testImplementation "com.h2database:h2"
+        testImplementation "org.testcontainers:mysql"
     }
 
     sourceCompatibility = JavaVersion.VERSION_1_8
