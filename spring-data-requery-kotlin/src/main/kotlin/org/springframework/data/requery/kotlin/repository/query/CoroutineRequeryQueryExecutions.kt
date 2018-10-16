@@ -19,11 +19,15 @@ package org.springframework.data.requery.kotlin.repository.query
 import io.requery.PersistenceException
 import io.requery.query.Result
 import io.requery.query.element.QueryElement
+import io.requery.query.function.Count
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.withContext
 import mu.KLogging
 import org.springframework.core.convert.ConversionService
 import org.springframework.core.convert.support.ConfigurableConversionService
 import org.springframework.core.convert.support.DefaultConversionService
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
 import org.springframework.data.domain.SliceImpl
@@ -77,11 +81,13 @@ abstract class AbstractCoroutineQueryExecution {
         }
     }
 
-    suspend fun execute(query: AbstractCoroutineRequeryQuery, values: Array<Any>): Any? = try {
-        doExecute(query, values)
-    } catch(e: PersistenceException) {
-        logger.error(e) { "Fail to execute query. return null. query=$query" }
-        null
+    suspend fun execute(query: AbstractCoroutineRequeryQuery, values: Array<Any>): Any? {
+        return try {
+            doExecute(query, values)
+        } catch(e: PersistenceException) {
+            logger.error(e) { "Fail to execute query. return null. query=$query" }
+            null
+        }
     }
 
     protected abstract suspend fun doExecute(query: AbstractCoroutineRequeryQuery, values: Array<Any>): Any?
@@ -92,12 +98,13 @@ abstract class AbstractCoroutineQueryExecution {
     protected fun adjustPage(queryElement: QueryElement<out Any>,
                              domainClass: Class<out Any>,
                              pageable: Pageable): QueryElement<out Any> {
-
         // method name에서 paging을 유추할 수 있을 수 있기 때문에 추가로 paging을 하지 않는다.
-        return if(queryElement.limit == null && queryElement.offset == null)
-            queryElement.applyPageable(domainClass, pageable).unwrap()
-        else
-            queryElement
+        val needPageable = queryElement.limit == null && queryElement.offset == null
+
+        return when {
+            needPageable -> queryElement.applyPageable(domainClass, pageable).unwrap()
+            else -> queryElement
+        }
     }
 }
 
@@ -111,7 +118,7 @@ internal class CoroutineCollectionExecution : AbstractCoroutineQueryExecution() 
 
     companion object : KLogging()
 
-    override suspend fun doExecute(query: AbstractCoroutineRequeryQuery, values: Array<Any>): Any? {
+    override suspend fun doExecute(query: AbstractCoroutineRequeryQuery, values: Array<Any>): List<Any> {
         val result = query.createQueryElement(values).get() as Result<*>
         return result.toList()
     }
@@ -165,11 +172,35 @@ internal class CoroutinePagedExecution(val parameters: RequeryParameters) : Abst
     companion object : KLogging()
 
     override suspend fun doExecute(query: AbstractCoroutineRequeryQuery, values: Array<Any>): Page<*> {
-        TODO("not implemented")
+        logger.debug { "Run paged execution... query=$query, values=$values" }
+
+        val accessor = ParametersParameterAccessor(parameters, values)
+        val pageable = accessor.pageable
+
+        return if(pageable.isPaged) {
+            // method name에서 paging을 유추할 수 있을 수 있기 때문에 추가로 paging을 하지 않는다.
+            var queryElement = query.createQueryElement(values)
+            queryElement = adjustPage(queryElement, query.domainClass, pageable)
+            logger.trace { "offset=${queryElement.offset}, limit=${queryElement.limit}, pageable=$pageable" }
+
+            val result = withContext(Dispatchers.Unconfined) { queryElement.getAsResult().toList() }
+            val totals = withContext(Dispatchers.Default) { doExecuteTotals(query, values) }
+
+            PageImpl(result, pageable, totals)
+        } else {
+            val queryElement = query.createQueryElement(values)
+            PageImpl(queryElement.getAsResult().toList())
+        }
     }
 
     private suspend fun doExecuteTotals(query: AbstractCoroutineRequeryQuery, values: Array<Any>): Long {
-        TODO("Not implementeed")
+        val baseQuery = query.createQueryElement(values).unwrap()
+        val selection = query.operations.select(Count.count(query.domainClass))
+
+        selection.unwrap().whereElements.addAll(baseQuery.whereElements)
+
+        val result = RequeryResultConverter.convert(selection.get().firstOrNull(), 0L) as Int
+        return result.toLong()
     }
 }
 

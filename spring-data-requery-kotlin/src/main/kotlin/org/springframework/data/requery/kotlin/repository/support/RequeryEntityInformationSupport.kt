@@ -16,10 +16,10 @@
 
 package org.springframework.data.requery.kotlin.repository.support
 
+import io.requery.meta.EntityModel
 import mu.KotlinLogging
 import org.springframework.data.domain.Persistable
 import org.springframework.data.repository.core.support.AbstractEntityInformation
-import org.springframework.data.requery.kotlin.core.RequeryOperations
 import org.springframework.data.requery.kotlin.repository.query.DefaultRequeryEntityMetadata
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSuperclassOf
@@ -29,7 +29,7 @@ import kotlin.reflect.full.isSuperclassOf
  *
  * @author debop
  */
-abstract class RequeryEntityInformationSupport<E : Any, ID : Any>(override val kotlinType: KClass<E>)
+abstract class RequeryEntityInformationSupport<E : Any, ID : Any>(final override val kotlinType: KClass<E>)
     : AbstractEntityInformation<E, ID>(kotlinType.java), RequeryEntityInformation<E, ID> {
 
     companion object {
@@ -37,9 +37,7 @@ abstract class RequeryEntityInformationSupport<E : Any, ID : Any>(override val k
 
         @JvmStatic
         fun <E : Any, ID : Any> getEntityInformation(domainKlass: KClass<E>,
-                                                     operations: RequeryOperations): RequeryEntityInformation<E, ID> {
-
-            val entityModel = operations.entityModel
+                                                     entityModel: EntityModel): RequeryEntityInformation<E, ID> {
 
             log.debug { "domainClass=$domainKlass, entityModel=$entityModel" }
 

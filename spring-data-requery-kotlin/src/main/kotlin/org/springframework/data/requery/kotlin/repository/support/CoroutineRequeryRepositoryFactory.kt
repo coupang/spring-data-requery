@@ -29,7 +29,7 @@ import org.springframework.data.requery.kotlin.repository.query.CoroutineRequery
 import java.util.*
 
 /**
- * [CoroutineRequeryRepository] 를 생성하는 Factory 입니다.
+ * Requery with coroutine specific generic repository factory.
  *
  * @author debop (Sunghyouk Bae)
  */
@@ -55,7 +55,7 @@ open class CoroutineRequeryRepositoryFactory(private val operations: CoroutineRe
     @Suppress("UNCHECKED_CAST")
     protected fun getTargetRepository(information: RepositoryInformation,
                                       operations: CoroutineRequeryOperations): SimpleCoroutineRequeryRepository<out Any, out Any> {
-        logger.debug { "Get target repository for domain type=${information.domainType}" }
+        logger.debug { "Get target coroutine repository for domain type=${information.domainType.name}" }
 
         val entityInformation = getEntityInformation<Any, Any>(information.domainType as Class<Any>)
 
@@ -64,21 +64,22 @@ open class CoroutineRequeryRepositoryFactory(private val operations: CoroutineRe
                                              entityInformation,
                                              operations) as? SimpleCoroutineRequeryRepository<out Any, out Any>
 
+        check(repository != null) { "Fail to find target repository for domain type=[${information.domainType.name}]" }
+
         logger.debug { "Find target repository. repository=$repository" }
         return repository!!
     }
 
+    override fun getRepositoryBaseClass(metadata: RepositoryMetadata): Class<*> =
+        SimpleCoroutineRequeryRepository::class.java
+
     override fun getQueryLookupStrategy(key: Key?,
                                         evaluationContextProvider: EvaluationContextProvider): Optional<QueryLookupStrategy> {
-        logger.debug { "Create QueryLookupStrategy by key=$key" }
+        logger.debug { "Create CoroutineQueryLookupStrategy by key=$key" }
         return Optional.ofNullable(CoroutineRequeryQueryLookupStrategy.create(operations, key, evaluationContextProvider))
     }
 
-    override fun <T : Any?, ID : Any?> getEntityInformation(domainClass: Class<T>): EntityInformation<T, ID> {
-        TODO("not implemented")
-    }
-
-    override fun getRepositoryBaseClass(metadata: RepositoryMetadata): Class<*> {
-        TODO("not implemented")
+    override fun <E : Any, ID : Any> getEntityInformation(domainClass: Class<E>): EntityInformation<E, ID> {
+        return RequeryEntityInformationSupport.getEntityInformation(domainClass.kotlin, operations.entityModel)
     }
 }

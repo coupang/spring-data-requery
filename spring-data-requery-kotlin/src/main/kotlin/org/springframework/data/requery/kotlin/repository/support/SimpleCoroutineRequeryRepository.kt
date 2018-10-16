@@ -56,8 +56,7 @@ import kotlin.reflect.KClass
 @Transactional
 class SimpleCoroutineRequeryRepository<E : Any, ID : Any> @Autowired constructor(
     val entityInformation: RequeryEntityInformation<E, ID>,
-    override val operations: CoroutineRequeryOperations
-) : CoroutineRequeryRepositoryImplementation<E, ID> {
+    override val operations: CoroutineRequeryOperations) : CoroutineRequeryRepositoryImplementation<E, ID> {
 
     companion object : KLogging()
 
@@ -76,7 +75,7 @@ class SimpleCoroutineRequeryRepository<E : Any, ID : Any> @Autowired constructor
         this.crudMethodMetadata = crudMethodMetadata
     }
 
-    suspend fun select(): QueryElement<out Result<E>> = operations.select(domainKlass).unwrap()
+    private fun select(): QueryElement<out Result<E>> = operations.select(domainKlass).unwrap()
 
     private inline fun <T : Any> async(crossinline block: suspend () -> T): Deferred<T> {
         return GlobalScope.async(coroutineDispatcher) {

@@ -21,6 +21,7 @@ import io.requery.query.NamedExpression
 import io.requery.query.Result
 import io.requery.query.element.LogicalOperator
 import io.requery.query.element.QueryElement
+import mu.KLogging
 import mu.KotlinLogging
 import org.springframework.data.domain.Example
 import org.springframework.data.domain.ExampleMatcher
@@ -70,9 +71,7 @@ fun <E : Any> QueryElement<out Any>.applyExample(example: Example<E>): QueryElem
     } ?: this
 }
 
-object QueryByExampleBuilder {
-
-    private val log = KotlinLogging.logger { }
+object QueryByExampleBuilder : KLogging() {
 
     val entityFields = LinkedMultiValueMap<Class<*>, Field>()
 
@@ -109,12 +108,17 @@ object QueryByExampleBuilder {
         log.trace { "entity methods size=${methods.size}" }
 
         methods
+            .asSequence()
             .filterNot {
                 // Query By Example 에서 지원하지 못하는 Field 들은 제외합니다.
                 // NOTE: Kotlin interface entity 는 get annotation을 사용하므로 method에 대해서도 처리해야 한다.
-                it.isKeyAnnoatedElement() || it.isAssociatedAnnotatedElement() || it.isEmbeddedAnnoatedElement() || it.isTransientAnnotatedElement()
+                it.isKeyAnnoatedElement() ||
+                it.isAssociatedAnnotatedElement() ||
+                it.isEmbeddedAnnoatedElement() ||
+                it.isTransientAnnotatedElement()
             }
             .filterNot { accessor.isIgnoredPath(it.extractGetterSetter()) }
+            .toList()
             .forEach {
                 val fieldName = it.extractGetterSetter()
                 val fieldType = it.returnType as Class<Any>

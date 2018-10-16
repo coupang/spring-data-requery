@@ -80,7 +80,7 @@ open class RequeryRepositoryFactory(val operations: RequeryOperations) : Reposit
     @Suppress("UNCHECKED_CAST")
     override fun <E : Any, ID : Any> getEntityInformation(domainClass: Class<E>): EntityInformation<E, ID> {
 
-        return RequeryEntityInformationSupport.getEntityInformation<E, ID>(domainClass.kotlin, operations)
+        return RequeryEntityInformationSupport.getEntityInformation<E, ID>(domainClass.kotlin, operations.entityModel)
             as RequeryEntityInformationSupport<E, ID>
     }
 }

@@ -16,6 +16,7 @@
 
 package org.springframework.data.requery.kotlin.repository.config
 
+import mu.KLogging
 import org.springframework.beans.factory.support.BeanDefinitionBuilder
 import org.springframework.core.io.ResourceLoader
 import org.springframework.data.repository.config.AnnotationRepositoryConfigurationSource
@@ -34,7 +35,7 @@ import java.util.*
  */
 class RequeryRepositoryConfigurationExtension : RepositoryConfigurationExtensionSupport() {
 
-    companion object {
+    companion object : KLogging() {
         private const val DEFAULT_TRANSACTION_MANAGER_BEAN_NAME = "transactionManager"
         private const val ENABLE_DEFAULT_TRANSACTIONS_ATTRIBUTE = "enableDefaultTransactions"
     }

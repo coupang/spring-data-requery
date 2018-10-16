@@ -19,7 +19,7 @@ package org.springframework.data.requery.kotlin.utils
 import io.requery.meta.EntityModel
 
 /**
- * RequeryMetamodel
+ * Requery 가 관리하는 entity들의 메타정보를 제공합니다.
  *
  * @author debop
  */
@@ -27,16 +27,25 @@ class RequeryMetamodel(val entityModel: EntityModel) {
 
     private val managedTypes = arrayListOf<Class<*>>()
 
+    /**
+     * 지정한 entityClass 가 Requery의 EntityModel에 등록된 수형인지 여부
+     * @param entityClass entity type
+     */
     fun isRequeryManaged(entityClass: Class<*>): Boolean {
         return getManagedTypes().contains(entityClass)
     }
 
+    /**
+     * 지정한 entityClass의 수형이 하나의 identitifer만 가지는지 여부
+     * @param entityClass
+     * @param name
+     * @param attributeClass
+     */
     fun isSingleIdAttribute(entityClass: Class<*>, name: String, attributeClass: Class<*>): Boolean {
 
         return entityModel.types
-                   .filter { it.classType == entityClass }
-                   .mapNotNull { it.singleKeyAttribute }
-                   .filter { it.classType == attributeClass }
+                   .asSequence()
+                   .filter { it.classType == entityClass && it.singleKeyAttribute != null && it.classType == attributeClass }
                    .map { it.name == name }
                    .firstOrNull()
                ?: false
@@ -49,5 +58,4 @@ class RequeryMetamodel(val entityModel: EntityModel) {
         }
         return managedTypes
     }
-
 }
