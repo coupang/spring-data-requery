@@ -85,7 +85,7 @@ fun <T : Any> Return<T>.applyPageable(domainKlass: KClass<out Any>, pageable: Pa
 }
 
 /**
- * 지정한 Domain class 를 조회하는 [QueryElement]에 Paging 을 설정합니다.
+ * 지정한 Domain Entity를 조회하는 [QueryElement]에 Paging을 설정합니다.
  *
  * @param domainClass domain class
  * @param pageable [Pageable] instance
@@ -117,10 +117,10 @@ fun <T : Any> Return<T>.applySort(domainKlass: KClass<out Any>, sort: Sort = Sor
 }
 
 /**
- * 지정한 Domain class 를 조회하는 [QueryElement]에 정렬 설정합니다.
+ * 지정한 Domain Entity를 조회하는 [QueryElement]에 정렬(Sort)를 설정합니다.
  *
  * @param domainClass domain class
- * @param pageable [Pageable] instance
+ * @param sort [Sort] instance
  */
 fun <T : Any> Return<T>.applySort(domainClass: Class<out Any>, sort: Sort = Sort.unsorted()): QueryElement<T> {
 

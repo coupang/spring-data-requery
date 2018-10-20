@@ -77,19 +77,19 @@ class ClassExtensionsTest : AbstractRequeryTest() {
 
         // Kotlin 에서는 @get:Annotation 이므로 get이 붙어야 합니다.
         val method = User::class.java.getDeclaredMethod("getRoles")
-        log.debug { "Method=$method" }
-        log.debug { "Declared Annotations size=${method.declaredAnnotations.size}" }
-        log.debug { "Annotations size=${method.annotations.size}" }
+        logger.debug { "Method=$method" }
+        logger.debug { "Declared Annotations size=${method.declaredAnnotations.size}" }
+        logger.debug { "Annotations size=${method.annotations.size}" }
 
         assertThat(method.isAnnotationPresent(io.requery.ManyToMany::class.java)).isTrue()
 
         val methods = User::class.java.findEntityMethods()
 
-        log.debug { "methods size=${methods.size}" }
+        logger.debug { "methods size=${methods.size}" }
         methods.forEach {
-            log.debug { "method=$it" }
-            log.debug { "method is requery entity method = ${it.isRequeryEntityMethod()}" }
-            log.debug { "method is requery generated method = ${it.isRequeryGeneratedMethod()}" }
+            logger.debug { "method=$it" }
+            logger.debug { "method is requery entity method = ${it.isRequeryEntityMethod()}" }
+            logger.debug { "method is requery generated method = ${it.isRequeryGeneratedMethod()}" }
         }
     }
 
@@ -99,7 +99,7 @@ class ClassExtensionsTest : AbstractRequeryTest() {
         val methods = UserEntity::class.java.findEntityMethods()
 
         methods.forEach { m ->
-            log.debug {
+            logger.debug {
                 """
                     | "method name=${m.name}"
                     |    is Key = ${m.isKeyAnnoatedElement()}

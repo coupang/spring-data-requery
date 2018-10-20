@@ -20,7 +20,7 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import io.requery.reactivex.KotlinReactiveEntityStore
-import mu.KotlinLogging
+import mu.KLogging
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.Before
@@ -28,8 +28,9 @@ import org.junit.Test
 import org.reactivestreams.Subscription
 import org.springframework.data.requery.kotlin.domain.AbstractDomainTest
 import org.springframework.data.requery.kotlin.domain.RandomData
+import org.springframework.data.requery.kotlin.domain.basic.BasicGroup
 import org.springframework.data.requery.kotlin.domain.basic.BasicGroupEntity
-import org.springframework.data.requery.kotlin.domain.basic.BasicLocationEntity
+import org.springframework.data.requery.kotlin.domain.basic.BasicLocation
 import org.springframework.data.requery.kotlin.domain.basic.BasicUser
 import org.springframework.data.requery.kotlin.domain.basic.BasicUserEntity
 import java.util.concurrent.CountDownLatch
@@ -37,15 +38,14 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
- * org.springframework.data.requery.kotlin.core.ReactiveTemplateTest
+ * [KotlinReactiveEntityStore] 예제
+ *
  * @author debop
  * @since 18. 6. 2
  */
-class ReactiveTemplateTest : AbstractDomainTest() {
+class KotlinReactiveEntityStoreExample : AbstractDomainTest() {
 
-    companion object {
-        private val log = KotlinLogging.logger {}
-    }
+    companion object : KLogging()
 
     private val reactiveStore: KotlinReactiveEntityStore<Any> by lazy {
         KotlinReactiveEntityStore(kotlinDataStore)
@@ -53,11 +53,19 @@ class ReactiveTemplateTest : AbstractDomainTest() {
 
     @Before
     fun setup() {
-        with(operations) {
-            deleteAll(BasicGroupEntity::class)
-            deleteAll(BasicLocationEntity::class)
-            deleteAll(BasicUserEntity::class)
-        }
+        //        with(operations) {
+        //            deleteAll(BasicGroupEntity::class)
+        //            deleteAll(BasicLocationEntity::class)
+        //            deleteAll(BasicUserEntity::class)
+        //        }
+
+        val deleteGroup = reactiveStore.delete<BasicGroup>(BasicGroup::class).get()
+        val deleteLocation = reactiveStore.delete<BasicLocation>(BasicLocation::class).get()
+        val deleteUser = reactiveStore.delete<BasicUser>(BasicUser::class).get()
+
+        deleteGroup.single().blockingGet()
+        deleteLocation.single().blockingGet()
+        deleteUser.single().blockingGet()
     }
 
     @Test

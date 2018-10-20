@@ -18,7 +18,7 @@ package org.springframework.data.requery.kotlin.core
 
 import io.requery.async.KotlinCompletableEntityStore
 import io.requery.kotlin.eq
-import mu.KotlinLogging
+import mu.KLogging
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -33,15 +33,13 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ForkJoinPool
 
 /**
- * org.springframework.data.requery.kotlin.core.CompletableFutureTemplateTest
+ * [KotlinCompletableEntityStore] 에 대한 예제 
  * @author debop
  * @since 18. 6. 2
  */
-class CompletableFutureTemplateTest : AbstractDomainTest() {
+class KotlinCompletableEntityStoreExample : AbstractDomainTest() {
 
-    companion object {
-        private val log = KotlinLogging.logger { }
-    }
+    companion object : KLogging()
 
     private val asyncEntityStore: KotlinCompletableEntityStore<Any> by lazy {
         KotlinCompletableEntityStore(kotlinDataStore, ForkJoinPool.commonPool())
@@ -49,22 +47,27 @@ class CompletableFutureTemplateTest : AbstractDomainTest() {
 
     @Before
     fun setup() {
-        with(operations) {
-            deleteAll(BasicLocation::class)
-            deleteAll(BasicGroup::class)
-            deleteAll(BasicUser::class)
+        with(asyncEntityStore) {
+            val task1 = delete<BasicLocation>(BasicLocation::class).get()
+            val task2 = delete<BasicGroup>(BasicGroup::class).get()
+            val task3 = delete<BasicUser>(BasicUser::class).get()
+
+            task1.call()
+            task2.call()
+            task3.call()
         }
     }
 
     @Test
     fun `async insert`() {
         val user = RandomData.randomBasicUser()
-        asyncEntityStore.insert(user).thenAccept { u ->
-            assertThat(u.id).isNotNull()
-
-            val loaded = asyncEntityStore.select(BasicUser::class).where(BasicUser::id eq user.id).get().first()
-            assertThat(loaded).isEqualTo(user)
-        }.join()
+        asyncEntityStore
+            .insert(user)
+            .thenAccept { u ->
+                assertThat(u.id).isNotNull()
+                val loaded = asyncEntityStore.select(BasicUser::class).where(BasicUser::id eq user.id).get().first()
+                assertThat(loaded).isEqualTo(user)
+            }.join()
     }
 
     @Test
@@ -81,6 +84,8 @@ class CompletableFutureTemplateTest : AbstractDomainTest() {
                     count(BasicUser::class).get().toCompletableFuture()
                 }
                 .get()
+
+            logger.debug { "Insert asynchronous, and get count" }
         }
     }
 

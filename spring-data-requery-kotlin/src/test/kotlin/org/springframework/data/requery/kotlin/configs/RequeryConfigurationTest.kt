@@ -47,7 +47,7 @@ class RequeryConfigurationTest : AbstractRequeryTest() {
 
     @Test
     fun `load entity model`() {
-        log.info { "EntityModel=$entityModel" }
+        logger.info { "EntityModel=$entityModel" }
         assertThat(entityModel).isNotNull
     }
 

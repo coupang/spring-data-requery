@@ -16,8 +16,7 @@
 
 package org.springframework.data.requery.kotlin
 
-import mu.KLogger
-import mu.KotlinLogging
+import mu.KLogging
 
 /**
  * AbstractRequeryTest
@@ -26,7 +25,5 @@ import mu.KotlinLogging
  */
 abstract class AbstractRequeryTest {
 
-    companion object {
-        val log: KLogger by lazy { KotlinLogging.logger { } }
-    }
+    companion object : KLogging()
 }

@@ -101,7 +101,6 @@ public class CompletableFutureTest extends AbstractDomainTest {
                 .toCompletableFuture(Executors.newSingleThreadExecutor()))
             .thenApplyAsync(rowCount -> assertThat(rowCount).isEqualTo(1))
             .get();
-
     }
 
     @Test

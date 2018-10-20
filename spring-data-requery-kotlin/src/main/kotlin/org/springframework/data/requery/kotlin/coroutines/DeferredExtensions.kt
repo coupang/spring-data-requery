@@ -19,47 +19,47 @@ package org.springframework.data.requery.kotlin.coroutines
 import kotlinx.coroutines.experimental.CoroutineDispatcher
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.Dispatchers
-import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.coroutineScope
+import kotlinx.coroutines.experimental.runBlocking
 import kotlinx.coroutines.experimental.withTimeout
 import java.time.Duration
 import java.util.concurrent.CancellationException
 import java.util.concurrent.CompletionStage
-import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 import java.util.stream.Stream
-import kotlin.coroutines.experimental.CoroutineContext
 
 /**
  * Requery 사용 시 사용하는 기본 [CoroutineDispatcher]입니다.
  * Transaction이 thread bound 이므로 [Dispatchers.Unconfined] 를 사용합니다.
  */
-internal val defaultCoroutineDispatcher: CoroutineDispatcher = Dispatchers.Unconfined
+internal val defaultCoroutineDispatcher: CoroutineDispatcher = Dispatchers.Default
 
-fun <T : Any?> T.toDeferred(context: CoroutineContext = defaultCoroutineDispatcher): Deferred<T> {
-    return GlobalScope.async(context) { this@toDeferred }
+fun <T : Any?> T.toDeferred(): Deferred<T> {
+    return RequeryScope.async { this@toDeferred }
 }
 
-fun <T> Future<T>.asDeferred(context: CoroutineContext = defaultCoroutineDispatcher): Deferred<T> {
-    return GlobalScope.async(context) { this@asDeferred.get() }
+//fun <T> Future<T>.asDeferred(): Deferred<T> {
+//    return RequeryScope.async { this@asDeferred.get() }
+//}
+
+fun <T> CompletionStage<T>.asDeferred(): Deferred<T> {
+    return RequeryScope.async { this@asDeferred.toCompletableFuture().join() }
 }
 
-fun <T> CompletionStage<T>.toDeferred(context: CoroutineContext = defaultCoroutineDispatcher): Deferred<T> {
-    return GlobalScope.async(context) { this@toDeferred.toCompletableFuture().join() }
+
+fun <T> CompletionStage<T>.toDeferred(): Deferred<T> {
+    return RequeryScope.async { this@toDeferred.toCompletableFuture().join() }
 }
 
-fun <T> CompletionStage<T>.asDeferred(context: CoroutineContext = defaultCoroutineDispatcher): Deferred<T> {
-    return GlobalScope.async(context) { this@asDeferred.toCompletableFuture().join() }
+suspend fun <T> Iterable<Deferred<T>>.flatten(): Deferred<List<T>> {
+    return this@flatten.map { it.await() }.toDeferred()
 }
 
-suspend fun <T> Iterable<Deferred<T>>.flatten(context: CoroutineContext = defaultCoroutineDispatcher): Deferred<List<T>> {
-    return this@flatten.map { it.await() }.toDeferred(context)
-}
-
-fun <T> Stream<Deferred<T>>.flatten(context: CoroutineContext = defaultCoroutineDispatcher): Deferred<Stream<T>> {
-    return GlobalScope.async(context) {
-        this@flatten.map {
-            it.getCompleted()
+suspend fun <T> Stream<Deferred<T>>.flatten(): Deferred<Stream<T>> {
+    return coroutineScope {
+        async {
+            this@flatten.map { runBlocking { it.await() } }
         }
     }
 }

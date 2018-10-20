@@ -39,6 +39,7 @@ import org.springframework.data.requery.mapping.RequeryMappingContext;
 import org.springframework.data.requery.utils.Iterables;
 import org.springframework.data.requery.utils.RequeryUtils;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
@@ -51,6 +52,7 @@ import static org.springframework.data.requery.utils.RequeryUtils.unwrap;
  * @author debop
  * @since 18. 6. 4
  */
+@ParametersAreNonnullByDefault
 public interface RequeryOperations {
 
     @NotNull
@@ -159,7 +161,7 @@ public interface RequeryOperations {
         return Iterables.toList(getDataStore().update(entities));
     }
 
-    default <E> Deletion<? extends Scalar<Integer>> delete() {
+    default Deletion<? extends Scalar<Integer>> delete() {
         return getDataStore().delete();
     }
 
@@ -183,7 +185,7 @@ public interface RequeryOperations {
         return getDataStore().count(entityType);
     }
 
-    default <E> Selection<? extends Scalar<Integer>> count(final QueryAttribute<?, ?>... attributes) {
+    default Selection<? extends Scalar<Integer>> count(final QueryAttribute<?, ?>... attributes) {
         return getDataStore().count(attributes);
     }
 

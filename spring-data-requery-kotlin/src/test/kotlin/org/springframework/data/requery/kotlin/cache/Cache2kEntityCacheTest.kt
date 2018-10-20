@@ -32,11 +32,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-/**
- * Cache2kEntityCacheTest
- *
- * @author debop
- */
 class Cache2kEntityCacheTest {
 
     private val entityCache = Cache2kEntityCache()

@@ -30,7 +30,7 @@ import kotlin.reflect.KClass
 private val log = KotlinLogging.logger { }
 
 /**
- * [Example]을 Requery [QueryElement]로 빌드합니다.
+ * [Example]로부터 Requery [QueryElement]로 빌드합니다.
  * @param S
  * @param E
  * @param operations Requery operations
@@ -39,7 +39,6 @@ private val log = KotlinLogging.logger { }
 @Suppress("UNCHECKED_CAST")
 fun <S : E, E : Any> Example<S>.buildQueryElement(operations: RequeryOperations,
                                                   domainKlass: KClass<E>): QueryElement<out Result<S>> {
-
     log.debug { "Build query element from Example. domainKlass=$domainKlass" }
 
     val root = operations.select(domainKlass).unwrap()
@@ -47,16 +46,15 @@ fun <S : E, E : Any> Example<S>.buildQueryElement(operations: RequeryOperations,
 }
 
 /**
- * [Example]을 Requery [QueryElement]로 빌드합니다.
+ *[Example]로부터 Requery [QueryElement]로 빌드합니다.
  * @param S
  * @param E
  * @param coroutineOperations Coroutine용 RequeryOptions
  * @param domainKlass domain kotlin class
  */
 @Suppress("UNCHECKED_CAST")
-suspend fun <S : E, E : Any> Example<S>.buildQueryElement(coroutineOperations: CoroutineRequeryOperations,
-                                                          domainKlass: KClass<E>): QueryElement<out Result<S>> {
-
+fun <S : E, E : Any> Example<S>.buildQueryElement(coroutineOperations: CoroutineRequeryOperations,
+                                                  domainKlass: KClass<E>): QueryElement<out Result<S>> {
     log.debug { "Build query element from Example. domainKlass=$domainKlass" }
 
     val root = coroutineOperations.select(domainKlass).unwrap()

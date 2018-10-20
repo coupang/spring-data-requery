@@ -55,7 +55,8 @@ dependencies {
     annotationProcessor "io.requery:requery-processor"
     testAnnotationProcessor "io.requery:requery-processor"
 
-    compile "org.jetbrains:annotations"
+    compileOnly "org.jetbrains:annotations"
+    compileOnly "com.google.code.findbugs:jsr305"
     compile "javax.inject:javax.inject:1"
 
     // spring framework

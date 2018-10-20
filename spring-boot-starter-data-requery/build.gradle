@@ -56,6 +56,9 @@ dependencies {
     testAnnotationProcessor "org.projectlombok:lombok"
     testAnnotationProcessor "io.requery:requery-processor"
 
+    compileOnly "org.jetbrains:annotations"
+    compileOnly "com.google.code.findbugs:jsr305"
+
     // spring framework
     testImplementation("org.springframework.boot:spring-boot-starter-jdbc")
     testImplementation("org.springframework.boot:spring-boot-starter-test")

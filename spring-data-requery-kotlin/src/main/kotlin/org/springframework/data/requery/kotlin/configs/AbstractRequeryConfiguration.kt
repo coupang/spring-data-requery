@@ -30,6 +30,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.data.requery.kotlin.core.RequeryOperations
 import org.springframework.data.requery.kotlin.core.RequeryTemplate
 import org.springframework.data.requery.kotlin.core.RequeryTransactionManager
+import org.springframework.data.requery.kotlin.coroutines.CoroutineEntityStore
 import org.springframework.data.requery.kotlin.listeners.LogbackListener
 import org.springframework.data.requery.kotlin.mapping.RequeryMappingContext
 import org.springframework.transaction.PlatformTransactionManager
@@ -70,6 +71,13 @@ abstract class AbstractRequeryConfiguration {
     fun entityDataStore(configuration: io.requery.sql.Configuration): KotlinEntityDataStore<Any> {
         return KotlinEntityDataStore<Any>(configuration).apply {
             log.info { "Create Requery EntityDataStore instance." }
+        }
+    }
+
+    @Bean
+    fun coroutineEntityStore(dataStore: KotlinEntityDataStore<Any>): CoroutineEntityStore<Any> {
+        return CoroutineEntityStore(dataStore).apply {
+            log.info { "Create Requery CoroutineEntityStore instance." }
         }
     }
 

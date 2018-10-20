@@ -121,8 +121,8 @@ subprojects {
             dependency "org.apache.commons:commons-lang3:3.7"
             dependency "org.apache.commons:commons-collections4:4.1"
 
-            dependency "org.cache2k:cache2k-all:1.0.2.Final"
-            dependency "org.cache2k:cache2k-jcache:1.0.2.Final"
+            dependency "org.cache2k:cache2k-all:1.2.0.Final"
+            dependency "org.cache2k:cache2k-jcache:1.2.0.Final"
 
             dependency "org.assertj:assertj-core:3.10.0"
             dependency "org.mockito:mockito-core:2.19.0"

@@ -17,6 +17,7 @@
 package org.springframework.data.requery.kotlin.domain
 
 import io.requery.sql.KotlinEntityDataStore
+import mu.KLogging
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -37,7 +38,7 @@ import java.util.*
 @ContextConfiguration(classes = [RequeryTestConfiguration::class])
 abstract class AbstractDomainTest : AbstractRequeryTest() {
 
-    companion object {
+    companion object : KLogging() {
         val rnd = Random(System.currentTimeMillis())
     }
 

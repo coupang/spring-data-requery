@@ -67,7 +67,7 @@ class SimpleCoroutineRequeryRepository<E : Any, ID : Any> @Autowired constructor
     final override val domainKlass: KClass<E> get() = entityInformation.kotlinType
     final val domainClassName: String = domainKlass.simpleName ?: "Unknown"
 
-    val coroutineEntityStore: CoroutineEntityStore<Any> by lazy { CoroutineEntityStore(operations.dataStore) }
+    val coroutineEntityStore: CoroutineEntityStore<Any> = operations.entityStore
 
     private var crudMethodMetadata: CrudMethodMetadata? = null
 

@@ -16,13 +16,12 @@
 
 package org.springframework.data.requery.kotlin.coroutines
 
-import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
-import kotlinx.coroutines.experimental.withContext
-import org.assertj.core.api.Assertions.assertThat
+import mu.KLogging
 import org.junit.Before
 import org.junit.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.requery.kotlin.domain.AbstractDomainTest
 import org.springframework.data.requery.kotlin.domain.RandomData
 import org.springframework.data.requery.kotlin.domain.RandomData.randomBasicUser
@@ -30,69 +29,77 @@ import org.springframework.data.requery.kotlin.domain.basic.BasicGroup
 import org.springframework.data.requery.kotlin.domain.basic.BasicLocation
 import org.springframework.data.requery.kotlin.domain.basic.BasicUser
 import org.springframework.data.requery.kotlin.domain.basic.BasicUserEntity
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 class KotlinCoroutineTemplateTest : AbstractDomainTest() {
 
-    private val coroutineTemplate by lazy { CoroutineRequeryTemplate(kotlinDataStore) }
+    companion object : KLogging()
+
+    @Autowired
+    private lateinit var coroutineEntityStore: CoroutineEntityStore<Any>
+
+    private val coroutineTemplate by lazy { CoroutineRequeryTemplate(coroutineEntityStore) }
 
     @Before
     fun setup() {
         runBlocking {
             with(coroutineTemplate) {
-                val result1 = async { deleteAll(BasicLocation::class) }
-                val result2 = async { deleteAll(BasicGroup::class) }
-                val result3 = async { deleteAll(BasicUser::class) }
+                val work1 = RequeryScope.async { deleteAll(BasicLocation::class) }
+                val work2 = RequeryScope.async { deleteAll(BasicGroup::class) }
+                val work3 = RequeryScope.async { deleteAll(BasicUser::class) }
 
-                result1.await()
-                result2.await()
-                result3.await()
+                work1.await()
+                work2.await()
+                work3.await()
+                logger.debug { "Complete to delete entities." }
             }
         }
     }
 
     @Test
-    fun `async insert`() = runBlocking<Unit> {
+    fun `async insert`() = runBlocking {
         val user = randomBasicUser()
         with(coroutineTemplate) {
             val savedUser = insert(user)
 
-            val loaded = async {
-                select(BasicUser::class).where(BasicUserEntity.ID.eq(savedUser.id)).get().firstOrNull()
-            }
-            assertThat(loaded.await()).isEqualTo(user)
+            val loaded =
+                select(BasicUser::class)
+                    .where(BasicUserEntity.ID.eq(savedUser.id))
+                    .get()
+                    .firstOrNull()
+
+            assertEquals(user, loaded)
         }
     }
 
     @Test
-    fun `async insert and count`() = runBlocking<Unit> {
+    fun `async insert and count`() = runBlocking {
         with(coroutineTemplate) {
             val user = randomBasicUser()
 
-            val count = async {
-                insert(user)
-                assertThat(user.id).isNotNull()
-                count(BasicUser::class).get().value()
-            }
+            insert(user)
+            assertNotNull(user.id)
 
-            assertThat(count.await()).isEqualTo(1)
+            val count = count(BasicUser::class).get().value()
+            assertEquals(1, count)
         }
     }
 
     @Test
-    fun `async insert one to many`() = runBlocking<Unit> {
+    fun `async insert one to many`() = runBlocking {
         with(coroutineTemplate) {
             val user = randomBasicUser()
 
-            withContext(Dispatchers.Unconfined) { insert(user) }
-            assertThat(user.id).isNotNull()
+            assertNotNull(insert(user).id)
 
             val group = RandomData.randomBasicGroup()
             group.members.add(user)
 
-            withContext(Dispatchers.Unconfined) { insert(group) }
+            insert(group)
 
-            assertThat(user.groups).hasSize(1)
-            assertThat(group.members).hasSize(1)
+            assertEquals(1, user.groups.size)
+            assertEquals(1, group.members.size)
         }
     }
 
@@ -101,10 +108,11 @@ class KotlinCoroutineTemplateTest : AbstractDomainTest() {
         val user = randomBasicUser().apply { age = 100 }
 
         with(coroutineTemplate) {
-            withContext(Dispatchers.Unconfined) {
-                insert(user)
-                insert(randomBasicUser().apply { age = 10 })
-            }
+            val insert1 = async { insert(user) }
+            val insert2 = async { insert(randomBasicUser().apply { age = 10 }) }
+
+            insert1.await()
+            insert2.await()
 
             val affectedCount = async {
                 update(BasicUser::class)
@@ -123,28 +131,26 @@ class KotlinCoroutineTemplateTest : AbstractDomainTest() {
                     .get()
                     .value()
             }
-
-            assertThat(affectedCount.await()).isEqualTo(1)
-            assertThat(affectedCount2.await()).isEqualTo(1)
+            assertEquals(1, affectedCount.await())
+            assertEquals(1, affectedCount2.await())
         }
     }
 
     @Test
-    fun `query stream`() = runBlocking<Unit> {
+    fun `query stream`() = runBlocking {
         val users = RandomData.randomBasicUsers(100)
 
         with(coroutineTemplate) {
-            withContext(Dispatchers.Unconfined) { insertAll(users) }
+            insertAll(users)
 
-            val loadedUsers = async {
+            val loadedUsers =
                 select(BasicUser::class)
                     .orderBy(BasicUserEntity.NAME.asc().nullsFirst())
                     .limit(200)
                     .get()
                     .stream()
-            }
 
-            assertThat(loadedUsers.await().count()).isEqualTo(100L)
+            assertEquals(100L, loadedUsers.count())
         }
     }
 }

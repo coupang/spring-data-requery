@@ -32,20 +32,20 @@ import java.util.concurrent.ConcurrentHashMap
  * @since 18. 7. 2
  */
 class Cache2kEntityCache @JvmOverloads constructor(
-    val configuration: Cache2kConfiguration<Any, Any?> = DEFAULT_CONFIGURATION
-) : EntityCache {
+    val configuration: Cache2kConfiguration<Any, Any?> = DEFAULT_CONFIGURATION) : EntityCache {
 
     companion object : KLogging() {
 
-        private val DEFAULT_CONFIGURATION: Cache2kConfiguration<Any, Any?> = Cache2kConfiguration.of(Any::class.java, Any::class.java)
-            .apply {
-                entryCapacity = 20000L
-                isEternal = true
-                isKeepDataAfterExpired = false
-                isBoostConcurrency = true
-                retryInterval = 10
-                maxRetryInterval = 1000L
-            }
+        private val DEFAULT_CONFIGURATION: Cache2kConfiguration<Any, Any?> =
+            Cache2kConfiguration.of(Any::class.java, Any::class.java)
+                .apply {
+                    entryCapacity = 20000L
+                    isEternal = true
+                    isKeepDataAfterExpired = false
+                    isBoostConcurrency = true
+                    retryInterval = 10
+                    maxRetryInterval = 1000L
+                }
 
         private val cacheManager: MutableMap<Class<*>, Cache<Any, Any?>> = ConcurrentHashMap()
         private val syncObj: Any = Any()

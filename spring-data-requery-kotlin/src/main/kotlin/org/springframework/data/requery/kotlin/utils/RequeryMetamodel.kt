@@ -21,18 +21,23 @@ import io.requery.meta.EntityModel
 /**
  * Requery 가 관리하는 entity들의 메타정보를 제공합니다.
  *
+ * @property entityModel 관리하는 엔티티들의 정보를 담은 [EntityModel]
  * @author debop
  */
 class RequeryMetamodel(val entityModel: EntityModel) {
 
-    private val managedTypes = arrayListOf<Class<*>>()
+    private val managedTypes: MutableList<Class<out Any>> by lazy {
+        ArrayList<Class<out Any>>().apply {
+            addAll(entityModel.types.mapNotNull { it.classType })
+        }
+    }
 
     /**
      * 지정한 entityClass 가 Requery의 EntityModel에 등록된 수형인지 여부
      * @param entityClass entity type
      */
     fun isRequeryManaged(entityClass: Class<*>): Boolean {
-        return getManagedTypes().contains(entityClass)
+        return managedTypes.contains(entityClass)
     }
 
     /**
@@ -44,18 +49,13 @@ class RequeryMetamodel(val entityModel: EntityModel) {
     fun isSingleIdAttribute(entityClass: Class<*>, name: String, attributeClass: Class<*>): Boolean {
 
         return entityModel.types
-                   .asSequence()
-                   .filter { it.classType == entityClass && it.singleKeyAttribute != null && it.classType == attributeClass }
-                   .map { it.name == name }
-                   .firstOrNull()
-               ?: false
-
-    }
-
-    private fun getManagedTypes(): Collection<Class<*>> {
-        if(managedTypes.isEmpty()) {
-            managedTypes.addAll(entityModel.types.mapNotNull { it.classType })
-        }
-        return managedTypes
+            .asSequence()
+            .filter {
+                it.classType == entityClass &&
+                it.singleKeyAttribute != null &&
+                it.classType == attributeClass &&
+                it.name == name
+            }
+            .any()
     }
 }

@@ -236,15 +236,30 @@ fun AnnotatedElement.isAssociatedAnnotatedElement(): Boolean =
     isAnnotationPresent(io.requery.ManyToOne::class.java) ||
     isAnnotationPresent(io.requery.ManyToMany::class.java)
 
+/**
+ * 엔티티의 특정 필드에 대한 [NamedExpression]의 캐시를 관리합니다.
+ */
+private val classKeyExpressions = ConcurrentHashMap<Class<out Any>, NamedExpression<out Any>>()
+/**
+ * Key = 엔티티의 명+필드명, Value=[NamedExpression]의 캐시
+ */
+private val classPropertyExpressions = ConcurrentHashMap<String, NamedExpression<out Any>?>()
 
-private val classKeyExpressions = ConcurrentHashMap<Class<*>, NamedExpression<*>>()
-var UNKNOWN_KEY_EXPRESSION: NamedExpression<*> = NamedExpression.of("Unknown", Any::class.java)
+val UNKNOWN_KEY_EXPRESSION: NamedExpression<*> = NamedExpression.of("Unknown", Any::class.java)
 
-fun <V : Any> KClass<*>.getKeyExpression(): NamedExpression<V> =
+/**
+ * 엔티티에서 `@Key` annotation이 지정될 속성/필드를 이용하는 [NamedExpression]을 생성합니다.
+ * @param V 속성/필드의 수형
+ */
+fun <V : Any> KClass<out Any>.getKeyExpression(): NamedExpression<V> =
     this.java.getKeyExpression()
 
+/**
+ * 엔티티에서 `@Key` annotation이 지정될 속성/필드를 이용하는 [NamedExpression]을 생성합니다.
+ * @param V 속성/필드의 수형
+ */
 @Suppress("UNCHECKED_CAST")
-fun <V : Any> Class<*>.getKeyExpression(): NamedExpression<V> {
+fun <V : Any> Class<out Any>.getKeyExpression(): NamedExpression<V> {
 
     return classKeyExpressions.computeIfAbsent(this) { domainClass ->
 
@@ -268,10 +283,12 @@ fun <V : Any> Class<*>.getKeyExpression(): NamedExpression<V> {
     } as NamedExpression<V>
 }
 
-private val classPropertyExpressions = ConcurrentHashMap<String, NamedExpression<*>?>()
-
+/**
+ * 엔티티에 대해 지정한 속성명으로 [NamedExpression]을 빌드합니다.
+ * @param propertyName
+ */
 @Suppress("UNCHECKED_CAST")
-fun Class<*>.getExpression(propertyName: String): NamedExpression<*>? {
+fun Class<out Any>.getExpression(propertyName: String): NamedExpression<*>? {
 
     val key = this.name + "." + propertyName
     return classPropertyExpressions.computeIfAbsent(key) { _ ->
@@ -288,6 +305,10 @@ fun Class<*>.getExpression(propertyName: String): NamedExpression<*>? {
     }
 }
 
+/**
+ * 지정한 엔티티 수형으로부터 실제 엔티티 명을 추출합니다.
+ * Java에서는 `Abstract` 접두사, Kotlin에서는 `Entity` 접미사를 제거하고 반환합니다.
+ */
 fun Class<*>.getRequeryEntityName(): String {
     return when {
         simpleName.contains("Abstract") -> name.removePrefix("Abstract")
@@ -297,7 +318,7 @@ fun Class<*>.getRequeryEntityName(): String {
 }
 
 /**
- * Getter method로부터 field name을 추출합니다.
+ * Kotlin으로 정의된 Entity의 경우 [Method]로부터 field name을 추출합니다. (get/set 접두사를 제거합니다)
  */
 fun Method.extractGetterSetter(): String {
     return when {

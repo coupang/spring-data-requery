@@ -20,10 +20,7 @@ import io.requery.query.Result
 import io.requery.query.ResultDelegate
 import io.requery.query.element.QueryElement
 import io.requery.query.element.QueryWrapper
-import kotlinx.coroutines.experimental.CoroutineDispatcher
 import kotlinx.coroutines.experimental.Deferred
-import kotlinx.coroutines.experimental.Dispatchers
-import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.async
 
 /**
@@ -32,12 +29,11 @@ import kotlinx.coroutines.experimental.async
  * @author debop
  * @since 18. 5. 16
  */
-class DeferredResult<E>(delegate: Result<E>,
-                        val coroutineDispatcher: CoroutineDispatcher = Dispatchers.Unconfined)
+class DeferredResult<E>(delegate: Result<E>)
     : ResultDelegate<E>(delegate), QueryWrapper<E> {
 
-    inline fun <reified V : Any> toDefered(crossinline block: DeferredResult<E>.() -> V): Deferred<V> {
-        return GlobalScope.async(coroutineDispatcher) { block() }
+    inline fun <reified V : Any> toDefered(crossinline block: (DeferredResult<E>) -> V): Deferred<V> {
+        return RequeryScope.async { block(this@DeferredResult) }
     }
 
     @Suppress("UNCHECKED_CAST")

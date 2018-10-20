@@ -17,7 +17,6 @@
 package org.springframework.data.requery.kotlin.coroutines
 
 import io.requery.TransactionIsolation
-import io.requery.sql.KotlinEntityDataStore
 import mu.KLogging
 
 /**
@@ -26,7 +25,7 @@ import mu.KLogging
  * @author debop
  * @since 18. 6. 2
  */
-class CoroutineRequeryTemplate(override val dataStore: KotlinEntityDataStore<Any>) : CoroutineRequeryOperations {
+class CoroutineRequeryTemplate(override val entityStore: CoroutineEntityStore<Any>) : CoroutineRequeryOperations {
 
     companion object : KLogging()
 
@@ -42,11 +41,9 @@ class CoroutineRequeryTemplate(override val dataStore: KotlinEntityDataStore<Any
 
         logger.trace { "Execution in transaction. isolation=$isolation" }
         return if(isolation == null) {
-            dataStore.withTransaction { block.invoke(operations) }
+            entityStore.withTransaction { block.invoke(operations) }.await()
         } else {
-            dataStore.withTransaction(isolation) {
-                block.invoke(operations)
-            }
+            entityStore.withTransaction(isolation) { block.invoke(operations) }.await()
         }
     }
 }

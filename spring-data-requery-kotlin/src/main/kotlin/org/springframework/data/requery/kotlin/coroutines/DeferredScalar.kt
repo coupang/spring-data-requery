@@ -18,9 +18,8 @@ package org.springframework.data.requery.kotlin.coroutines
 
 import io.requery.query.Scalar
 import io.requery.query.ScalarDelegate
-import kotlinx.coroutines.experimental.CoroutineDispatcher
 import kotlinx.coroutines.experimental.Deferred
-import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.async
 
 /**
  * Kotlin Coroutines 을 이용하여 Scala 수형의 질의 반환 값을 받을 때 사용하는 클래스입니다.
@@ -28,11 +27,10 @@ import kotlinx.coroutines.experimental.Dispatchers
  * @author debop
  * @since 18. 5. 16
  */
-class DeferredScalar<E>(delegate: Scalar<E>,
-                        private val dispatcher: CoroutineDispatcher = Dispatchers.Unconfined)
+class DeferredScalar<E>(delegate: Scalar<E>)
     : ScalarDelegate<E>(delegate) {
 
-    fun toDeferred(dispatcher: CoroutineDispatcher = this.dispatcher): Deferred<E> =
-        toCompletableFuture().toDeferred(dispatcher)
+    fun toDeferred(): Deferred<E> =
+        RequeryScope.async { call() }
 
 }

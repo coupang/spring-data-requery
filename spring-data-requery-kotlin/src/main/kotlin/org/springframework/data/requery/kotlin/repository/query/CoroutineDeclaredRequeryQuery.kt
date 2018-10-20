@@ -28,6 +28,7 @@ import org.springframework.data.domain.SliceImpl
 import org.springframework.data.repository.query.ReturnedType
 import org.springframework.data.requery.kotlin.NotSupportedException
 import org.springframework.data.requery.kotlin.coroutines.CoroutineRequeryOperations
+import org.springframework.data.requery.kotlin.coroutines.DeferredResult
 
 /**
  * Coroutine을 이용하여 RAW Query를 실행하는 [AbstractCoroutineRequeryQuery]의 구현체입니다.
@@ -84,7 +85,7 @@ class CoroutineDeclaredRequeryQuery(queryMethod: RequeryQueryMethod,
         }
     }
 
-    private suspend fun runNativeQuery(query: String, parameters: Array<Any>): Result<*> {
+    private suspend fun runNativeQuery(query: String, parameters: Array<Any>): DeferredResult<*> {
         return if(queryMethod.isQueryForEntity) {
             operations.raw(queryMethod.entityKlass, query, *parameters)
         } else {
