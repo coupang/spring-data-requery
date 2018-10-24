@@ -50,11 +50,11 @@ class RequeryMetamodel(val entityModel: EntityModel) {
 
         return entityModel.types
             .asSequence()
-            .filter {
-                it.classType == entityClass &&
-                it.singleKeyAttribute != null &&
-                it.classType == attributeClass &&
-                it.name == name
+            .filter { type ->
+                type.name == name &&
+                type.classType == entityClass &&
+                type.singleKeyAttribute != null &&
+                type.classType == attributeClass
             }
             .any()
     }

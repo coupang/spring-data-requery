@@ -56,6 +56,11 @@ private val classMethodCache = ConcurrentHashMap<String, Method?>()
 private val entityFieldCache = LinkedMultiValueMap<Class<*>, Field>()
 private val entityMethodCache = LinkedMultiValueMap<Class<*>, Method>()
 
+/**
+ * 수형에 지정한 필드명에 해당하는 [Field]를 찾는다.
+ *
+ * @param fieldName field name to find
+ */
 fun Class<*>.findField(fieldName: String): Field? {
 
     val cacheKey = "$name.$fieldName"
@@ -78,6 +83,11 @@ fun Class<*>.findField(fieldName: String): Field? {
     }
 }
 
+/**
+ * 해당 조건에 맞는 Field 들을 찾습니다.
+ *
+ * @param predicate condition to find
+ */
 fun Class<*>.findFields(predicate: (Field) -> Boolean): Set<Field> {
 
     val foundFields = mutableSetOf<Field>()
@@ -85,14 +95,17 @@ fun Class<*>.findFields(predicate: (Field) -> Boolean): Set<Field> {
 
     while(targetClass != null && !targetClass.isAnyClass) {
         val fields = targetClass.declaredFields.filter { predicate(it) }.toList()
-        fields.let { foundFields.addAll(it) }
-
+        foundFields.addAll(fields)
         targetClass = targetClass.superclass
     }
 
     return foundFields
 }
 
+/**
+ * 해당 조건에 맞는 Field 중 첫번 째 Field를 반환한다
+ * @param predicate
+ */
 fun Class<*>.findFirstField(predicate: (Field) -> Boolean): Field? {
 
     var targetClass: Class<*>? = findRequeryEntity()
@@ -106,10 +119,15 @@ fun Class<*>.findFirstField(predicate: (Field) -> Boolean): Field? {
 
         targetClass = targetClass.superclass
     }
-
     return null
 }
 
+/**
+ * 지정한 메소드명과 인자를 가지는 [Method]를 찾습니다.
+ *
+ * @param methodName method name to find
+ * @param paramTypes types of method parameters
+ */
 fun Class<*>.findMethod(methodName: String, vararg paramTypes: Class<*>): Method? {
     val cacheKey = "$name.$methodName.${paramTypes.joinToString()}"
 
@@ -131,6 +149,10 @@ fun Class<*>.findMethod(methodName: String, vararg paramTypes: Class<*>): Method
     }
 }
 
+/**
+ * 지정한 조건에 맞는 모든 [Method]를 찾습니다.
+ * @param predicate conditions to find
+ */
 fun Class<*>.findMethods(predicate: (Method) -> Boolean): MutableSet<Method> {
 
     val foundMethods = mutableSetOf<Method>()
@@ -189,47 +211,80 @@ fun Class<*>.findRequeryEntity(): Class<*>? {
     return null
 }
 
+/**
+ * 해당 수형에서 Requery용 Property의 [Field] 정보들을 가져옵니다.
+ */
 fun Class<*>.findEntityFields(): List<Field> {
-
     return entityFieldCache.computeIfAbsent(this) { clazz ->
-        val klazz = clazz.findRequeryEntity()
-        klazz?.findFields(Field::isRequeryEntityField)?.toList()
+        clazz.findRequeryEntity()
+            ?.findFields(Field::isRequeryEntityField)
+            ?.toList()
+        ?: emptyList<Field>()
     }
 }
 
+/**
+ * 해당 수형에서 Requery용 Method 정보를 추출합니다.
+ */
 fun Class<*>.findEntityMethods(): List<Method> {
     return entityMethodCache.computeIfAbsent(this) { clazz ->
-        val klazz = clazz.findRequeryEntity()
-        klazz?.findMethods { it.isRequeryEntityMethod() }?.toList()
+        clazz.findRequeryEntity()
+            ?.findMethods(Method::isRequeryEntityMethod)
+            ?.toList()
+        ?: emptyList<Method>()
     }
 }
 
+/**
+ * Requery용 Field 중에 requery processor가 생성한 Field를 제외한 실제 엔티티의 필드인지 검사한다
+ */
 fun Field.isRequeryEntityField(): Boolean {
     return !this.isRequeryGeneratedField()
 }
 
+/**
+ * Requery용 Method중에 requery processor가 생성한 Method를 제외한 실제 엔티티의 필드인지 검사한다
+ */
 fun Method.isRequeryEntityMethod(): Boolean {
     return !this.isRequeryGeneratedMethod() && !this.isDefault
 }
 
+/**
+ * 해당 Field가 requery-processor로부터 생성된 field 인지 여부
+ */
 fun Field.isRequeryGeneratedField(): Boolean {
     return (modifiers and Modifier.STATIC) > 0 ||
            (name == "\$proxy") ||
            (name.startsWith("\$") && name.endsWith("_state"))
 }
 
+/**
+ * 해당 Method가 requery-processor로부터 생성된 method 인지 여부
+ */
 fun Method.isRequeryGeneratedMethod(): Boolean {
     return (modifiers and Modifier.STATIC) > 0 ||
            this.isVarArgs ||
            this.parameterCount > 0
 }
 
+/**
+ * 해당 필드나 메소드가 requery의 `@Key` annotation이 있는지 여부
+ */
 fun AnnotatedElement.isKeyAnnoatedElement(): Boolean = isAnnotationPresent(io.requery.Key::class.java)
 
+/**
+ * 해당 필드나 메소드가 DB에 저장할 필요 없음을 나타내는 requery의 `@Transient` annotation이 있는지 여부
+ */
 fun AnnotatedElement.isTransientAnnotatedElement(): Boolean = isAnnotationPresent(io.requery.Transient::class.java)
 
+/**
+ * 해당 필드나 메소드가 requery의 `@Embedded` annotation이 있는지 여부
+ */
 fun AnnotatedElement.isEmbeddedAnnoatedElement(): Boolean = isAnnotationPresent(io.requery.Embedded::class.java)
 
+/**
+ * 해당 필드나 메소드가 entity들의 association을 나타내는 requery의 annotation이 있는지 여부
+ */
 fun AnnotatedElement.isAssociatedAnnotatedElement(): Boolean =
     isAnnotationPresent(io.requery.OneToOne::class.java) ||
     isAnnotationPresent(io.requery.OneToMany::class.java) ||
@@ -312,8 +367,8 @@ fun Class<out Any>.getExpression(propertyName: String): NamedExpression<*>? {
 fun Class<*>.getRequeryEntityName(): String {
     return when {
         simpleName.contains("Abstract") -> name.removePrefix("Abstract")
-        simpleName.contains("Entity") -> name.removeSuffix("Entity")
-        else -> simpleName
+        simpleName.contains("Entity")   -> name.removeSuffix("Entity")
+        else                            -> simpleName
     }
 }
 
@@ -324,6 +379,6 @@ fun Method.extractGetterSetter(): String {
     return when {
         name.startsWith("get") -> name.removePrefix("get").decapitalize()
         name.startsWith("set") -> name.removePrefix("set").decapitalize()
-        else -> name.decapitalize()
+        else                   -> name.decapitalize()
     }
 }
