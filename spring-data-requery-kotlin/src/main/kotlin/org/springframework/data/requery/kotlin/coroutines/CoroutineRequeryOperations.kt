@@ -32,8 +32,6 @@ import io.requery.query.element.QueryElement
 import io.requery.query.function.Count
 import io.requery.sql.EntityContext
 import io.requery.sql.KotlinEntityDataStore
-import kotlinx.coroutines.experimental.Dispatchers
-import kotlinx.coroutines.experimental.withContext
 import org.springframework.data.requery.kotlin.applyWhereConditions
 import org.springframework.data.requery.kotlin.getEntityContext
 import org.springframework.data.requery.kotlin.getEntityModel
@@ -99,10 +97,7 @@ interface CoroutineRequeryOperations {
 
     @JvmDefault
     suspend fun <T : Any> refreshAllEntities(entities: Iterable<T>, vararg attributes: Attribute<T, *>): List<T> {
-        return entities
-            .map {
-                withContext(Dispatchers.Default) { refreshAllProperties(it) }
-            }
+        return entities.map { refreshAllProperties(it) }
     }
 
     @JvmDefault
@@ -200,6 +195,7 @@ interface CoroutineRequeryOperations {
         return tuple[0]
     }
 
+    // TODO: whereClause 가 QueryElement<out DeferredResutl<E>> 인 경우를 추가해야 합니다.
     @JvmDefault
     suspend fun <E : Any> exists(entityType: KClass<E>, whereClause: QueryElement<out Result<E>>): Boolean =
         whereClause.limit(1).get().firstOrNull() != null
