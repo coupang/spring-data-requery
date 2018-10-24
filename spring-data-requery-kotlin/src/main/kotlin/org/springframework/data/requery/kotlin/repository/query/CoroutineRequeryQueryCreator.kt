@@ -21,6 +21,7 @@ import io.requery.query.LogicalCondition
 import io.requery.query.NamedExpression
 import io.requery.query.element.QueryElement
 import io.requery.query.function.Count
+import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import org.springframework.data.domain.Sort
 import org.springframework.data.repository.query.ReturnedType
@@ -89,13 +90,17 @@ open class CoroutineRequeryQueryCreator(val operations: CoroutineRequeryOperatio
     }
 
     @Suppress("LeakingThis")
-    private val root: Requery by lazy { createQueryElement(returnedType) }
+    private val root: Requery by lazy {
+        runBlocking {
+            createQueryElement(returnedType)
+        }
+    }
 
     val parameterExpressions: List<ParameterMetadata<out Any>>
         get() = provider.getExpressions()
 
 
-    protected open fun createQueryElement(type: ReturnedType): Requery {
+    protected open suspend fun createQueryElement(type: ReturnedType): Requery {
 
         val typeToRead = type.typeToRead
         logger.debug { "Create QueryElement instance. returnedType=$type, typeToRead=$typeToRead" }
@@ -108,7 +113,7 @@ open class CoroutineRequeryQueryCreator(val operations: CoroutineRequeryOperatio
         }
     }
 
-    open override fun create(part: Part, iterator: MutableIterator<Any>): LogicalCondition<out Any, *> {
+    override fun create(part: Part, iterator: MutableIterator<Any>): LogicalCondition<out Any, *> {
         logger.trace { "Build new condition ..." }
         return buildWhereCondition(part)
     }
@@ -126,12 +131,12 @@ open class CoroutineRequeryQueryCreator(val operations: CoroutineRequeryOperatio
     }
 
     override fun complete(criteria: LogicalCondition<out Any, *>?, sort: Sort): Requery {
-        return complete(criteria, sort, root)
+        return runBlocking { complete(criteria, sort, root) }
     }
 
-    open fun complete(criteria: LogicalCondition<out Any, *>?,
-                      sort: Sort,
-                      base: Requery): Requery {
+    open suspend fun complete(criteria: LogicalCondition<out Any, *>?,
+                              sort: Sort,
+                              base: Requery): Requery {
 
         logger.trace { "Complete build query ..." }
 

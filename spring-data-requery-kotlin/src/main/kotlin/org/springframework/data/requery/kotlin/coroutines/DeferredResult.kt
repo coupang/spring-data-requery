@@ -22,9 +22,10 @@ import io.requery.query.element.QueryElement
 import io.requery.query.element.QueryWrapper
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.coroutineScope
 
 /**
- * Kotlin Coroutines를 이용한 비동기 결과를 표현합니다.
+ * Kotlin Coroutines를 이용한 비동기 방식의 작업의 [Result]를 표현합니다.
  *
  * @author debop
  * @since 18. 5. 16
@@ -32,8 +33,13 @@ import kotlinx.coroutines.experimental.async
 class DeferredResult<E>(delegate: Result<E>)
     : ResultDelegate<E>(delegate), QueryWrapper<E> {
 
-    inline fun <reified V : Any> toDefered(crossinline block: (DeferredResult<E>) -> V): Deferred<V> {
-        return RequeryScope.async { block(this@DeferredResult) }
+    suspend inline fun <reified V : Any> toDefered(crossinline block: suspend (DeferredResult<E>) -> V): Deferred<V> {
+        // return RequeryScope.async { block(this@DeferredResult) }
+        return coroutineScope {
+            async {
+                block(this@DeferredResult)
+            }
+        }
     }
 
     @Suppress("UNCHECKED_CAST")

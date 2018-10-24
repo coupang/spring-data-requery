@@ -24,6 +24,7 @@ import io.requery.query.element.QueryElement
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.IncorrectResultSizeDataAccessException
@@ -75,7 +76,10 @@ class SimpleCoroutineRequeryRepository<E : Any, ID : Any> @Autowired constructor
         this.crudMethodMetadata = crudMethodMetadata
     }
 
-    private fun select(): QueryElement<out Result<E>> = operations.select(domainKlass).unwrap()
+    private fun select(): QueryElement<out Result<E>> =
+        runBlocking {
+            operations.select(domainKlass).unwrap()
+        }
 
     private inline fun <T : Any> async(crossinline block: suspend () -> T): Deferred<T> {
         return GlobalScope.async(coroutineDispatcher) {

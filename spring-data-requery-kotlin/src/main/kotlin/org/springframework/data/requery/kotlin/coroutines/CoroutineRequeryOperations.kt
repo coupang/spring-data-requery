@@ -55,15 +55,16 @@ interface CoroutineRequeryOperations {
         get() = entityStore.dataStore.getEntityContext()
 
     @JvmDefault
-    infix fun <T : Any> select(entityType: KClass<T>): Selection<out DeferredResult<T>> =
+    suspend infix fun <T : Any> select(entityType: KClass<T>): Selection<out DeferredResult<T>> =
         entityStore.select(entityType)
 
     @JvmDefault
-    fun <T : Any> select(entityType: KClass<T>, vararg attributes: QueryableAttribute<T, *>): Selection<out DeferredResult<T>> =
+    suspend fun <T : Any> select(entityType: KClass<T>, vararg attributes: QueryableAttribute<T, *>): Selection<out
+    DeferredResult<T>> =
         entityStore.select(entityType, *attributes)
 
     @JvmDefault
-    fun select(vararg expressions: Expression<*>): Selection<out DeferredResult<Tuple>> =
+    suspend fun select(vararg expressions: Expression<*>): Selection<out DeferredResult<Tuple>> =
         entityStore.select(*expressions)
 
     @JvmDefault
@@ -92,7 +93,7 @@ interface CoroutineRequeryOperations {
         entityStore.refresh<T>(entities, *attributes).await()
 
     @JvmDefault
-    suspend fun <T : Any> refreshAllProperties(entity: T): T =
+    suspend infix fun <T : Any> refreshAllProperties(entity: T): T =
         entityStore.refreshAll(entity).await()
 
     @JvmDefault
@@ -120,16 +121,16 @@ interface CoroutineRequeryOperations {
         entityStore.insert(entity, keyKlass).await()
 
     @JvmDefault
-    infix fun <T : Any> insert(entityType: KClass<T>): Insertion<out DeferredResult<Tuple>> =
+    suspend infix fun <T : Any> insert(entityType: KClass<T>): Insertion<out DeferredResult<Tuple>> =
         entityStore.insert<T>(entityType)
 
     @JvmDefault
-    fun <T : Any> insert(entityType: KClass<T>,
-                         vararg attributes: QueryableAttribute<T, *>): InsertInto<out DeferredResult<Tuple>> =
+    suspend fun <T : Any> insert(entityType: KClass<T>,
+                                 vararg attributes: QueryableAttribute<T, *>): InsertInto<out DeferredResult<Tuple>> =
         entityStore.insert(entityType, *attributes)
 
     @JvmDefault
-    suspend fun <T : Any> insertAll(entities: Iterable<T>): List<T> =
+    suspend infix fun <T : Any> insertAll(entities: Iterable<T>): List<T> =
         entityStore.insert<T>(entities).await()
 
     @JvmDefault
@@ -137,7 +138,7 @@ interface CoroutineRequeryOperations {
         entityStore.insert<K, T>(entities, keyKlass).await()
 
     @JvmDefault
-    fun <T : Any> update(): Update<out DeferredScalar<Int>> =
+    suspend fun <T : Any> update(): Update<out DeferredScalar<Int>> =
         entityStore.update()
 
     @JvmDefault
@@ -145,7 +146,7 @@ interface CoroutineRequeryOperations {
         entityStore.update(entity).await()
 
     @JvmDefault
-    infix fun <T : Any> update(entityType: KClass<T>): Update<out DeferredScalar<Int>> =
+    suspend infix fun <T : Any> update(entityType: KClass<T>): Update<out DeferredScalar<Int>> =
         entityStore.update<T>(entityType)
 
     @JvmDefault
@@ -153,7 +154,7 @@ interface CoroutineRequeryOperations {
         entityStore.update<T>(entities).await()
 
     @JvmDefault
-    fun delete(): Deletion<out DeferredScalar<Int>> =
+    suspend fun delete(): Deletion<out DeferredScalar<Int>> =
         entityStore.delete()
 
     @JvmDefault
@@ -162,7 +163,7 @@ interface CoroutineRequeryOperations {
     }
 
     @JvmDefault
-    infix fun <T : Any> delete(entityType: KClass<T>): Deletion<out DeferredScalar<Int>> =
+    suspend infix fun <T : Any> delete(entityType: KClass<T>): Deletion<out DeferredScalar<Int>> =
         entityStore.delete<T>(entityType)
 
     @JvmDefault
@@ -175,11 +176,11 @@ interface CoroutineRequeryOperations {
         entityStore.delete<T>(entityType).get().call()
 
     @JvmDefault
-    infix fun <T : Any> count(entityType: KClass<T>): Selection<out DeferredScalar<Int>> =
+    suspend infix fun <T : Any> count(entityType: KClass<T>): Selection<out DeferredScalar<Int>> =
         entityStore.count(entityType)
 
     @JvmDefault
-    fun <E : Any> count(vararg attributes: QueryableAttribute<Any, *>): Selection<out DeferredScalar<Int>> =
+    suspend fun <E : Any> count(vararg attributes: QueryableAttribute<Any, *>): Selection<out DeferredScalar<Int>> =
         entityStore.count(*attributes)
 
 
@@ -191,11 +192,10 @@ interface CoroutineRequeryOperations {
             .applyWhereConditions(whereClause.whereElements)
             .unwrapQuery()
 
-        val tuple = query.get().toDefered { it.first() }.await()
+        val tuple = query.get().first()
         return tuple[0]
     }
 
-    // TODO: whereClause 가 QueryElement<out DeferredResutl<E>> 인 경우를 추가해야 합니다.
     @JvmDefault
     suspend fun <E : Any> exists(entityType: KClass<E>, whereClause: QueryElement<out Result<E>>): Boolean =
         whereClause.limit(1).get().firstOrNull() != null
@@ -209,13 +209,16 @@ interface CoroutineRequeryOperations {
         entityStore.raw(entityType, query, *parameters)
 
     @JvmDefault
-    suspend fun <T : Any> withTransaction(block: CoroutineRequeryOperations.() -> T): T =
-        withTransaction(null, block)
+    suspend fun <T : Any> withTransaction(block: CoroutineRequeryOperations.() -> T): T {
+        return withTransaction(null, block)
+    }
 
-    suspend fun <T : Any> withTransaction(isolation: TransactionIsolation?, block: CoroutineRequeryOperations.() -> T): T
+    suspend fun <T : Any> withTransaction(isolation: TransactionIsolation?,
+                                          block: CoroutineRequeryOperations.() -> T): T
 
     @JvmDefault
-    suspend fun <T : Any> withDataStore(block: KotlinEntityDataStore<Any>.() -> T): T =
-        block.invoke(entityStore.dataStore)
+    suspend fun <T : Any> withDataStore(block: KotlinEntityDataStore<Any>.() -> T): T {
+        return block.invoke(entityStore.dataStore)
+    }
 
 }

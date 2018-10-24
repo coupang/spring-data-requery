@@ -53,8 +53,8 @@ fun <S : E, E : Any> Example<S>.buildQueryElement(operations: RequeryOperations,
  * @param domainKlass domain kotlin class
  */
 @Suppress("UNCHECKED_CAST")
-fun <S : E, E : Any> Example<S>.buildQueryElement(coroutineOperations: CoroutineRequeryOperations,
-                                                  domainKlass: KClass<E>): QueryElement<out Result<S>> {
+suspend fun <S : E, E : Any> Example<S>.buildQueryElement(coroutineOperations: CoroutineRequeryOperations,
+                                                          domainKlass: KClass<E>): QueryElement<out Result<S>> {
     log.debug { "Build query element from Example. domainKlass=$domainKlass" }
 
     val root = coroutineOperations.select(domainKlass).unwrap()

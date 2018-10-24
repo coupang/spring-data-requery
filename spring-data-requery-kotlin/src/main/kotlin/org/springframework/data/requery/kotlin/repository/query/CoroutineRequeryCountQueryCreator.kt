@@ -39,13 +39,13 @@ class CoroutineRequeryCountQueryCreator(operations: CoroutineRequeryOperations,
                                         tree: PartTree)
     : CoroutineRequeryQueryCreator(operations, provider, returnedType, tree) {
 
-    override fun createQueryElement(type: ReturnedType): Requery {
+    override suspend fun createQueryElement(type: ReturnedType): Requery {
         return operations.select(Count.count(type.domainType)).unwrap()
     }
 
-    override fun complete(criteria: LogicalCondition<out Any, *>?,
-                          sort: Sort,
-                          base: Requery): Requery {
+    override suspend fun complete(criteria: LogicalCondition<out Any, *>?,
+                                  sort: Sort,
+                                  base: Requery): Requery {
         var countQuery = operations.select(Count.count(domainKlass.java)).unwrap()
         if(criteria != null) {
             countQuery = countQuery.where(criteria).unwrap()

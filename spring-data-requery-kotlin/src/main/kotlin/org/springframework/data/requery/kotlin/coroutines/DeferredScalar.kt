@@ -20,6 +20,7 @@ import io.requery.query.Scalar
 import io.requery.query.ScalarDelegate
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.coroutineScope
 
 /**
  * Kotlin Coroutines 을 이용하여 Scala 수형의 질의 반환 값을 받을 때 사용하는 클래스입니다.
@@ -30,7 +31,12 @@ import kotlinx.coroutines.experimental.async
 class DeferredScalar<E>(delegate: Scalar<E>)
     : ScalarDelegate<E>(delegate) {
 
-    fun toDeferred(): Deferred<E> =
-        RequeryScope.async { call() }
-
+    suspend fun toDeferred(): Deferred<E> {
+        // return RequeryScope.async { call() }
+        return coroutineScope {
+            async {
+                call()
+            }
+        }
+    }
 }

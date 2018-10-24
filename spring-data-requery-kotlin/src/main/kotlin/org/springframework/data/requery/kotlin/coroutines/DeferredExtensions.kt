@@ -35,21 +35,30 @@ import java.util.stream.Stream
  */
 internal val defaultCoroutineDispatcher: CoroutineDispatcher = Dispatchers.Default
 
-fun <T : Any?> T.toDeferred(): Deferred<T> {
-    return RequeryScope.async { this@toDeferred }
+suspend fun <T : Any?> T.toDeferred(): Deferred<T> {
+    //     return RequeryScope.async { this@toDeferred }
+    return coroutineScope {
+        async {
+            this@toDeferred
+        }
+    }
 }
 
-//fun <T> Future<T>.asDeferred(): Deferred<T> {
-//    return RequeryScope.async { this@asDeferred.get() }
-//}
-
-fun <T> CompletionStage<T>.asDeferred(): Deferred<T> {
-    return RequeryScope.async { this@asDeferred.toCompletableFuture().join() }
+suspend fun <T> CompletionStage<T>.asDeferred(): Deferred<T> {
+    return coroutineScope {
+        async {
+            this@asDeferred.toCompletableFuture().join()
+        }
+    }
 }
 
 
-fun <T> CompletionStage<T>.toDeferred(): Deferred<T> {
-    return RequeryScope.async { this@toDeferred.toCompletableFuture().join() }
+suspend fun <T> CompletionStage<T>.toDeferred(): Deferred<T> {
+    return coroutineScope {
+        async {
+            this@toDeferred.toCompletableFuture().join()
+        }
+    }
 }
 
 suspend fun <T> Iterable<Deferred<T>>.flatten(): Deferred<List<T>> {

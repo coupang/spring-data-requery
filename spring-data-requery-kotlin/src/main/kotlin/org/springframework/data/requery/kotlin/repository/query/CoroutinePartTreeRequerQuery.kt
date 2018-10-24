@@ -17,6 +17,7 @@
 package org.springframework.data.requery.kotlin.repository.query
 
 import io.requery.query.element.QueryElement
+import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import org.springframework.data.domain.Sort
 import org.springframework.data.repository.query.parser.PartTree
@@ -78,7 +79,7 @@ open class CoroutinePartTreeRequerQuery(queryMethod: RequeryQueryMethod,
     protected open fun preapreQuery(accessor: RequeryParameterAccessor): Requery {
         logger.trace { "Prepare query ... domainClass=$domainClass" }
 
-        val query = buildWhereClause(operations.select(domainKlass).unwrap(), accessor)
+        val query = buildWhereClause(runBlocking { operations.select(domainKlass).unwrap() }, accessor)
 
         return when {
             accessor.parameters.hasPageableParameter() ->
