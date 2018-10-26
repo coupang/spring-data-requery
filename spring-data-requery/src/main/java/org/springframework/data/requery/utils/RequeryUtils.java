@@ -412,7 +412,7 @@ public class RequeryUtils {
                         return foundField;
                     }
                 } catch (Exception e) {
-                    log.warn("Fail to retrieve field. fieldName={}", fieldName);
+                    log.debug("Fail to retrieve field. search in superClass... fieldName={} in targetClass={}", fieldName, targetClass);
                 }
                 targetClass = targetClass.getSuperclass();
             } while (targetClass != null && targetClass != Object.class);

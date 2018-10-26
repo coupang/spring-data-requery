@@ -34,6 +34,7 @@ import org.springframework.data.requery.core.RequeryTransactionManager;
 import org.springframework.data.requery.listeners.LogbackListener;
 import org.springframework.data.requery.mapping.RequeryMappingContext;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.util.Assert;
 
 import javax.annotation.PostConstruct;
@@ -47,6 +48,7 @@ import javax.sql.DataSource;
  */
 @Slf4j
 @Configuration
+@EnableTransactionManagement
 public abstract class AbstractRequeryConfiguration {
 
     /**

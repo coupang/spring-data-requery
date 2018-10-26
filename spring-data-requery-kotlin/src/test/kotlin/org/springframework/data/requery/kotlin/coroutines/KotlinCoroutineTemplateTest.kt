@@ -141,7 +141,7 @@ class KotlinCoroutineTemplateTest : AbstractDomainTest() {
         val users = RandomData.randomBasicUsers(100)
 
         with(coroutineTemplate) {
-            insertAll(users)
+            RequeryScope.async { insertAll(users) }.await()
 
             val loadedUsers =
                 select(BasicUser::class)

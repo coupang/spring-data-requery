@@ -61,6 +61,7 @@ subprojects {
 
     apply plugin: "io.spring.dependency-management"
     apply plugin: 'idea'
+    apply plugin: 'project-report'
 
     apply plugin: 'jacoco'
     apply plugin: 'org.jetbrains.dokka'

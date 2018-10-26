@@ -16,7 +16,6 @@
 
 package org.springframework.data.requery.core;
 
-import io.requery.PersistenceException;
 import io.requery.TransactionIsolation;
 import io.requery.sql.EntityDataStore;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +30,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 
 /**
- * Requery 용 {@link DataSourceTransactionManager}
+ * Requery용 {@link DataSourceTransactionManager}
  *
  * @author debop
  * @since 18. 6. 14
@@ -52,10 +51,10 @@ public class RequeryTransactionManager extends DataSourceTransactionManager {
     @Override
     protected void doBegin(@NotNull final Object transaction, @NotNull final TransactionDefinition definition) {
         super.doBegin(transaction, definition);
-
-        log.debug("Begin transaction. definition={}", definition);
+        log.debug("Begin transaction... definition={}", definition);
 
         TransactionIsolation isolation = getTransactionIsolation(definition.getIsolationLevel());
+
         if (isolation != null) {
             entityDataStore.transaction().begin(isolation);
         } else {
@@ -66,11 +65,12 @@ public class RequeryTransactionManager extends DataSourceTransactionManager {
     @Override
     protected void doCommit(@NotNull final DefaultTransactionStatus status) {
         if (entityDataStore.transaction().active()) {
-            try {
-                entityDataStore.transaction().commit();
-            } catch (Exception e) {
-                log.error("Fail to commit in requery transaction", e);
-            }
+//            try {
+            log.debug("Commit transaction. status={}", status.getTransaction());
+            entityDataStore.transaction().commit();
+//            } catch (Exception e) {
+//                log.error("Fail to commit in requery transaction", e);
+//            }
         }
         super.doCommit(status);
     }
@@ -78,11 +78,12 @@ public class RequeryTransactionManager extends DataSourceTransactionManager {
     @Override
     protected void doRollback(@NotNull final DefaultTransactionStatus status) {
         if (entityDataStore.transaction().active()) {
-            try {
-                entityDataStore.transaction().rollback();
-            } catch (PersistenceException e) {
-                log.error("Fail to rollback in requery transaction", e);
-            }
+            //try {
+            log.debug("Rollback transaction. status={}", status);
+            entityDataStore.transaction().rollback();
+//            } catch (PersistenceException e) {
+//                log.error("Fail to rollback in requery transaction", e);
+//            }
         }
         super.doRollback(status);
     }
@@ -90,12 +91,14 @@ public class RequeryTransactionManager extends DataSourceTransactionManager {
     @NotNull
     @Override
     protected Object doSuspend(@NotNull final Object transaction) {
+        log.debug("Suspend transaction. transaction={}", transaction);
         return super.doSuspend(transaction);
     }
 
     @Override
     protected void doResume(@Nullable final Object transaction,
                             @NotNull final Object suspendedResources) {
+        log.debug("Resume transaction. transaction={}, suspendedResources={}", transaction, suspendedResources);
         super.doResume(transaction, suspendedResources);
     }
 

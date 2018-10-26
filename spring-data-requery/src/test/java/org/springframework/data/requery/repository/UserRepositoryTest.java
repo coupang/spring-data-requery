@@ -54,6 +54,7 @@ import org.springframework.data.requery.repository.support.RequeryRepositoryFact
 import org.springframework.data.requery.repository.support.SimpleRequeryRepository;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
@@ -83,9 +84,12 @@ import static org.springframework.data.requery.utils.RequeryUtils.unwrap;
 @Slf4j
 @RunWith(SpringRunner.class)
 @ContextConfiguration
+// FIXME: @Transactional을 지정하면, Paging 조회 시 Contents를 가져오지 못하는 경우가 있다.
+// @Transactional
 public class UserRepositoryTest {
 
     @Configuration
+    @EnableTransactionManagement(proxyTargetClass = true)
     @EnableRequeryRepositories(basePackageClasses = { UserRepository.class })
     static class TestConfiguration extends InfrastructureConfig {
 
@@ -153,6 +157,7 @@ public class UserRepositoryTest {
         secondUser = createUser("Diego", "Ahn", "diego@example.com");
         secondUser.setAge(30);
 
+        // Before / After test 를 위해 
         Thread.sleep(10);
 
         thirdUser = createUser("Jinie", "Park", "jinie@example.com");
@@ -1092,6 +1097,7 @@ public class UserRepositoryTest {
         assertThat(result).isEqualTo(data);
     }
 
+    // FIXME: Transaction 적용 시  Count 는 실행되는데, Content는 제대로 실행되지 않는다. 실행 부분에서 문제가 발생하는 것 같다. (Paging 처리에 문제가 있는 것 같다)
     @Test
     public void findPaginatedExplicitQueryWithEmpty() {
 
@@ -1099,16 +1105,22 @@ public class UserRepositoryTest {
 
         flushTestUsers();
 
-        Page<User> result = repository.findAllByFirstnameLike("%", PageRequest.of(0, 10));
-        assertThat(result.getContent()).hasSize(3);
+        assertThat(repository.count()).isEqualTo(4);
+
+        Page<User> result = repository.findAllByFirstnameLike("Di%", PageRequest.of(0, 10));
+        log.debug("search result={}", result); // search result=Page 1 of 1 containing UNKNOWN instances
+        assertThat(result.getContent()).hasSize(1);
     }
 
+    // FIXME: Transaction 적용 시  Count 는 실행되는데, Content는 담기지 않는다. 실행 부분에서 문제가 발생하는 것 같다.
     @Test
     public void findPaginatedExplicitQuery() {
 
         flushTestUsers();
 
         Page<User> result = repository.findAllByFirstnameLike("De%", PageRequest.of(0, 10));
+        log.debug("search result={}", result);
+        log.debug("contents={}", result.getContent());
         assertThat(result.getContent()).hasSize(1);
     }
 

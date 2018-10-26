@@ -67,14 +67,13 @@ public class ToStringBuilder implements Serializable {
         StringBuilder builder = new StringBuilder();
 
         for (Map.Entry<String, Object> entry : valueMap.entrySet()) {
-            builder.append(entry.getKey()).append(",").append(entry.getValue());
+            if (builder.length() > 0) {
+                builder.append(",");
+            }
+            builder.append(entry.getKey()).append("=").append(entry.getValue());
         }
 
-        String valueStr = (builder.length() > 0)
-                          ? builder.substring(0, builder.length() - 1)
-                          : builder.toString();
-
-        return this.classname + "(" + valueStr + ")";
+        return this.classname + "(" + builder.toString() + ")";
     }
 
     @NotNull

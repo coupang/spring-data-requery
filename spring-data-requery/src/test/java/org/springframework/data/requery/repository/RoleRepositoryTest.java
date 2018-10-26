@@ -48,7 +48,6 @@ public class RoleRepositoryTest {
     @Test
     public void instancingRepository() {
         assertThat(repository).isNotNull();
-        // log.debug("Repository type={}", AopUtils.getTargetClass(repository));
         assertThat(AopUtils.getTargetClass(repository)).isEqualTo(SimpleRequeryRepository.class);
     }
 
@@ -72,6 +71,7 @@ public class RoleRepositoryTest {
         reference.setName("USER");
         repository.save(reference);
 
+        assertThat(result.getId()).isNotNull();
         assertThat(repository.findById(result.getId())).isEqualTo(Optional.of(reference));
     }
 
@@ -91,6 +91,7 @@ public class RoleRepositoryTest {
         Role reference = new Role("ADMIN");
         repository.save(reference);
 
+        assertThat(reference.getId()).isNotNull();
         assertThat(repository.existsById(reference.getId())).isTrue();
     }
 
@@ -99,6 +100,7 @@ public class RoleRepositoryTest {
         Role reference = new Role("ADMIN");
         repository.save(reference);
 
+        assertThat(reference.getName()).isNotEmpty();
         assertThat(repository.countByName(reference.getName())).isEqualTo(1L);
     }
 }

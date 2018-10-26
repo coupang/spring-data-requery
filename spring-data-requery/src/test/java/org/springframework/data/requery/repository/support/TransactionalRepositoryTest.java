@@ -36,23 +36,27 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
+@Transactional
 @RunWith(SpringRunner.class)
 @ContextConfiguration
-public class TransactionalRepositoryTest {
+public class TransactionalRepositoryTest { 
 
     @Configuration
+    @EnableTransactionManagement(proxyTargetClass = true)
     @EnableRequeryRepositories(basePackageClasses = { BasicUserRepository.class })
     static class TestConfiguration extends RequeryTestConfiguration {
 
         @Bean
         @Override
-        public PlatformTransactionManager transactionManager(EntityDataStore<Object> entityDataStore, DataSource dataSource) {
+        public DelegatingTransactionManager transactionManager(EntityDataStore<Object> entityDataStore, DataSource dataSource) {
             return new DelegatingTransactionManager(super.transactionManager(entityDataStore, dataSource));
         }
     }
