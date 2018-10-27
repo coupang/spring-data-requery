@@ -65,12 +65,8 @@ public class RequeryTransactionManager extends DataSourceTransactionManager {
     @Override
     protected void doCommit(@NotNull final DefaultTransactionStatus status) {
         if (entityDataStore.transaction().active()) {
-//            try {
             log.debug("Commit transaction. status={}", status.getTransaction());
             entityDataStore.transaction().commit();
-//            } catch (Exception e) {
-//                log.error("Fail to commit in requery transaction", e);
-//            }
         }
         super.doCommit(status);
     }
@@ -78,12 +74,8 @@ public class RequeryTransactionManager extends DataSourceTransactionManager {
     @Override
     protected void doRollback(@NotNull final DefaultTransactionStatus status) {
         if (entityDataStore.transaction().active()) {
-            //try {
             log.debug("Rollback transaction. status={}", status);
             entityDataStore.transaction().rollback();
-//            } catch (PersistenceException e) {
-//                log.error("Fail to rollback in requery transaction", e);
-//            }
         }
         super.doRollback(status);
     }

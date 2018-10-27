@@ -55,7 +55,9 @@ public class RequeryTemplate implements RequeryOperations {
     public <V> V runInTransaction(@NotNull final Callable<V> callable,
                                   @Nullable final TransactionIsolation isolation) {
         Assert.notNull(callable, "Callable must not be null.");
-        return dataStore.runInTransaction(callable, isolation);
+        return (isolation != null)
+               ? dataStore.runInTransaction(callable, isolation)
+               : dataStore.runInTransaction(callable, TransactionIsolation.REPEATABLE_READ);
     }
 
     @Override

@@ -25,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.NoRepositoryBean;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +36,7 @@ import java.util.Optional;
  * @author debop
  * @since 18. 6. 20
  */
+@NoRepositoryBean
 public interface RequeryWhereExecutor<T> {
 
     @NotNull

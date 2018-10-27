@@ -55,6 +55,8 @@ import org.springframework.data.requery.repository.support.SimpleRequeryReposito
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
@@ -84,8 +86,7 @@ import static org.springframework.data.requery.utils.RequeryUtils.unwrap;
 @Slf4j
 @RunWith(SpringRunner.class)
 @ContextConfiguration
-// FIXME: @Transactional을 지정하면, Paging 조회 시 Contents를 가져오지 못하는 경우가 있다.
-// @Transactional
+@Transactional
 public class UserRepositoryTest {
 
     @Configuration
@@ -413,16 +414,17 @@ public class UserRepositoryTest {
 
     @Test
     public void testUsesQueryAnnotation() {
+
         assertThat(repository.findByAnnotatedQuery("debop@example.com")).isNull();
 
-        flushTestUsers();
-        assertThat(repository.findByAnnotatedQuery("debop@example.com")).isEqualTo(firstUser);
+//        flushTestUsers();
+//
+//        assertThat(repository.findByAnnotatedQuery("debop@example.com")).isEqualTo(firstUser);
     }
 
     @Test
     public void testExecutionOfProjectingMethod() {
         flushTestUsers();
-
         assertThat(repository.countWithFirstname("Debop")).isEqualTo(1L);
     }
 
@@ -500,6 +502,7 @@ public class UserRepositoryTest {
         assertThat(users.getSize()).isEqualTo(1);
         assertThat(users.hasPrevious()).isFalse();
         assertThat(users.getTotalElements()).isEqualTo(2L);
+        assertThat(users.getNumberOfElements()).isEqualTo(1);
     }
 
     @Test
@@ -830,13 +833,19 @@ public class UserRepositoryTest {
         assertThat(all.getContent()).isNotEmpty();
     }
 
+    // FIXME: @Transactional 인 경우 Paging 처리 시, count query 와 content query 둘 중 먼저 실행된 것만 제대로 값을 가져온다.
+    // NOTE: Raw Query 사용 시, Transactional 의 propagation을 Propagation.SUPPORT | Propagation.NOT_SUPPORT 를 사용해야 connection 을 유지한다.
     @Test
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void bindsSortingToOuterJoinCorrectly() {
 
         flushTestUsers();
 
         Page<User> result = repository.findAllPaged(PageRequest.of(0, 10, Sort.by("manager.lastname")));
-        assertThat(result.getContent()).hasSize((int) repository.count());
+
+        assertThat(result.getTotalElements()).isEqualTo(4);
+        assertThat(result.getContent()).isNotEmpty();
+        assertThat(result.getNumberOfElements()).isEqualTo(4);
     }
 
     @SuppressWarnings("unchecked")
@@ -1097,7 +1106,6 @@ public class UserRepositoryTest {
         assertThat(result).isEqualTo(data);
     }
 
-    // FIXME: Transaction 적용 시  Count 는 실행되는데, Content는 제대로 실행되지 않는다. 실행 부분에서 문제가 발생하는 것 같다. (Paging 처리에 문제가 있는 것 같다)
     @Test
     public void findPaginatedExplicitQueryWithEmpty() {
 
@@ -1112,8 +1120,8 @@ public class UserRepositoryTest {
         assertThat(result.getContent()).hasSize(1);
     }
 
-    // FIXME: Transaction 적용 시  Count 는 실행되는데, Content는 담기지 않는다. 실행 부분에서 문제가 발생하는 것 같다.
     @Test
+    @Transactional(readOnly = true)
     public void findPaginatedExplicitQuery() {
 
         flushTestUsers();
@@ -1121,6 +1129,9 @@ public class UserRepositoryTest {
         Page<User> result = repository.findAllByFirstnameLike("De%", PageRequest.of(0, 10));
         log.debug("search result={}", result);
         log.debug("contents={}", result.getContent());
+
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getNumberOfElements()).isEqualTo(1);
         assertThat(result.getContent()).hasSize(1);
     }
 
@@ -1720,7 +1731,10 @@ public class UserRepositoryTest {
         repository.findAllOrderedBySpecialNameMultipleParamsIndexed("x", "Debop", PageRequest.of(2, 3));
     }
 
+    // FIXME: @Transactional 인 경우 Paging 처리 시, count query 와 content query 둘 중 먼저 실행된 것만 제대로 값을 가져온다.
+    // NOTE: Raw Query 사용 시, Transactional 의 propagation을 Propagation.SUPPORT | Propagation.NOT_SUPPORT 를 사용해야 connection 을 유지한다. 
     @Test
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void executeNativeQueryWithPage() {
 
         flushTestUsers();
@@ -1779,7 +1793,7 @@ public class UserRepositoryTest {
         softly.assertAll();
     }
 
-    @Test // DATAJPA-1307
+    @Test
     public void testFindByEmailAddressJdbcStyleParameter() {
 
         flushTestUsers();
@@ -1799,8 +1813,7 @@ public class UserRepositoryTest {
                        .where(User.FIRSTNAME.eq("Debop"))
                        .or(User.LASTNAME.eq("Park")));
 
-        Page<User> result = repository.findAll(whereClause,
-                                               PageRequest.of(0, 1, sort));
+        Page<User> result = repository.findAll(whereClause, PageRequest.of(0, 1, sort));
 
         assertThat(result.getTotalElements()).isEqualTo(2L);
         return result;

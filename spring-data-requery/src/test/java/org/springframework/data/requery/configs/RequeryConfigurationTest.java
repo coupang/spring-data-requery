@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.requery.core.RequeryTemplate;
+import org.springframework.data.requery.core.RequeryOperations;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -43,7 +43,7 @@ public class RequeryConfigurationTest {
     EntityDataStore<Object> dataStore;
 
     @Autowired
-    RequeryTemplate requeryTemplate;
+    RequeryOperations requeryOperations;
 
     @Autowired
     EntityModel entityModel;
@@ -58,6 +58,6 @@ public class RequeryConfigurationTest {
     public void contextLoading() {
         log.debug("Context Loading...");
         assertThat(dataStore).isNotNull();
-        assertThat(requeryTemplate).isNotNull();
+        assertThat(requeryOperations).isNotNull();
     }
 }

@@ -121,7 +121,7 @@ public abstract class RequeryQueryExecution {
      * Method to implement {@link DeclaredRequeryQuery} executions by single enum values.
      */
     @Nullable
-    protected abstract Object doExecute(@NotNull final AbstractRequeryQuery query, final Object[] values);
+    protected abstract Object doExecute(final AbstractRequeryQuery query, final Object[] values);
 
 
     //
@@ -202,13 +202,18 @@ public abstract class RequeryQueryExecution {
 
             if (pageable.isPaged()) {
 
+                long totals = count(query, values);
+
                 // method name에서 paging을 유추할 수 있을 수 있기 때문에 추가로 paging을 하지 않는다.
                 if (queryElement.getLimit() == null && queryElement.getOffset() == null) {
                     queryElement = RequeryUtils.applyPageable(query.getDomainClass(), queryElement, accessor.getPageable());
                 }
                 Result<?> result = (Result<?>) queryElement.get();
+                List<?> contents = result.toList();
 
-                return new PageImpl(result.toList(), accessor.getPageable(), count(query, values));
+                log.debug("Paged Query. totals={}, contents={}", totals, contents);
+
+                return new PageImpl(contents, accessor.getPageable(), totals);
             } else {
                 Result<?> result = (Result<?>) queryElement.get();
                 return new PageImpl(result.toList());
@@ -218,12 +223,14 @@ public abstract class RequeryQueryExecution {
         @SuppressWarnings("unchecked")
         private long count(@NotNull final AbstractRequeryQuery query, final Object[] values) {
             QueryElement<?> queryElement = unwrap(query.createQueryElement(values));
+            queryElement.limit(1);
+            queryElement.offset(0);
             QueryElement<?> selection = (QueryElement<?>) query.getOperations().select(Count.count(query.getDomainClass()));
 
             selection.getWhereElements().addAll(queryElement.getWhereElements());
             Tuple countResult = ((QueryElement<? extends Result<Tuple>>) selection).get().firstOrNull();
 
-            Integer count = (Integer) RequeryResultConverter.convertResult(countResult, 0);
+            Number count = (Number) RequeryResultConverter.convertResult(countResult, 0);
             return count.longValue();
         }
     }

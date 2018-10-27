@@ -30,6 +30,7 @@ import org.springframework.data.requery.domain.sample.User;
 import org.springframework.data.requery.domain.sample.User_Colleagues;
 import org.springframework.data.requery.domain.sample.User_Role;
 import org.springframework.data.requery.repository.RequeryRepository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
@@ -68,9 +69,8 @@ public interface UserRepository extends RequeryRepository<User, Integer>, UserRe
     List<User> findByEmailAddressAndLastnameOrFirstname(String emailAddress, String lastname, String firstname);
 
     @Query("select * from SD_User u where u.emailAddress = ?")
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     User findByAnnotatedQuery(String emailAddress);
-
 
     /**
      * Method to directly create query from and adding a {@link Pageable} parameter to be regarded on query execution.
@@ -415,45 +415,33 @@ public interface UserRepository extends RequeryRepository<User, Integer>, UserRe
     List<User> findByStringAge(String age);
 
 
-    //    // DATAJPA-1185
     <T> Stream<T> findAsStreamByFirstnameLike(String name, Class<T> projectionType);
 
-    //
-//    // DATAJPA-1185
     <T> List<T> findAsListByFirstnameLike(String name, Class<T> projectionType);
 
     @Query("SELECT u.firstname, u.lastname from SD_User u WHERE u.id=?")
     NameOnly findByNativeQuery(Integer id);
 
-    //
     @Query("SELECT u.emailaddress from SD_User u WHERE u.id=?")
     EmailOnly findEmailOnlyByNativeQuery(Integer id);
 
     // NOTE: Not Supported
 
-    //    // DATAJPA-1235
     @Query("SELECT u.* FROM SD_User u where u.firstname >= ? and u.lastname = '000:1'")
     List<User> queryWithIndexedParameterAndColonFollowedByIntegerInString(String firstname);
 
-
-    // DATAJPA-1233
     @Query(value = "SELECT u.* FROM SD_User u ORDER BY CASE WHEN (u.firstname  >= ?) THEN 0 ELSE 1 END, u.firstname")
     Page<User> findAllOrderedBySpecialNameSingleParam(String name, Pageable page);
 
-
-    // DATAJPA-1233
     @Query(value = "SELECT u.* FROM SD_User u WHERE 'x' = ? ORDER BY CASE WHEN (u.firstname  >= ?) THEN 0 ELSE 1 END, u.firstname")
     Page<User> findAllOrderedBySpecialNameMultipleParams(String other, String name, Pageable page);
 
-    // DATAJPA-1233
     @Query(value = "SELECT u.* FROM SD_User u WHERE 'x' = ? ORDER BY CASE WHEN (u.firstname  >= ?) THEN 0 ELSE 1 END, u.firstname")
     Page<User> findAllOrderedBySpecialNameMultipleParamsIndexed(String other, String name, Pageable page);
 
-    //    // DATAJPA-928
-    @Query(value = "SELECT u.* FROM SD_User u")
+    @Query(value = "SELECT * FROM SD_User")
     Page<User> findByNativQueryWithPageable(Pageable pageable);
 
-    // DATAJPA-928
     @Query(value = "SELECT firstname FROM SD_User ORDER BY UCASE(firstname)", countQuery = "SELECT count(*) FROM SD_User")
     Page<String> findAsStringByNativeQueryWithPageable(Pageable pageable);
 

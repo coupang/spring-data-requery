@@ -19,6 +19,7 @@ package org.springframework.data.requery.repository.query;
 import io.requery.query.Tuple;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * RequeryResultConverter
@@ -30,11 +31,15 @@ import lombok.extern.slf4j.Slf4j;
 @UtilityClass
 public class RequeryResultConverter {
 
-    public static Object convertResult(Object result) {
+    public static Object convertResult(@Nullable Object result) {
         return convertResult(result, null);
     }
 
-    public static Object convertResult(Object result, Object defaultValue) {
+    @Nullable
+    public static Object convertResult(@Nullable Object result, @Nullable Object defaultValue) {
+        if (result == null) {
+            return defaultValue;
+        }
 
         log.trace("Convert result... result={}", result);
         try {

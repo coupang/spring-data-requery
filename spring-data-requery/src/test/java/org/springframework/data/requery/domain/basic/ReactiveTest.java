@@ -202,6 +202,7 @@ public class ReactiveTest extends AbstractDomainTest {
         disposable.dispose();
     }
 
+    @SuppressWarnings("ThrowableNotThrown")
     @Test
     public void query_self_observable_relational() {
         AtomicInteger count = new AtomicInteger();
@@ -211,13 +212,13 @@ public class ReactiveTest extends AbstractDomainTest {
 
         BasicUser user = RandomData.randomUser();
 
-        reactiveStore.insert(user).blockingGet();
+        user = reactiveStore.insert(user).blockingGet();
         assertThat(count.get()).isEqualTo(2);
 
         BasicGroup group = RandomData.randomBasicGroup();
         user.getGroups().add(group);
         user.setAbout("new about");
-        reactiveStore.update(user).blockingGet();
+        user = reactiveStore.update(user).blockingGet();
         assertThat(count.get()).isEqualTo(3);
 
         reactiveStore.delete(user).blockingGet();

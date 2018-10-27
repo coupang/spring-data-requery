@@ -22,12 +22,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.requery.domain.Models;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 
 @Configuration
-@EnableTransactionManagement
 public class RequeryTestConfiguration extends AbstractRequeryConfiguration {
 
     @Override
@@ -42,6 +40,7 @@ public class RequeryTestConfiguration extends AbstractRequeryConfiguration {
             .setName("test")
             .setType(EmbeddedDatabaseType.H2)
             .setScriptEncoding("UTF-8")
+            .continueOnError(true)
             .ignoreFailedDrops(true)
             .build();
     }

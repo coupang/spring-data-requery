@@ -32,6 +32,8 @@ import org.springframework.data.requery.annotation.Query;
 import org.springframework.data.requery.core.RequeryOperations;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+
 /**
  * {@link Query} annotation이 정의된 메소드, interface default method, custom defined method를 실행하는 {@link RepositoryQuery}
  *
@@ -62,55 +64,113 @@ public class DeclaredRequeryQuery extends AbstractRequeryQuery {
     @Override
     public Object execute(@NotNull final Object[] parameters) {
 
+        Object resultSet = null;
+
         String query = getRawQuery();
 
         log.debug("Execute queryMethod={}, return type={}, query={}", getQueryMethod().getName(), getQueryMethod().getReturnType(), query);
 
         Result<?> result;
 
-        // TODO: Refactoring이 필요하다.
         // TODO: Entity 나 Tuple 에 대해 ReturnedType에 맞게 casting 해야 한다.
         // TODO: Paging 에 대해서는 처리했는데, Sort 는 넣지 못했음. 이 부분도 추가해야 함.
 
         RequeryParametersParameterAccessor accessor = new RequeryParametersParameterAccessor(getQueryMethod().getParameters(), parameters);
         Pageable pageable = accessor.getPageable();
 
+        // FIXME: Spring @Transactional 하에서는 Raw Query에 대해 Count Query, Raw Query 둘 중 먼저 실행된 것만 제대로 값을 가져온다.
+        // FIXME: 
+
+        // 참고로 Query By Property 로 PagedExecution 에서는 제대로 수행된다.
         if (pageable.isPaged()) {
 
             int pageableIndex = accessor.getParameters().getPageableIndex();
+            Object[] values = extractValues(pageableIndex, parameters);
 
-            Object[] values = (pageableIndex >= 0) ? new Object[parameters.length - 1] : parameters;
+            log.trace("values={}", values);
 
-            int j = 0;
-            for (int i = 0; i < parameters.length; i++) {
-                if (i == pageableIndex) {
-                    continue;
-                }
-                values[j++] = parameters[i];
+            // Content Query
+            long totals = retrieveTotals(query, values);
+
+            // Content query
+            Result<?> contentResult = retrieveContents(query, pageable, values);
+
+            if (getQueryMethod().isPageQuery()) {
+                List<?> contents = contentResult.toList();
+                log.trace("Page results. totals={}, contents={}, values={}", totals, contents, values);
+
+                resultSet = new PageImpl(contents, pageable, totals);
+            } else {
+                resultSet = castResult(contentResult);
             }
 
-            String countQuery = "select count(cnt_tbl.*) from (" + query + ") as cnt_tbl";
-            Tuple countResult = operations.raw(countQuery, values).first();
+        } else if (getQueryMethod().isQueryForEntity()) {
+            log.debug("Query for entity. entity={}", getQueryMethod().getEntityInformation().getJavaType());
+            result = operations.raw(getQueryMethod().getEntityInformation().getJavaType(), query, parameters);
+            resultSet = castResult(result);
+            result.close();
+        } else {
+            result = operations.raw(query, parameters);
+            resultSet = castResult(result);
+            result.close();
+        }
 
-            long offset = pageable.getOffset();
-            int limit = pageable.getPageSize();
+        return resultSet;
+    }
 
-            query = query + " offset " + offset + " limit " + limit;
-            result = (getQueryMethod().isQueryForEntity())
-                     ? operations.raw(getQueryMethod().getEntityInformation().getJavaType(), query, values)
-                     : operations.raw(query, values);
+    @NotNull
+    private Object[] extractValues(int pageableIndex, @NotNull final Object[] parameters) {
 
-            return castResult(result, pageable, countResult.<Long>get(0));
+        Object[] values = (pageableIndex >= 0) ? new Object[parameters.length - 1] : parameters;
+
+        int j = 0;
+        for (int i = 0; i < parameters.length; i++) {
+            if (i == pageableIndex) {
+                continue;
+            }
+            values[j++] = parameters[i];
+        }
+        return values;
+    }
+
+    private Result<?> retrieveContents(final String baseQuery, Pageable pageable, final Object[] values) {
+        long offset = pageable.getOffset();
+        int limit = pageable.getPageSize();
+
+        String query = baseQuery;
+        if (offset > 0L) {
+            query = query + " offset " + offset;
+        }
+        if (limit > 0) {
+            query = query + " limit " + limit;
         }
 
         if (getQueryMethod().isQueryForEntity()) {
-            log.debug("Query for entity. entity={}", getQueryMethod().getEntityInformation().getJavaType());
-            result = operations.raw(getQueryMethod().getEntityInformation().getJavaType(), query, parameters);
-            return castResult(result);
+            log.trace("query for entity. {}", getQueryMethod().getEntityInformation().getJavaType());
+            return operations.raw(getQueryMethod().getEntityInformation().getJavaType(), query, values);
         } else {
-            result = operations.raw(query, parameters);
-            return castResult(result);
+            log.trace("raw query for tuple. query={}, values={}", query, values);
+            return operations.raw(query, values);
         }
+    }
+
+    private long retrieveTotals(final String query, final Object[] values) {
+        // Count Query
+        String countQuery = queryMethod.getCountQuery();
+        if (countQuery == null) {
+            countQuery = "select count(cnt_tbl.*) from (" + query + ") as cnt_tbl";
+        }
+
+        if (StringUtils.hasText(countQuery)) {
+            try {
+                Result<Tuple> result = operations.raw(countQuery, values);
+                return result.first().get(0);
+            } catch (Exception e) {
+                log.error("Fail to retrieve count. query={}", query);
+                return 0L;
+            }
+        }
+        return 0L;
     }
 
     @SuppressWarnings("unchecked")
@@ -129,8 +189,10 @@ public class DeclaredRequeryQuery extends AbstractRequeryQuery {
         } else if (getQueryMethod().isStreamQuery()) {
             return result.stream();
         } else if (getQueryMethod().isPageQuery()) {
+            List<?> contents = result.toList();
             if (pageable.isPaged()) {
-                return new PageImpl<>(result.toList(), pageable, totals);
+                log.trace("Cast result to Page. totals={}, contents={}, contents size={}", totals, contents, contents.size());
+                return new PageImpl<>(contents, pageable, totals);
             } else {
                 return new PageImpl<>(result.toList());
             }

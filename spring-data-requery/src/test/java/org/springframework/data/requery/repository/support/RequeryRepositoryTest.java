@@ -23,7 +23,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.requery.annotation.Query;
 import org.springframework.data.requery.configs.RequeryTestConfiguration;
-import org.springframework.data.requery.core.RequeryTemplate;
+import org.springframework.data.requery.core.RequeryOperations;
 import org.springframework.data.requery.domain.RandomData;
 import org.springframework.data.requery.domain.basic.BasicGroup;
 import org.springframework.data.requery.domain.basic.BasicUser;
@@ -44,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration(classes = { RequeryTestConfiguration.class })
 public class RequeryRepositoryTest {
 
-    @Autowired RequeryTemplate operations;
+    @Autowired RequeryOperations operations;
 
     SampleEntityRepository repository;
     GroupEntityRepository groupRepository;

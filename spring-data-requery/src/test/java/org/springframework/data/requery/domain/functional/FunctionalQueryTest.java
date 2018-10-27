@@ -37,6 +37,8 @@ import org.springframework.data.requery.domain.model.Group;
 import org.springframework.data.requery.domain.model.Person;
 import org.springframework.data.requery.domain.model.Phone;
 import org.springframework.data.requery.domain.model.RandomData;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -80,7 +82,15 @@ public class FunctionalQueryTest extends AbstractDomainTest {
             .where(Person.BIRTHDAY.gt(LocalDate.now()))
             .get();
 
-        assertThat(result.toList()).hasSize(1);
+        List<Person> people = result.toList();
+        assertThat(people).hasSize(1);
+
+        Integer count = requeryTemplate.count(Person.class)
+            .where(Person.BIRTHDAY.gt(LocalDate.now()))
+            .get()
+            .value();
+
+        assertThat(people).hasSize(count);
     }
 
     @Test
@@ -742,6 +752,7 @@ public class FunctionalQueryTest extends AbstractDomainTest {
     }
 
     @Test
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void query_raw() {
         int count = 5;
 
@@ -779,6 +790,7 @@ public class FunctionalQueryTest extends AbstractDomainTest {
     }
 
     @Test
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void query_raw_entities() {
         int count = 5;
 
@@ -809,6 +821,29 @@ public class FunctionalQueryTest extends AbstractDomainTest {
 
         result = requeryTemplate.raw(Person.class, "select * from Person WHERE personId = ?", people.get(0));
         assertThat(result.first().getId()).isEqualTo(people.get(0).getId());
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public void query_raw_paging() {
+        int count = 5;
+        for (int i = 0; i < count; i++) {
+            requeryTemplate.insert(RandomData.randomPerson());
+        }
+
+        long totals = requeryTemplate.raw("select count(*) from Person").first().get(0);
+        long totals2 = requeryTemplate.raw("select count(*) from Person").first().get(0);
+
+        Result<Person> result = requeryTemplate.raw(Person.class, "select * from Person");
+        List<Person> rows = result.toList();
+
+        Result<Person> result2 = requeryTemplate.raw(Person.class, "select * from Person");
+        List<Person> rows2 = result2.toList();
+
+        log.debug("rows size={}, rows2 size={}, totals={}, totals2={}", rows.size(), rows2.size(), totals, totals2);
+
+        assertThat(rows.size()).isEqualTo(totals);
+        assertThat(rows2.size()).isEqualTo(totals2);
     }
 
     @Test
