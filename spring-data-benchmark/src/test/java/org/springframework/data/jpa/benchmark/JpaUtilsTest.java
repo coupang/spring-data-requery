@@ -20,6 +20,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.jpa.benchmark.model.FullLog;
+import org.springframework.data.jpa.benchmark.model.TagType;
+import org.springframework.data.jpa.benchmark.model.TagValue;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -92,5 +94,29 @@ public class JpaUtilsTest {
         em.persist(fullLog);
         em.flush();
 
+    }
+
+    @Test
+    public void insertTag() {
+        TagValue tagValue = new TagValue();
+        tagValue.setRep("rep");
+        tagValue.setSynonyms("synonyms");
+        tagValue.setCreatedAt(new Date());
+        tagValue.setModifiedAt(new Date());
+
+        TagType tagType = new TagType();
+        tagType.setTagTypeClass("class");
+        tagType.setTagTypeName("type");
+        tagType.setCreatedAt(new Date());
+        tagType.setModifiedAt(new Date());
+
+        tagValue.setTagType(tagType);
+        tagType.getTagValues().add(tagValue);
+
+        em.persist(tagType);
+        em.flush();
+
+        assertThat(tagType.getTagTypeId()).isNotNull();
+        assertThat(tagValue.getTagValueId()).isNotNull();
     }
 }
