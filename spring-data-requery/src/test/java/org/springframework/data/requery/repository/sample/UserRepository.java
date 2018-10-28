@@ -30,7 +30,6 @@ import org.springframework.data.requery.domain.sample.User;
 import org.springframework.data.requery.domain.sample.User_Colleagues;
 import org.springframework.data.requery.domain.sample.User_Role;
 import org.springframework.data.requery.repository.RequeryRepository;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
@@ -53,7 +52,7 @@ public interface UserRepository extends RequeryRepository<User, Integer>, UserRe
     List<User> findByLastname(String lastname);
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     Optional<User> findById(Integer primaryKey);
 
     @Override
@@ -69,7 +68,6 @@ public interface UserRepository extends RequeryRepository<User, Integer>, UserRe
     List<User> findByEmailAddressAndLastnameOrFirstname(String emailAddress, String lastname, String firstname);
 
     @Query("select * from SD_User u where u.emailAddress = ?")
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     User findByAnnotatedQuery(String emailAddress);
 
     /**
@@ -237,6 +235,7 @@ public interface UserRepository extends RequeryRepository<User, Integer>, UserRe
     Integer deleteByLastname(String lastname);
 
 
+    @Transactional(readOnly = true)
     @Query(value = "select * from SD_User u where u.firstname like ?")
     Page<User> findAllByFirstnameLike(String firstname, Pageable page);
 

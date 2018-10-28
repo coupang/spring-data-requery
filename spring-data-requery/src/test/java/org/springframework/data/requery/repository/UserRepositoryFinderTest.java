@@ -35,7 +35,6 @@ import org.springframework.data.requery.repository.sample.RoleRepository;
 import org.springframework.data.requery.repository.sample.UserRepository;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
@@ -227,9 +226,7 @@ public class UserRepositoryFinderTest {
         assertThat(userRepository.findByRolesNotContaining(drummer)).contains(dave, oliver);
     }
 
-    @Ignore("Transanction propagation 이 NOT_SUPPORTED 일때 예외를 발생해야 한다.")
     @Test // (expected = InvalidDataAccessApiUsageException.class) // DATAJPA-1023, DATACMNS-959
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void rejectsStreamExecutionIfNoSurroundingTransactionActive() {
         userRepository.findAllByCustomQueryAndStream();
     }

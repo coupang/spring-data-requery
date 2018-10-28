@@ -34,7 +34,9 @@ import java.sql.Connection;
  *
  * @author debop
  * @since 18. 6. 14
+ * @deprecated Use DataSourceTransactionManager.
  */
+@Deprecated
 @Slf4j
 public class RequeryTransactionManager extends DataSourceTransactionManager {
     private static final long serialVersionUID = 3291422158479490099L;

@@ -55,7 +55,6 @@ import org.springframework.data.requery.repository.support.SimpleRequeryReposito
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
@@ -70,6 +69,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
@@ -650,7 +650,13 @@ public class UserRepositoryTest {
         flushTestUsers();
 
         Page<String> result = repository.findByLastnameGrouped(PageRequest.of(0, 10));
+
+        log.debug("last names={}", result.getContent());
+
         assertThat(result.getTotalPages()).isEqualTo(1);
+        assertThat(result.getTotalElements()).isEqualTo(4);
+        assertThat(result.getNumberOfElements()).isEqualTo(4);
+        assertThat(result.getContent()).hasSize(4);
     }
 
     @Test
@@ -833,10 +839,7 @@ public class UserRepositoryTest {
         assertThat(all.getContent()).isNotEmpty();
     }
 
-    // FIXME: @Transactional 인 경우 Paging 처리 시, count query 와 content query 둘 중 먼저 실행된 것만 제대로 값을 가져온다.
-    // NOTE: Raw Query 사용 시, Transactional 의 propagation을 Propagation.SUPPORT | Propagation.NOT_SUPPORT 를 사용해야 connection 을 유지한다.
     @Test
-    @Transactional(propagation = Propagation.SUPPORTS)
     public void bindsSortingToOuterJoinCorrectly() {
 
         flushTestUsers();
@@ -890,6 +893,9 @@ public class UserRepositoryTest {
 
         List<User> result = repository.findByFirstnameLike("Ni%");
         assertThat(result).containsOnly(fourthUser);
+
+        List<User> result2 = repository.findByFirstnameLike("De%");
+        assertThat(result2).containsOnly(firstUser);
     }
 
     // NOTE: Not supported Named parameter
@@ -913,7 +919,6 @@ public class UserRepositoryTest {
     public void executesDerivedCountQueryToInt() {
 
         flushTestUsers();
-
         assertThat(repository.countUsersByFirstname("Debop")).isEqualTo(1);
     }
 
@@ -1116,12 +1121,13 @@ public class UserRepositoryTest {
         assertThat(repository.count()).isEqualTo(4);
 
         Page<User> result = repository.findAllByFirstnameLike("Di%", PageRequest.of(0, 10));
-        log.debug("search result={}", result); // search result=Page 1 of 1 containing UNKNOWN instances
+        log.debug("search result={}", result);
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getNumberOfElements()).isEqualTo(1);
         assertThat(result.getContent()).hasSize(1);
     }
 
     @Test
-    @Transactional(readOnly = true)
     public void findPaginatedExplicitQuery() {
 
         flushTestUsers();
@@ -1340,7 +1346,8 @@ public class UserRepositoryTest {
         flushTestUsers();
 
         try (Stream<User> stream = repository.streamAllPaged(PageRequest.of(0, 2))) {
-            assertThat(stream).hasSize(2);
+            List<User> users = stream.collect(Collectors.toList());
+            assertThat(users).hasSize(2);
         }
     }
 
@@ -1731,10 +1738,7 @@ public class UserRepositoryTest {
         repository.findAllOrderedBySpecialNameMultipleParamsIndexed("x", "Debop", PageRequest.of(2, 3));
     }
 
-    // FIXME: @Transactional 인 경우 Paging 처리 시, count query 와 content query 둘 중 먼저 실행된 것만 제대로 값을 가져온다.
-    // NOTE: Raw Query 사용 시, Transactional 의 propagation을 Propagation.SUPPORT | Propagation.NOT_SUPPORT 를 사용해야 connection 을 유지한다. 
     @Test
-    @Transactional(propagation = Propagation.SUPPORTS)
     public void executeNativeQueryWithPage() {
 
         flushTestUsers();
@@ -1775,7 +1779,7 @@ public class UserRepositoryTest {
             .containsExactly("Nickoon");
     }
 
-    @Test // DATAJPA-1301
+    @Test
     public void returnsNullValueInMap() {
 
         firstUser.setLastname(null);

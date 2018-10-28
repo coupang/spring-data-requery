@@ -63,6 +63,12 @@ public class DeclaredRequeryQuery extends AbstractRequeryQuery {
     @SuppressWarnings("unchecked")
     @Override
     public Object execute(@NotNull final Object[] parameters) {
+        // return operations.runInTransaction(() -> executeInTransaction(parameters));
+        return executeInTransaction(parameters);
+    }
+
+    @SuppressWarnings("unchecked")
+    private Object executeInTransaction(@NotNull final Object[] parameters) {
 
         Object resultSet = null;
 
@@ -77,9 +83,6 @@ public class DeclaredRequeryQuery extends AbstractRequeryQuery {
 
         RequeryParametersParameterAccessor accessor = new RequeryParametersParameterAccessor(getQueryMethod().getParameters(), parameters);
         Pageable pageable = accessor.getPageable();
-
-        // FIXME: Spring @Transactional 하에서는 Raw Query에 대해 Count Query, Raw Query 둘 중 먼저 실행된 것만 제대로 값을 가져온다.
-        // FIXME: 
 
         // 참고로 Query By Property 로 PagedExecution 에서는 제대로 수행된다.
         if (pageable.isPaged()) {
@@ -97,7 +100,7 @@ public class DeclaredRequeryQuery extends AbstractRequeryQuery {
 
             if (getQueryMethod().isPageQuery()) {
                 List<?> contents = contentResult.toList();
-                log.trace("Page results. totals={}, contents={}, values={}", totals, contents, values);
+                log.debug("Page results. totals={}, contents={}, values={}", totals, contents, values);
 
                 resultSet = new PageImpl(contents, pageable, totals);
             } else {

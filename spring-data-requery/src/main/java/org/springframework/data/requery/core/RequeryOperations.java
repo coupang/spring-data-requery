@@ -38,7 +38,6 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.data.requery.mapping.RequeryMappingContext;
 import org.springframework.data.requery.utils.Iterables;
 import org.springframework.data.requery.utils.RequeryUtils;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -219,12 +218,10 @@ public interface RequeryOperations {
         return whereClause.limit(1).get().firstOrNull() != null;
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS)
     default Result<Tuple> raw(@NotNull final String query, final Object... parameters) {
         return getDataStore().raw(query, parameters);
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS)
     default <E> Result<E> raw(@NotNull final Class<E> entityType,
                               @NotNull final String query,
                               final Object... parameters) {

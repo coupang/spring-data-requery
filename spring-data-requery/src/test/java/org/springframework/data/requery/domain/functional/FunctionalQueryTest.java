@@ -37,7 +37,6 @@ import org.springframework.data.requery.domain.model.Group;
 import org.springframework.data.requery.domain.model.Person;
 import org.springframework.data.requery.domain.model.Phone;
 import org.springframework.data.requery.domain.model.RandomData;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -60,6 +59,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * @author Diego on 2018. 6. 9..
  */
 @Slf4j
+@Transactional
 public class FunctionalQueryTest extends AbstractDomainTest {
 
     private static final int COUNT = 100;
@@ -751,8 +751,9 @@ public class FunctionalQueryTest extends AbstractDomainTest {
         assertThat(result.get(1).<String>get(0)).isEqualTo("Hello!");
     }
 
+
     @Test
-    @Transactional(propagation = Propagation.SUPPORTS)
+    @Transactional
     public void query_raw() {
         int count = 5;
 
@@ -790,7 +791,7 @@ public class FunctionalQueryTest extends AbstractDomainTest {
     }
 
     @Test
-    @Transactional(propagation = Propagation.SUPPORTS)
+    @Transactional
     public void query_raw_entities() {
         int count = 5;
 
@@ -824,7 +825,7 @@ public class FunctionalQueryTest extends AbstractDomainTest {
     }
 
     @Test
-    @Transactional(propagation = Propagation.SUPPORTS)
+    @Transactional
     public void query_raw_paging() {
         int count = 5;
         for (int i = 0; i < count; i++) {
@@ -832,10 +833,11 @@ public class FunctionalQueryTest extends AbstractDomainTest {
         }
 
         long totals = requeryTemplate.raw("select count(*) from Person").first().get(0);
-        long totals2 = requeryTemplate.raw("select count(*) from Person").first().get(0);
 
         Result<Person> result = requeryTemplate.raw(Person.class, "select * from Person");
         List<Person> rows = result.toList();
+
+        long totals2 = requeryTemplate.raw("select count(*) from Person").first().get(0);
 
         Result<Person> result2 = requeryTemplate.raw(Person.class, "select * from Person");
         List<Person> rows2 = result2.toList();

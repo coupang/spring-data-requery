@@ -68,7 +68,9 @@ public class CustomRepositoryFactoryConfigTest {
         transactionManager.resetCount();
     }
 
-    // NOTE: repositoryFactoryBeanClass 를 지정해줘야 UserCustomExtendedRepository 가 제대로 injection이 된다. 
+    /**
+     * repositoryFactoryBeanClass 를 지정해줘야 UserCustomExtendedRepository 가 제대로 injection이 된다.
+     */
     @Test(expected = UnsupportedOperationException.class)
     public void testCustomFactoryUsed() {
         userRepository.customMethod(1L);
@@ -80,7 +82,7 @@ public class CustomRepositoryFactoryConfigTest {
         userRepository.findAll();
 
         assertThat(transactionManager.getDefinition().isReadOnly()).isFalse();
-        assertThat(transactionManager.getDefinition().getTimeout()).isEqualTo(10);
+        assertThat(transactionManager.getDefinition().getTimeout()).isEqualTo(100);
     }
 
     @Test

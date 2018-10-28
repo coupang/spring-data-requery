@@ -26,7 +26,7 @@ import java.util.Optional;
 public interface UserCustomExtendedRepository extends CustomGenericRepository<BasicUser, Long> {
 
     @NotNull
-    @Transactional(timeout = 10)
+    @Transactional(timeout = 100)
     List<BasicUser> findAll();
 
 

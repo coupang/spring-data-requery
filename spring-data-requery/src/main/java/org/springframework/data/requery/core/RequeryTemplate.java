@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.data.requery.RequeryExecutionException;
 import org.springframework.data.requery.mapping.RequeryMappingContext;
 import org.springframework.util.Assert;
 
@@ -55,15 +56,34 @@ public class RequeryTemplate implements RequeryOperations {
     public <V> V runInTransaction(@NotNull final Callable<V> callable,
                                   @Nullable final TransactionIsolation isolation) {
         Assert.notNull(callable, "Callable must not be null.");
+
+        if (dataStore.transaction().active()) {
+            log.debug("Transaction is active already, so run statement in currently active transaction");
+            try {
+                return callable.call();
+            } catch (Exception e) {
+                throw new RequeryExecutionException("Fail to requery query.", e);
+            }
+        }
         return (isolation != null)
                ? dataStore.runInTransaction(callable, isolation)
-               : dataStore.runInTransaction(callable, TransactionIsolation.REPEATABLE_READ);
+               : dataStore.runInTransaction(callable, TransactionIsolation.READ_COMMITTED);
     }
 
     @Override
     public <V> V withTransaction(@NotNull final Function<EntityDataStore<Object>, V> block,
                                  @Nullable final TransactionIsolation isolation) {
         Assert.notNull(block, "block must not be null.");
+
+        if (dataStore.transaction().active()) {
+            log.debug("Transaction is active already, so run statement in currently active transaction");
+            try {
+                return block.apply(dataStore);
+            } catch (Exception e) {
+                throw new RequeryExecutionException("Fail to requery query.", e);
+            }
+        }
+
         return getDataStore().runInTransaction(() -> block.apply(dataStore), isolation);
     }
 }

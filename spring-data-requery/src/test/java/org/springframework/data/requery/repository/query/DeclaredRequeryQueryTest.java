@@ -30,6 +30,7 @@ import org.springframework.data.requery.repository.RequeryRepository;
 import org.springframework.data.requery.repository.support.RequeryRepositoryFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
@@ -47,6 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = { RequeryTestConfiguration.class })
+@Transactional
 public class DeclaredRequeryQueryTest {
 
     @Inject RequeryOperations operations;
@@ -94,6 +96,9 @@ public class DeclaredRequeryQueryTest {
 
         List<BasicUser> results = repository.findWithLimits(5);
         assertThat(results).hasSize(5);
+
+        List<BasicUser> results2 = repository.findWithLimits(3);
+        assertThat(results2).hasSize(3);
     }
 
     @Test
