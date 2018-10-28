@@ -40,9 +40,9 @@ public class CompletableFutureTest extends AbstractDomainTest {
     public void setup() {
         asyncEntityStore = new CompletableEntityStore<>(dataStore, ForkJoinPool.commonPool());
 
-        requeryTemplate.deleteAll(BasicLocation.class);
-        requeryTemplate.deleteAll(BasicGroup.class);
-        requeryTemplate.deleteAll(BasicUser.class);
+        requeryOperations.deleteAll(BasicLocation.class);
+        requeryOperations.deleteAll(BasicGroup.class);
+        requeryOperations.deleteAll(BasicUser.class);
     }
 
     @Test

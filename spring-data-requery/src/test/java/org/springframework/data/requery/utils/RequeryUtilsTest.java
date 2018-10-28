@@ -80,7 +80,7 @@ public class RequeryUtilsTest extends AbstractDomainTest {
 
     @Test
     public void retrieveEntityModel() {
-        EntityModel entityModel = RequeryUtils.getEntityModel(requeryTemplate.getDataStore());
+        EntityModel entityModel = RequeryUtils.getEntityModel(requeryOperations.getDataStore());
 
         assertThat(entityModel).isNotNull();
 
@@ -94,7 +94,7 @@ public class RequeryUtilsTest extends AbstractDomainTest {
 
     @Test
     public void retrieveEntityClasses() {
-        List<Class<?>> classes = RequeryUtils.getEntityClasses(requeryTemplate.getDataStore());
+        List<Class<?>> classes = RequeryUtils.getEntityClasses(requeryOperations.getDataStore());
 
         assertThat(classes.contains(BasicUser.class)).isTrue();
         assertThat(classes.contains(EntityState.class)).isFalse();

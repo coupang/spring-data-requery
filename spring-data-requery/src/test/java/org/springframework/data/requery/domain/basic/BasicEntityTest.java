@@ -28,9 +28,9 @@ public class BasicEntityTest extends AbstractDomainTest {
 
     @Before
     public void setup() {
-        requeryTemplate.deleteAll(BasicLocation.class);
-        requeryTemplate.deleteAll(BasicGroup.class);
-        requeryTemplate.deleteAll(BasicUser.class);
+        requeryOperations.deleteAll(BasicLocation.class);
+        requeryOperations.deleteAll(BasicGroup.class);
+        requeryOperations.deleteAll(BasicUser.class);
     }
 
 
@@ -38,13 +38,13 @@ public class BasicEntityTest extends AbstractDomainTest {
     public void insert_user_without_association() throws Exception {
 
         BasicUser user = RandomData.randomUser();
-        requeryTemplate.insert(user);
+        requeryOperations.insert(user);
 
-        BasicUser loaded = requeryTemplate.findById(BasicUser.class, user.id);
+        BasicUser loaded = requeryOperations.findById(BasicUser.class, user.id);
 
         assertThat(loaded.getLastModifiedDate()).isNull();
         loaded.name = "updated";
-        requeryTemplate.update(loaded);
+        requeryOperations.update(loaded);
 
         assertThat(loaded.getLastModifiedDate()).isNotNull();
     }
@@ -52,10 +52,10 @@ public class BasicEntityTest extends AbstractDomainTest {
     @Test
     public void select_with_limit() throws Exception {
         BasicUser user = RandomData.randomUser();
-        requeryTemplate.insert(user);
+        requeryOperations.insert(user);
 
         // NOTE: 특정 컬럼만 가지고 온 후, 다른 컬럼을 참조하면, Lazy loading을 수행해준다.
-        Result<BasicUser> result = requeryTemplate
+        Result<BasicUser> result = requeryOperations
             .select(BasicUser.class, BasicUser.ID, BasicUser.NAME)
             .limit(10)
             .get();

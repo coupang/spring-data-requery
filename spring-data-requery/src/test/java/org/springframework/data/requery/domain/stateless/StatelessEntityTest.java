@@ -38,9 +38,9 @@ public class StatelessEntityTest extends AbstractDomainTest {
         entry.setFlag1(true);
         entry.setFlag2(false);
 
-        requeryTemplate.insert(entry);
+        requeryOperations.insert(entry);
 
-        Entry found = requeryTemplate.findById(Entry.class, entry.getId());
+        Entry found = requeryOperations.findById(Entry.class, entry.getId());
         assertThat(found.getId()).isEqualTo(entry.getId());
     }
 }

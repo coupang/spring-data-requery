@@ -37,13 +37,13 @@ public class ParentChildNoCascadeTest extends AbstractDomainTest {
 
     @Before
     public void setup() {
-        requeryTemplate.deleteAll(FuncChild.class);
-        requeryTemplate.deleteAll(FuncParent.class);
-        requeryTemplate.deleteAll(FuncChildOneToOneNoCascade.class);
-        requeryTemplate.deleteAll(FuncChildOneToManyNoCascade.class);
-        requeryTemplate.deleteAll(FuncChildManyToOneNoCascade.class);
-        requeryTemplate.deleteAll(FuncChildManyToManyNoCascade.class);
-        requeryTemplate.deleteAll(FuncParentNoCascade.class);
+        requeryOperations.deleteAll(FuncChild.class);
+        requeryOperations.deleteAll(FuncParent.class);
+        requeryOperations.deleteAll(FuncChildOneToOneNoCascade.class);
+        requeryOperations.deleteAll(FuncChildOneToManyNoCascade.class);
+        requeryOperations.deleteAll(FuncChildManyToOneNoCascade.class);
+        requeryOperations.deleteAll(FuncChildManyToManyNoCascade.class);
+        requeryOperations.deleteAll(FuncParentNoCascade.class);
     }
 
     @Test
@@ -56,7 +56,7 @@ public class ParentChildNoCascadeTest extends AbstractDomainTest {
             parent.setChild(child);
 
             // NOTE: This violates the Foreign Key Constraint, because Child does not exist and CascadeAction.SAVE is not specified
-            requeryTemplate.insert(parent);
+            requeryOperations.insert(parent);
         }).isInstanceOf(PersistenceException.class);
     }
 
@@ -72,7 +72,7 @@ public class ParentChildNoCascadeTest extends AbstractDomainTest {
         parent.setId(1L);
         parent.setOneToOne(child);
 
-        requeryTemplate.insert(parent);
+        requeryOperations.insert(parent);
         // }.isInstanceOf(StatementExecutionException::class)
     }
 
@@ -82,15 +82,15 @@ public class ParentChildNoCascadeTest extends AbstractDomainTest {
         FuncChildOneToOneNoCascade child = new FuncChildOneToOneNoCascade();
         child.setId(1L);
         child.setAttribute("1");
-        requeryTemplate.insert(child);
+        requeryOperations.insert(child);
 
         FuncParentNoCascade parent = new FuncParentNoCascade();
         parent.setId(1L);
         parent.setOneToOne(child);
-        requeryTemplate.insert(parent);
+        requeryOperations.insert(parent);
 
         // Assert that child has been associated to parent
-        FuncParentNoCascade parentGot = requeryTemplate.findById(FuncParentNoCascade.class, 1L);
+        FuncParentNoCascade parentGot = requeryOperations.findById(FuncParentNoCascade.class, 1L);
         assertThat(parentGot.getOneToOne()).isEqualTo(child);
     }
 
@@ -100,15 +100,15 @@ public class ParentChildNoCascadeTest extends AbstractDomainTest {
         FuncChildManyToOneNoCascade child = new FuncChildManyToOneNoCascade();
         child.setId(1L);
         child.setAttribute("1");
-        requeryTemplate.insert(child);
+        requeryOperations.insert(child);
 
         FuncParentNoCascade parent = new FuncParentNoCascade();
         parent.setId(1L);
         parent.setManyToOne(child);
-        requeryTemplate.insert(parent);
+        requeryOperations.insert(parent);
 
         // Assert that child has been associated to parent
-        FuncParentNoCascade parentGot = requeryTemplate.findById(FuncParentNoCascade.class, 1L);
+        FuncParentNoCascade parentGot = requeryOperations.findById(FuncParentNoCascade.class, 1L);
         assertThat(parentGot.getManyToOne()).isEqualTo(child);
     }
 
@@ -123,10 +123,10 @@ public class ParentChildNoCascadeTest extends AbstractDomainTest {
             FuncParentNoCascade parent = new FuncParentNoCascade();
             parent.setId(1L);
             parent.getOneToMany().add(child);
-            requeryTemplate.insert(parent);
+            requeryOperations.insert(parent);
 
             // Assert that child has been associated to parent
-            FuncParentNoCascade parentGot = requeryTemplate.findById(FuncParentNoCascade.class, 1L);
+            FuncParentNoCascade parentGot = requeryOperations.findById(FuncParentNoCascade.class, 1L);
         }).isInstanceOf(RowCountException.class);
     }
 
@@ -136,15 +136,15 @@ public class ParentChildNoCascadeTest extends AbstractDomainTest {
         FuncChildOneToManyNoCascade child = new FuncChildOneToManyNoCascade();
         child.setId(1L);
         child.setAttribute("1");
-        requeryTemplate.insert(child);
+        requeryOperations.insert(child);
 
         FuncParentNoCascade parent = new FuncParentNoCascade();
         parent.setId(1L);
         parent.getOneToMany().add(child);
-        requeryTemplate.insert(parent);
+        requeryOperations.insert(parent);
 
         // Assert that child has been associated to parent
-        FuncParentNoCascade parentGot = requeryTemplate.findById(FuncParentNoCascade.class, 1L);
+        FuncParentNoCascade parentGot = requeryOperations.findById(FuncParentNoCascade.class, 1L);
         assertThat(parentGot.getOneToMany()).hasSize(1);
         assertThat(parentGot.getOneToMany().get(0)).isEqualTo(child);
     }
@@ -160,7 +160,7 @@ public class ParentChildNoCascadeTest extends AbstractDomainTest {
             FuncParentNoCascade parent = new FuncParentNoCascade();
             parent.setId(1L);
             parent.getManyToMany().add(child);
-            requeryTemplate.insert(parent);
+            requeryOperations.insert(parent);
         }).isInstanceOf(StatementExecutionException.class);
     }
 
@@ -170,15 +170,15 @@ public class ParentChildNoCascadeTest extends AbstractDomainTest {
         FuncChildManyToManyNoCascade child = new FuncChildManyToManyNoCascade();
         child.setId(1L);
         child.setAttribute("1");
-        requeryTemplate.insert(child);
+        requeryOperations.insert(child);
 
         FuncParentNoCascade parent = new FuncParentNoCascade();
         parent.setId(1L);
         parent.getManyToMany().add(child);
-        requeryTemplate.insert(parent);
+        requeryOperations.insert(parent);
 
         // Assert that child has been associated to parent
-        FuncParentNoCascade parentGot = requeryTemplate.findById(FuncParentNoCascade.class, 1L);
+        FuncParentNoCascade parentGot = requeryOperations.findById(FuncParentNoCascade.class, 1L);
         assertThat(parentGot.getManyToMany()).hasSize(1);
         assertThat(parentGot.getManyToMany().get(0)).isEqualTo(child);
     }
@@ -193,12 +193,12 @@ public class ParentChildNoCascadeTest extends AbstractDomainTest {
         parent.setId(123L);
         parent.setOneToOne(child);
 
-        requeryTemplate.insert(child);
-        requeryTemplate.insert(parent);
+        requeryOperations.insert(child);
+        requeryOperations.insert(parent);
 
-        requeryTemplate.delete(parent);
+        requeryOperations.delete(parent);
 
-        FuncChildOneToOneNoCascade childGot = requeryTemplate.findById(FuncChildOneToOneNoCascade.class, 123L);
+        FuncChildOneToOneNoCascade childGot = requeryOperations.findById(FuncChildOneToOneNoCascade.class, 123L);
         assertThat(childGot).isNotNull();
     }
 
@@ -212,12 +212,12 @@ public class ParentChildNoCascadeTest extends AbstractDomainTest {
         parent.setId(123L);
         parent.setManyToOne(child);
 
-        requeryTemplate.insert(child);
-        requeryTemplate.insert(parent);
+        requeryOperations.insert(child);
+        requeryOperations.insert(parent);
 
-        requeryTemplate.delete(parent);
+        requeryOperations.delete(parent);
 
-        FuncChildManyToOneNoCascade childGot = requeryTemplate.findById(FuncChildManyToOneNoCascade.class, 123L);
+        FuncChildManyToOneNoCascade childGot = requeryOperations.findById(FuncChildManyToOneNoCascade.class, 123L);
         assertThat(childGot).isNotNull();
     }
 
@@ -235,18 +235,18 @@ public class ParentChildNoCascadeTest extends AbstractDomainTest {
         parent.getOneToMany().add(child1);
         parent.getOneToMany().add(child2);
 
-        requeryTemplate.insert(child1);
-        requeryTemplate.insert(child2);
-        requeryTemplate.insert(parent);
+        requeryOperations.insert(child1);
+        requeryOperations.insert(child2);
+        requeryOperations.insert(parent);
 
         // delete parent
-        requeryTemplate.delete(parent);
+        requeryOperations.delete(parent);
 
-        FuncChildOneToManyNoCascade child1Got = requeryTemplate.findById(FuncChildOneToManyNoCascade.class, 1L);
+        FuncChildOneToManyNoCascade child1Got = requeryOperations.findById(FuncChildOneToManyNoCascade.class, 1L);
         assertThat(child1Got).isNotNull();
         assertThat(child1Got.getParent()).isNull();
 
-        FuncChildOneToManyNoCascade child2Got = requeryTemplate.findById(FuncChildOneToManyNoCascade.class, 2L);
+        FuncChildOneToManyNoCascade child2Got = requeryOperations.findById(FuncChildOneToManyNoCascade.class, 2L);
         assertThat(child2Got).isNotNull();
         assertThat(child2Got.getParent()).isNull();
     }
@@ -265,16 +265,16 @@ public class ParentChildNoCascadeTest extends AbstractDomainTest {
         parent.getManyToMany().add(child1);
         parent.getManyToMany().add(child2);
 
-        requeryTemplate.insert(child1);
-        requeryTemplate.insert(child2);
-        requeryTemplate.insert(parent);
+        requeryOperations.insert(child1);
+        requeryOperations.insert(child2);
+        requeryOperations.insert(parent);
 
-        requeryTemplate.delete(parent);
+        requeryOperations.delete(parent);
 
-        FuncChildManyToManyNoCascade child1Got = requeryTemplate.findById(FuncChildManyToManyNoCascade.class, 1L);
+        FuncChildManyToManyNoCascade child1Got = requeryOperations.findById(FuncChildManyToManyNoCascade.class, 1L);
         assertThat(child1Got).isNotNull();
 
-        FuncChildManyToManyNoCascade child2Got = requeryTemplate.findById(FuncChildManyToManyNoCascade.class, 2L);
+        FuncChildManyToManyNoCascade child2Got = requeryOperations.findById(FuncChildManyToManyNoCascade.class, 2L);
         assertThat(child2Got).isNotNull();
     }
 }

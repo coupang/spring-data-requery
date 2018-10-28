@@ -37,6 +37,8 @@ import java.util.List;
 /**
  * {@link Query} annotation이 정의된 메소드, interface default method, custom defined method를 실행하는 {@link RepositoryQuery}
  *
+ * FIXME: Declared Query를 실행할 때, Transaction 처리 시, connection이 닫혀버린다. 이를 유지 할 수 있는 기능을 넣어야 한다.
+ *
  * @author debop
  * @since 18. 6. 15
  */
@@ -169,7 +171,7 @@ public class DeclaredRequeryQuery extends AbstractRequeryQuery {
                 Result<Tuple> result = operations.raw(countQuery, values);
                 return result.first().get(0);
             } catch (Exception e) {
-                log.error("Fail to retrieve count. query={}", query);
+                log.error("Fail to retrieve count. query={}", query, e);
                 return 0L;
             }
         }

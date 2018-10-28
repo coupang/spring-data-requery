@@ -34,9 +34,7 @@ import java.sql.Connection;
  *
  * @author debop
  * @since 18. 6. 14
- * @deprecated Use DataSourceTransactionManager.
  */
-@Deprecated
 @Slf4j
 public class RequeryTransactionManager extends DataSourceTransactionManager {
     private static final long serialVersionUID = 3291422158479490099L;
@@ -52,15 +50,20 @@ public class RequeryTransactionManager extends DataSourceTransactionManager {
 
     @Override
     protected void doBegin(@NotNull final Object transaction, @NotNull final TransactionDefinition definition) {
-        super.doBegin(transaction, definition);
+
         log.debug("Begin transaction... definition={}", definition);
 
-        TransactionIsolation isolation = getTransactionIsolation(definition.getIsolationLevel());
+        super.doBegin(transaction, definition);
 
-        if (isolation != null) {
-            entityDataStore.transaction().begin(isolation);
-        } else {
-            entityDataStore.transaction().begin();
+        if (!entityDataStore.transaction().active()) {
+            TransactionIsolation isolation = getTransactionIsolation(definition.getIsolationLevel());
+
+            log.debug("Begin requery transaction. {}", entityDataStore.transaction().getClass().getSimpleName());
+            if (isolation != null) {
+                entityDataStore.transaction().begin(isolation);
+            } else {
+                entityDataStore.transaction().begin();
+            }
         }
     }
 

@@ -67,28 +67,28 @@ public class HierarchyTest extends AbstractDomainTest {
 
     @Before
     public void setup() {
-        requeryTemplate.deleteAll(NodeAttribute.class);
-        requeryTemplate.deleteAll(TreeNode.class);
+        requeryOperations.deleteAll(NodeAttribute.class);
+        requeryOperations.deleteAll(TreeNode.class);
 
-        assertThat(requeryTemplate.count(NodeAttribute.class).get().value()).isEqualTo(0);
-        assertThat(requeryTemplate.count(TreeNode.class).get().value()).isEqualTo(0);
+        assertThat(requeryOperations.count(NodeAttribute.class).get().value()).isEqualTo(0);
+        assertThat(requeryOperations.count(TreeNode.class).get().value()).isEqualTo(0);
     }
 
     @Test
     public void insert_root_node_only() {
         TreeNode root = treeNodeOf("root");
-        requeryTemplate.insert(root);
+        requeryOperations.insert(root);
 
         assertThat(root.getId()).isNotNull();
 
-        TreeNode loadedRoot = requeryTemplate.findById(TreeNode.class, root.getId());
+        TreeNode loadedRoot = requeryOperations.findById(TreeNode.class, root.getId());
         assertThat(loadedRoot).isNotNull();
         assertThat(loadedRoot).isEqualTo(root);
 
-        requeryTemplate.delete(loadedRoot);
+        requeryOperations.delete(loadedRoot);
 
-        assertThat(requeryTemplate.count(NodeAttribute.class).get().value()).isEqualTo(0);
-        assertThat(requeryTemplate.count(TreeNode.class).get().value()).isEqualTo(0);
+        assertThat(requeryOperations.count(NodeAttribute.class).get().value()).isEqualTo(0);
+        assertThat(requeryOperations.count(TreeNode.class).get().value()).isEqualTo(0);
     }
 
     @Test
@@ -97,21 +97,21 @@ public class HierarchyTest extends AbstractDomainTest {
         TreeNode child1 = treeNodeOf("child1", root);
         TreeNode child2 = treeNodeOf("child2", root);
 
-        requeryTemplate.insert(root);
-        requeryTemplate.refreshAllProperties(root);
+        requeryOperations.insert(root);
+        requeryOperations.refreshAllProperties(root);
         assertThat(root.getId()).isNotNull();
         assertThat(child1.getId()).isNotNull();
         assertThat(child2.getId()).isNotNull();
 
-        TreeNode loadedRoot = requeryTemplate.findById(TreeNode.class, root.id);
+        TreeNode loadedRoot = requeryOperations.findById(TreeNode.class, root.id);
         assertThat(loadedRoot).isNotNull().isEqualTo(root);
         assertThat(loadedRoot.getChildren()).hasSize(2).containsOnly(child1, child2);
 
         // cascade delete
-        requeryTemplate.delete(loadedRoot);
+        requeryOperations.delete(loadedRoot);
 
-        assertThat(requeryTemplate.count(TreeNode.class).get().value()).isEqualTo(0);
-        assertThat(requeryTemplate.count(NodeAttribute.class).get().value()).isEqualTo(0);
+        assertThat(requeryOperations.count(TreeNode.class).get().value()).isEqualTo(0);
+        assertThat(requeryOperations.count(NodeAttribute.class).get().value()).isEqualTo(0);
     }
 
     @Test
@@ -125,30 +125,30 @@ public class HierarchyTest extends AbstractDomainTest {
 
         TreeNode grandChild21 = treeNodeOf("grandChild21", child2);
 
-        requeryTemplate.insert(root);
+        requeryOperations.insert(root);
 
         assertThat(root.getId()).isNotNull();
         assertThat(child1.getId()).isNotNull();
         assertThat(child2.getId()).isNotNull();
 
-        TreeNode loadedRoot = requeryTemplate.findById(TreeNode.class, root.id);
+        TreeNode loadedRoot = requeryOperations.findById(TreeNode.class, root.id);
         assertThat(loadedRoot).isNotNull().isEqualTo(root);
         assertThat(loadedRoot.getChildren()).hasSize(2).containsOnly(child1, child2);
 
-        TreeNode loadedChild = requeryTemplate.findById(TreeNode.class, child1.id);
+        TreeNode loadedChild = requeryOperations.findById(TreeNode.class, child1.id);
         assertThat(loadedChild.getChildren()).hasSize(2).containsOnly(grandChild11, grandChild12);
 
         // child delete
-        requeryTemplate.delete(loadedChild);
+        requeryOperations.delete(loadedChild);
 
         // HINT: child가 삭제된 후에는 parent를 refresh 해야 child가 삭제되었음을 안다 (그 전에 parent 에서 child를 제거해되 된다)
-        requeryTemplate.refreshAllProperties(loadedRoot);
+        requeryOperations.refreshAllProperties(loadedRoot);
         assertThat(loadedRoot.getChildren()).hasSize(1).containsOnly(child2);
 
         // cascade delete
-        requeryTemplate.delete(loadedRoot);
+        requeryOperations.delete(loadedRoot);
 
-        assertThat(requeryTemplate.count(TreeNode.class).get().value()).isEqualTo(0);
-        assertThat(requeryTemplate.count(NodeAttribute.class).get().value()).isEqualTo(0);
+        assertThat(requeryOperations.count(TreeNode.class).get().value()).isEqualTo(0);
+        assertThat(requeryOperations.count(NodeAttribute.class).get().value()).isEqualTo(0);
     }
 }

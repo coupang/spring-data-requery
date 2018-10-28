@@ -41,7 +41,7 @@ public class QueryByExampleBuilderTest extends AbstractDomainTest {
 
     @Before
     public void setup() {
-        requeryTemplate.deleteAll(BasicUser.class);
+        requeryOperations.deleteAll(BasicUser.class);
     }
 
     @Test
@@ -49,7 +49,7 @@ public class QueryByExampleBuilderTest extends AbstractDomainTest {
 
         BasicUser user = RandomData.randomUser();
         user.setName("example");
-        requeryTemplate.insert(user);
+        requeryOperations.insert(user);
 
         BasicUser exampleUser = new BasicUser();
         exampleUser.setName(user.getName());
@@ -66,7 +66,7 @@ public class QueryByExampleBuilderTest extends AbstractDomainTest {
         BasicUser user = RandomData.randomUser();
         user.setName("example");
         user.setEmail("debop@example.com");
-        requeryTemplate.insert(user);
+        requeryOperations.insert(user);
 
         BasicUser exampleUser = new BasicUser();
         exampleUser.setName(user.getName());
@@ -82,7 +82,7 @@ public class QueryByExampleBuilderTest extends AbstractDomainTest {
     public void nameStartWithExample() {
         BasicUser user = RandomData.randomUser();
         user.setName("example");
-        requeryTemplate.insert(user);
+        requeryOperations.insert(user);
 
         BasicUser exampleUser = new BasicUser();
         exampleUser.setName("EXA");
@@ -101,7 +101,7 @@ public class QueryByExampleBuilderTest extends AbstractDomainTest {
 
     @SuppressWarnings("unchecked")
     private Return<? extends Result<BasicUser>> buildQueryByExample(Example<BasicUser> example) {
-        QueryElement<? extends Result<BasicUser>> root = (QueryElement<? extends Result<BasicUser>>) requeryTemplate.select(BasicUser.class);
+        QueryElement<? extends Result<BasicUser>> root = (QueryElement<? extends Result<BasicUser>>) requeryOperations.select(BasicUser.class);
         return QueryByExampleBuilder.applyExample(root, example);
     }
 }

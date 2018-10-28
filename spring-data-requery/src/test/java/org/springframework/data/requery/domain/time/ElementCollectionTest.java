@@ -45,9 +45,9 @@ public class ElementCollectionTest extends AbstractDomainTest {
             phoneNumbers.add("666-6666");
             user.setPhoneNumbers(phoneNumbers);
 
-            requeryTemplate.insert(user);
+            requeryOperations.insert(user);
 
-            ElementCollectionUser saved = requeryTemplate.select(ElementCollectionUser.class)
+            ElementCollectionUser saved = requeryOperations.select(ElementCollectionUser.class)
                 .where(ElementCollectionUser.ID.eq(user.getId()).and(ElementCollectionUser.NAME.eq(user.getName())))
                 .get()
                 .first();

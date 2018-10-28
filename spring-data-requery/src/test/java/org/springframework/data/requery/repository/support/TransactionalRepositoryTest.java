@@ -72,7 +72,7 @@ public class TransactionalRepositoryTest {
 
     @Test
     public void simpleManipulatingOperation() throws Exception {
-        repository.upsert(RandomData.randomUser());
+        repository.save(RandomData.randomUser());
         assertThat(transactionManager.getTransactionRequests()).isEqualTo(1);
     }
 
@@ -83,9 +83,15 @@ public class TransactionalRepositoryTest {
     }
 
     @Test
-    public void rawQueryString() {
+    public void invokeTransactionalFinder() {
         repository.findByAnnotatedQuery("foo@bar.kr");
         assertThat(transactionManager.getTransactionRequests()).isEqualTo(1);
+    }
+
+    @Test
+    public void invokeRedeclaredMethod() {
+        repository.findById(1L);
+        assertThat(transactionManager.getDefinition().isReadOnly()).isFalse();
     }
 
     @Getter

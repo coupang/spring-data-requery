@@ -37,6 +37,7 @@ import org.springframework.data.requery.domain.model.Group;
 import org.springframework.data.requery.domain.model.Person;
 import org.springframework.data.requery.domain.model.Phone;
 import org.springframework.data.requery.domain.model.RandomData;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -59,33 +60,32 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * @author Diego on 2018. 6. 9..
  */
 @Slf4j
-@Transactional
 public class FunctionalQueryTest extends AbstractDomainTest {
 
     private static final int COUNT = 100;
 
     @Before
     public void setup() {
-        requeryTemplate.deleteAll(Address.class);
-        requeryTemplate.deleteAll(Group.class);
-        requeryTemplate.deleteAll(Phone.class);
-        requeryTemplate.deleteAll(Person.class);
+        requeryOperations.deleteAll(Address.class);
+        requeryOperations.deleteAll(Group.class);
+        requeryOperations.deleteAll(Phone.class);
+        requeryOperations.deleteAll(Person.class);
     }
 
     @Test
     public void query_function_now() {
         Person person = RandomData.randomPerson();
         person.setBirthday(LocalDate.now().plusDays(1));
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
-        Result<Person> result = requeryTemplate.select(Person.class)
+        Result<Person> result = requeryOperations.select(Person.class)
             .where(Person.BIRTHDAY.gt(LocalDate.now()))
             .get();
 
         List<Person> people = result.toList();
         assertThat(people).hasSize(1);
 
-        Integer count = requeryTemplate.count(Person.class)
+        Integer count = requeryOperations.count(Person.class)
             .where(Person.BIRTHDAY.gt(LocalDate.now()))
             .get()
             .value();
@@ -96,9 +96,9 @@ public class FunctionalQueryTest extends AbstractDomainTest {
     @Test
     public void query_function_random() {
         Set<Person> people = RandomData.randomPeople(10);
-        requeryTemplate.insertAll(people);
+        requeryOperations.insertAll(people);
 
-        Result<Person> result = requeryTemplate.select(Person.class)
+        Result<Person> result = requeryOperations.select(Person.class)
             .orderBy(new Random())
             .get();
 
@@ -112,10 +112,10 @@ public class FunctionalQueryTest extends AbstractDomainTest {
         for (int i = 0; i < 10; i++) {
             Person person = RandomData.randomPerson();
             person.setName(name);
-            requeryTemplate.insert(person);
+            requeryOperations.insert(person);
         }
 
-        Result<Person> result = requeryTemplate.select(Person.class)
+        Result<Person> result = requeryOperations.select(Person.class)
             .where(Person.NAME.eq(name))
             .get();
 
@@ -137,12 +137,12 @@ public class FunctionalQueryTest extends AbstractDomainTest {
                     person.setEmail(email);
                     break;
             }
-            requeryTemplate.insert(person);
+            requeryOperations.insert(person);
         }
 
         // FIXME: not 연산자가 제대로 동작하지 않는다. (Java 와 Kotlin 모두)
         //
-        Result<Person> result = requeryTemplate.select(Person.class)
+        Result<Person> result = requeryOperations.select(Person.class)
             .where(Person.NAME.ne(name).and(Person.EMAIL.ne(email)))
             .get();
 
@@ -151,13 +151,13 @@ public class FunctionalQueryTest extends AbstractDomainTest {
 
     @Test
     public void single_query_execute() {
-        requeryTemplate.insertAll(RandomData.randomPeople(10));
+        requeryOperations.insertAll(RandomData.randomPeople(10));
 
-        Result<Person> result = requeryTemplate.select(Person.class).get();
+        Result<Person> result = requeryOperations.select(Person.class).get();
         assertThat(result.toList()).hasSize(10);
 
         Person person = RandomData.randomPerson();
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
         assertThat(result.toList()).hasSize(11);
     }
@@ -169,18 +169,18 @@ public class FunctionalQueryTest extends AbstractDomainTest {
         for (int i = 0; i < 10; i++) {
             Person person = RandomData.randomPerson();
             person.setName(name);
-            requeryTemplate.insert(person);
+            requeryOperations.insert(person);
         }
 
         for (int i = 0; i < 3; i++) {
-            Result<Person> query = requeryTemplate.select(Person.class)
+            Result<Person> query = requeryOperations.select(Person.class)
                 .where(Person.NAME.eq(name))
                 .orderBy(Person.NAME)
                 .limit(5)
                 .get();
             assertThat(query.toList()).hasSize(5);
 
-            Result<Person> query2 = requeryTemplate.select(Person.class)
+            Result<Person> query2 = requeryOperations.select(Person.class)
                 .where(Person.NAME.eq(name))
                 .limit(5)
                 .offset(5)
@@ -193,9 +193,9 @@ public class FunctionalQueryTest extends AbstractDomainTest {
     public void single_query_where_null() {
         Person person = RandomData.randomPerson();
         person.setName(null);
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
-        Result<Person> query = requeryTemplate.select(Person.class)
+        Result<Person> query = requeryOperations.select(Person.class)
             .where(Person.NAME.isNull())
             .get();
 
@@ -209,45 +209,45 @@ public class FunctionalQueryTest extends AbstractDomainTest {
         for (int i = 0; i < 10; i++) {
             Person person = RandomData.randomPerson();
             person.setName(name);
-            requeryTemplate.insert(person);
+            requeryOperations.insert(person);
         }
 
-        assertThat(requeryTemplate.deleteAll(Person.class)).isGreaterThan(0);
-        assertThat(requeryTemplate.select(Person.class).get().firstOrNull()).isNull();
+        assertThat(requeryOperations.deleteAll(Person.class)).isGreaterThan(0);
+        assertThat(requeryOperations.select(Person.class).get().firstOrNull()).isNull();
     }
 
     @Test
     public void delete_batch() {
         Set<Person> people = RandomData.randomPeople(COUNT);
-        requeryTemplate.insertAll(people);
+        requeryOperations.insertAll(people);
 
-        assertThat(requeryTemplate.count(Person.class).get().value()).isEqualTo(people.size());
+        assertThat(requeryOperations.count(Person.class).get().value()).isEqualTo(people.size());
 
-        requeryTemplate.deleteAll(people);
-        assertThat(requeryTemplate.count(Person.class).get().value()).isEqualTo(0);
+        requeryOperations.deleteAll(people);
+        assertThat(requeryOperations.count(Person.class).get().value()).isEqualTo(0);
     }
 
     @Test
     public void query_by_foreign_key() {
         Person person = RandomData.randomPerson();
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
         Phone phone1 = RandomData.randomPhone();
         Phone phone2 = RandomData.randomPhone();
         person.getPhoneNumbers().add(phone1);
         person.getPhoneNumbers().add(phone2);
 
-        requeryTemplate.upsert(person);
+        requeryOperations.upsert(person);
         assertThat(person.getPhoneNumberSet()).containsOnly(phone1, phone2);
 
         // by entity
-        Result<Phone> query1 = requeryTemplate.select(Phone.class).where(Phone.OWNER.eq(person)).get();
+        Result<Phone> query1 = requeryOperations.select(Phone.class).where(Phone.OWNER.eq(person)).get();
 
         assertThat(query1.toList()).hasSize(2).containsOnly(phone1, phone2);
         assertThat(person.getPhoneNumberList()).hasSize(2).containsAll(query1.toList());
 
         // by id
-        Result<Phone> query2 = requeryTemplate.select(Phone.class).where(Phone.OWNER_ID.eq(person.getId())).get();
+        Result<Phone> query2 = requeryOperations.select(Phone.class).where(Phone.OWNER_ID.eq(person.getId())).get();
 
         assertThat(query2.toList()).hasSize(2).containsOnly(phone1, phone2);
         assertThat(person.getPhoneNumberList()).hasSize(2).containsAll(query2.toList());
@@ -256,10 +256,10 @@ public class FunctionalQueryTest extends AbstractDomainTest {
     @Test
     public void query_by_UUID() {
         Person person = RandomData.randomPerson();
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
         UUID uuid = person.getUUID();
-        Person loaded = requeryTemplate.select(Person.class).where(Person.UUID.eq(uuid)).get().first();
+        Person loaded = requeryOperations.select(Person.class).where(Person.UUID.eq(uuid)).get().first();
         assertThat(loaded).isEqualTo(person);
     }
 
@@ -268,10 +268,10 @@ public class FunctionalQueryTest extends AbstractDomainTest {
         for (int i = 0; i < 10; i++) {
             Person person = RandomData.randomPerson();
             person.setName(Integer.toString(i / 2));
-            requeryTemplate.insert(person);
+            requeryOperations.insert(person);
         }
 
-        Result<Tuple> result = requeryTemplate.select(Person.NAME).distinct().get();
+        Result<Tuple> result = requeryOperations.select(Person.NAME).distinct().get();
 
         assertThat(result.toList()).hasSize(5);
     }
@@ -279,17 +279,17 @@ public class FunctionalQueryTest extends AbstractDomainTest {
     @Test
     public void query_select_count() {
         Set<Person> people = RandomData.randomPeople(10);
-        requeryTemplate.insertAll(people);
+        requeryOperations.insertAll(people);
 
-        Result<Tuple> result = requeryTemplate.select(Count.count(Person.class).as("bb")).get();
+        Result<Tuple> result = requeryOperations.select(Count.count(Person.class).as("bb")).get();
         assertThat(result.first().<Integer>get("bb")).isEqualTo(people.size());
 
-        Result<Tuple> result2 = requeryTemplate.select(Count.count(Person.class)).get();
+        Result<Tuple> result2 = requeryOperations.select(Count.count(Person.class)).get();
         assertThat(result2.first().<Integer>get(0)).isEqualTo(people.size());
 
-        assertThat(requeryTemplate.count(Person.class).get().value()).isEqualTo(people.size());
+        assertThat(requeryOperations.count(Person.class).get().value()).isEqualTo(people.size());
 
-        requeryTemplate.count(Person.class).get().consume(
+        requeryOperations.count(Person.class).get().consume(
             count -> assertThat(count).isEqualTo(people.size())
         );
     }
@@ -298,12 +298,12 @@ public class FunctionalQueryTest extends AbstractDomainTest {
     public void query_select_count_where() {
         Person person = RandomData.randomPerson();
         person.setName("countMe");
-        requeryTemplate.insert(person);
-        requeryTemplate.insertAll(RandomData.randomPeople(9));
+        requeryOperations.insert(person);
+        requeryOperations.insertAll(RandomData.randomPeople(9));
 
-        assertThat(requeryTemplate.count(Person.class).where(Person.NAME.eq("countMe")).get().value()).isEqualTo(1);
+        assertThat(requeryOperations.count(Person.class).where(Person.NAME.eq("countMe")).get().value()).isEqualTo(1);
 
-        Result<Tuple> result = requeryTemplate.select(Count.count(Person.class).as("cnt"))
+        Result<Tuple> result = requeryOperations.select(Count.count(Person.class).as("cnt"))
             .where(Person.NAME.eq("countMe"))
             .get();
 
@@ -312,11 +312,11 @@ public class FunctionalQueryTest extends AbstractDomainTest {
 
     @Test
     public void query_not_null() throws Exception {
-        requeryTemplate.insertAll(RandomData.randomPeople(10));
+        requeryOperations.insertAll(RandomData.randomPeople(10));
 
         Thread.sleep(10L);
 
-        Result<Person> result = requeryTemplate.select(Person.class).where(Person.NAME.notNull()).get();
+        Result<Person> result = requeryOperations.select(Person.class).where(Person.NAME.notNull()).get();
         assertThat(result.toList()).hasSize(10);
     }
 
@@ -325,18 +325,18 @@ public class FunctionalQueryTest extends AbstractDomainTest {
         for (int i = 0; i < 10; i++) {
             Person person = RandomData.randomPerson();
             person.setAge(i + 1);
-            requeryTemplate.insert(person);
+            requeryOperations.insert(person);
         }
 
         NumericAttribute<Person, Integer> personAge = Person.AGE;
 
-        Return<? extends Result<Tuple>> subQuery = requeryTemplate.select(personAge.sum().as("avg_age"))
+        Return<? extends Result<Tuple>> subQuery = requeryOperations.select(personAge.sum().as("avg_age"))
             .from(Person.class)
             .groupBy(personAge)
             .as("sums");
 
         Result<Tuple> result =
-            requeryTemplate.select(NamedNumericExpression.ofInteger("avg_age").avg())
+            requeryOperations.select(NamedNumericExpression.ofInteger("avg_age").avg())
                 .from(subQuery)
                 .get();
 
@@ -347,10 +347,10 @@ public class FunctionalQueryTest extends AbstractDomainTest {
     public void query_join_orderBy() {
         Person person = RandomData.randomPerson();
         person.setAddress(RandomData.randomAddress());
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
         // not a useful query just tests the sql output
-        Result<Address> result = requeryTemplate.select(Address.class)
+        Result<Address> result = requeryOperations.select(Address.class)
             .join(Person.class).on(Person.ADDRESS_ID.eq(Address.ID))
             .where(Person.ID.eq(person.getId()))
             .orderBy(Address.CITY.desc())
@@ -363,13 +363,13 @@ public class FunctionalQueryTest extends AbstractDomainTest {
     @Test
     public void query_select_min() {
         for (int i = 0; i < 9; i++) {
-            requeryTemplate.insert(RandomData.randomPerson());
+            requeryOperations.insert(RandomData.randomPerson());
         }
         Person person = RandomData.randomPerson();
         person.setBirthday(LocalDate.of(1800, 11, 11));
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
-        Result<Tuple> query = requeryTemplate.select(Person.BIRTHDAY.min().as("oldestBDay")).get();
+        Result<Tuple> query = requeryOperations.select(Person.BIRTHDAY.min().as("oldestBDay")).get();
         LocalDate birthday = query.first().get("oldestBDay");
         assertThat(birthday).isEqualTo(LocalDate.of(1800, 11, 11));
     }
@@ -378,9 +378,9 @@ public class FunctionalQueryTest extends AbstractDomainTest {
     public void query_select_trim() {
         Person person = RandomData.randomPerson();
         person.setName("  Name  ");
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
-        Tuple result = requeryTemplate.select(Person.NAME.trim().as("name")).get().first();
+        Tuple result = requeryOperations.select(Person.NAME.trim().as("name")).get().first();
         String name = result.get(0);
         assertThat(name).isEqualTo("Name");
     }
@@ -389,9 +389,9 @@ public class FunctionalQueryTest extends AbstractDomainTest {
     public void query_select_substr() {
         Person person = RandomData.randomPerson();
         person.setName("  Name");
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
-        Tuple result = requeryTemplate.select(Person.NAME.substr(3, 6).as("name")).get().first();
+        Tuple result = requeryOperations.select(Person.NAME.substr(3, 6).as("name")).get().first();
         String name = result.get(0);
         assertThat(name).isEqualTo("Name");
     }
@@ -401,10 +401,10 @@ public class FunctionalQueryTest extends AbstractDomainTest {
         for (int i = 0; i < 10; i++) {
             Person person = RandomData.randomPerson();
             person.setAge(i);
-            requeryTemplate.insert(person);
+            requeryOperations.insert(person);
         }
 
-        Result<Tuple> query = requeryTemplate.select(Person.AGE).orderBy(Person.AGE.desc()).get();
+        Result<Tuple> query = requeryOperations.select(Person.AGE).orderBy(Person.AGE.desc()).get();
 
         int topAge = query.first().<Integer>get(0);
         assertThat(topAge).isEqualTo(9);
@@ -414,15 +414,15 @@ public class FunctionalQueryTest extends AbstractDomainTest {
     public void query_orderBy_function() {
         Person person1 = RandomData.randomPerson();
         person1.setName("BOBB");
-        requeryTemplate.insert(person1);
+        requeryOperations.insert(person1);
         Person person2 = RandomData.randomPerson();
         person2.setName("BobA");
-        requeryTemplate.insert(person2);
+        requeryOperations.insert(person2);
         Person person3 = RandomData.randomPerson();
         person3.setName("bobC");
-        requeryTemplate.insert(person3);
+        requeryOperations.insert(person3);
 
-        List<Tuple> people = requeryTemplate.select(Person.NAME)
+        List<Tuple> people = requeryOperations.select(Person.NAME)
             .orderBy(Person.NAME.upper().desc())
             .get()
             .toList();
@@ -438,17 +438,17 @@ public class FunctionalQueryTest extends AbstractDomainTest {
         for (int i = 0; i < 5; i++) {
             Person person = RandomData.randomPerson();
             person.setAge(i);
-            requeryTemplate.insert(person);
+            requeryOperations.insert(person);
         }
 
-        Result<Tuple> result = requeryTemplate.select(Person.AGE)
+        Result<Tuple> result = requeryOperations.select(Person.AGE)
             .groupBy(Person.AGE)
             .having(Person.AGE.gt(3))
             .get();
 
         assertThat(result.toList()).hasSize(1);
 
-        Result<Tuple> result2 = requeryTemplate.select(Person.AGE)
+        Result<Tuple> result2 = requeryOperations.select(Person.AGE)
             .groupBy(Person.AGE)
             .having(Person.AGE.lt(0))
             .get();
@@ -461,35 +461,35 @@ public class FunctionalQueryTest extends AbstractDomainTest {
         String name = "Hello!";
         Person person = RandomData.randomPerson();
         person.setName(name);
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
         Group group = new Group();
         group.setName(name);
-        requeryTemplate.insert(group);
+        requeryOperations.insert(group);
 
         person.getGroups().add(group);
-        requeryTemplate.upsert(group);
+        requeryOperations.upsert(group);
 
-        WhereAndOr<? extends Result<Tuple>> groupNames = requeryTemplate.select(Group.NAME)
+        WhereAndOr<? extends Result<Tuple>> groupNames = requeryOperations.select(Group.NAME)
             .where(Group.NAME.eq(name));
 
-        Person p = requeryTemplate.select(Person.class)
+        Person p = requeryOperations.select(Person.class)
             .where(Person.NAME.in(groupNames)).get().first();
         assertThat(p.getName()).isEqualTo(name);
 
-        p = requeryTemplate.select(Person.class)
+        p = requeryOperations.select(Person.class)
             .where(Person.NAME.notIn(groupNames)).get().firstOrNull();
         assertThat(p).isNull();
 
-        p = requeryTemplate.select(Person.class)
+        p = requeryOperations.select(Person.class)
             .where(Person.NAME.in(Arrays.asList("Hello!", "Other"))).get().first();
         assertThat(p.getName()).isEqualTo(name);
 
-        p = requeryTemplate.select(Person.class)
+        p = requeryOperations.select(Person.class)
             .where(Person.NAME.in(Collections.singletonList("Hello!"))).get().first();
         assertThat(p.getName()).isEqualTo(name);
 
-        p = requeryTemplate.select(Person.class)
+        p = requeryOperations.select(Person.class)
             .where(Person.NAME.notIn(Collections.singletonList("Hello!"))).get().firstOrNull();
         assertThat(p).isNull();
     }
@@ -498,9 +498,9 @@ public class FunctionalQueryTest extends AbstractDomainTest {
     public void query_between() {
         Person person = RandomData.randomPerson();
         person.setAge(75);
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
-        Person p = requeryTemplate.select(Person.class).where(Person.AGE.between(50, 100)).get().first();
+        Person p = requeryOperations.select(Person.class).where(Person.AGE.between(50, 100)).get().first();
         assertThat(p).isEqualTo(person);
     }
 
@@ -508,21 +508,21 @@ public class FunctionalQueryTest extends AbstractDomainTest {
     public void query_conditions() {
         Person person = RandomData.randomPerson();
         person.setAge(75);
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
-        Person p = requeryTemplate.select(Person.class).where(Person.AGE.gte(75)).get().first();
+        Person p = requeryOperations.select(Person.class).where(Person.AGE.gte(75)).get().first();
         assertThat(p).isEqualTo(person);
 
-        p = requeryTemplate.select(Person.class).where(Person.AGE.lte(75)).get().first();
+        p = requeryOperations.select(Person.class).where(Person.AGE.lte(75)).get().first();
         assertThat(p).isEqualTo(person);
 
-        p = requeryTemplate.select(Person.class).where(Person.AGE.gt(75)).get().firstOrNull();
+        p = requeryOperations.select(Person.class).where(Person.AGE.gt(75)).get().firstOrNull();
         assertThat(p).isNull();
 
-        p = requeryTemplate.select(Person.class).where(Person.AGE.lt(75)).get().firstOrNull();
+        p = requeryOperations.select(Person.class).where(Person.AGE.lt(75)).get().firstOrNull();
         assertThat(p).isNull();
 
-        p = requeryTemplate.select(Person.class).where(Person.AGE.ne(75)).get().firstOrNull();
+        p = requeryOperations.select(Person.class).where(Person.AGE.ne(75)).get().firstOrNull();
         assertThat(p).isNull();
     }
 
@@ -530,19 +530,19 @@ public class FunctionalQueryTest extends AbstractDomainTest {
     public void query_compound_conditions() {
         Person person1 = RandomData.randomPerson();
         person1.setAge(75);
-        requeryTemplate.insert(person1);
+        requeryOperations.insert(person1);
 
         Person person2 = RandomData.randomPerson();
         person2.setAge(10);
         person2.setName("Carol");
-        requeryTemplate.insert(person2);
+        requeryOperations.insert(person2);
 
         Person person3 = RandomData.randomPerson();
         person3.setAge(0);
         person3.setName("Bob");
-        requeryTemplate.insert(person3);
+        requeryOperations.insert(person3);
 
-        Result<Person> result = requeryTemplate.select(Person.class)
+        Result<Person> result = requeryOperations.select(Person.class)
             .where(Person.AGE.gt(5).and(Person.AGE.lt(75))).and(Person.NAME.ne("Bob"))
 //            .where(Person.AGE.gt(5).and(Person.AGE.lt(75)).and(Person.NAME.ne("Bob"))) // TODO?: Error occurs
             .or(Person.NAME.eq("Bob"))
@@ -550,7 +550,7 @@ public class FunctionalQueryTest extends AbstractDomainTest {
 
         assertThat(result.toList()).hasSize(2).containsOnly(person2, person3);
 
-        result = requeryTemplate.select(Person.class)
+        result = requeryOperations.select(Person.class)
             .where(Person.AGE.gt(5).or(Person.AGE.lt(75)))
             .and(Person.NAME.eq("Bob"))
             .get();
@@ -560,10 +560,10 @@ public class FunctionalQueryTest extends AbstractDomainTest {
 
     @Test
     public void query_consume() {
-        requeryTemplate.insertAll(RandomData.randomPeople(10));
+        requeryOperations.insertAll(RandomData.randomPeople(10));
 
         List<Person> people = new ArrayList<>();
-        Result<Person> result = requeryTemplate.select(Person.class).get();
+        Result<Person> result = requeryOperations.select(Person.class).get();
         result.each(people::add);
 
         assertThat(people).hasSize(10);
@@ -573,10 +573,10 @@ public class FunctionalQueryTest extends AbstractDomainTest {
     public void query_map() {
         Person person = RandomData.randomPerson();
         person.setEmail("one@test.com");
-        requeryTemplate.insert(person);
-        requeryTemplate.insertAll(RandomData.randomPeople(9));
+        requeryOperations.insert(person);
+        requeryOperations.insertAll(RandomData.randomPeople(9));
 
-        Result<Person> result = requeryTemplate.select(Person.class).get();
+        Result<Person> result = requeryOperations.select(Person.class).get();
         Map<String, Person> map = result.toMap(Person.EMAIL, new ConcurrentHashMap<>());
         assertThat(map.get("one@test.com")).isNotNull();
 
@@ -591,9 +591,9 @@ public class FunctionalQueryTest extends AbstractDomainTest {
     public void query_update() {
         Person person = RandomData.randomPerson();
         person.setAge(100);
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
-        int updatedCount = requeryTemplate.update(Person.class)
+        int updatedCount = requeryOperations.update(Person.class)
             .set(Person.ABOUT, "nothing")
             .set(Person.AGE, 50)
             .where(Person.AGE.eq(100))
@@ -607,9 +607,9 @@ public class FunctionalQueryTest extends AbstractDomainTest {
     public void query_update_refresh() {
         Person person = RandomData.randomPerson();
         person.setAge(100);
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
-        int updatedCount = requeryTemplate.update(Person.class)
+        int updatedCount = requeryOperations.update(Person.class)
             .set(Person.AGE, 50)
             .where(Person.ID.eq(person.getId()))
             .get()
@@ -617,7 +617,7 @@ public class FunctionalQueryTest extends AbstractDomainTest {
 
         assertThat(updatedCount).isEqualTo(1);
 
-        Person selected = requeryTemplate.select(Person.class).where(Person.ID.eq(person.getId())).get().first();
+        Person selected = requeryOperations.select(Person.class).where(Person.ID.eq(person.getId())).get().first();
         assertThat(selected.getAge()).isEqualTo(50);
     }
 
@@ -626,15 +626,15 @@ public class FunctionalQueryTest extends AbstractDomainTest {
         Person person = RandomData.randomPerson();
         person.setName("Carol");
         person.setEmail(null);
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
         person = RandomData.randomPerson();
         person.setName("Bob");
         person.setEmail("test@test.com");
         person.setHomepage(null);
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
-        Result<Tuple> result = requeryTemplate.select(Coalesce.coalesce(Person.EMAIL, Person.NAME)).get();
+        Result<Tuple> result = requeryOperations.select(Coalesce.coalesce(Person.EMAIL, Person.NAME)).get();
         List<Tuple> list = result.toList();
         List<String> values = list.stream().map(it -> it.<String>get(0)).collect(Collectors.toList());
 
@@ -645,26 +645,26 @@ public class FunctionalQueryTest extends AbstractDomainTest {
     public void query_like() {
         Person person1 = RandomData.randomPerson();
         person1.setName("Carol");
-        requeryTemplate.insert(person1);
+        requeryOperations.insert(person1);
         Person person2 = RandomData.randomPerson();
         person2.setName("Bob");
-        requeryTemplate.insert(person2);
+        requeryOperations.insert(person2);
 
-        Person p = requeryTemplate.select(Person.class)
+        Person p = requeryOperations.select(Person.class)
             .where(Person.NAME.like("B%"))
             .get()
             .first();
 
         assertThat(p.getName()).isEqualTo("Bob");
 
-        p = requeryTemplate.select(Person.class)
+        p = requeryOperations.select(Person.class)
             .where(Person.NAME.lower().like("b%"))
             .get()
             .first();
 
         assertThat(p.getName()).isEqualTo("Bob");
 
-        Person p2 = requeryTemplate.select(Person.class)
+        Person p2 = requeryOperations.select(Person.class)
             .where(Person.NAME.notLike("B%"))
             .get()
             .firstOrNull();
@@ -676,9 +676,9 @@ public class FunctionalQueryTest extends AbstractDomainTest {
     public void query_equals_ignore_case() {
         Person person = RandomData.randomPerson();
         person.setName("Carol");
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
-        Person p = requeryTemplate.select(Person.class)
+        Person p = requeryOperations.select(Person.class)
             .where(Person.NAME.equalsIgnoreCase("carol"))
             .get()
             .first();
@@ -692,10 +692,10 @@ public class FunctionalQueryTest extends AbstractDomainTest {
         names.forEach(name -> {
             Person person = RandomData.randomPerson();
             person.setName(name);
-            requeryTemplate.insert(person);
+            requeryOperations.insert(person);
         });
 
-        Result<Tuple> a = requeryTemplate.select(
+        Result<Tuple> a = requeryOperations.select(
             Person.NAME,
             Case.type(String.class)
                 .when(Person.NAME.eq("Bob"), "B")
@@ -711,7 +711,7 @@ public class FunctionalQueryTest extends AbstractDomainTest {
         assertThat(list.get(1).<String>get(1)).isEqualTo("C");
         assertThat(list.get(2).<String>get(1)).isEqualTo("Unknown");
 
-        a = requeryTemplate.select(
+        a = requeryOperations.select(
             Person.NAME,
             Case.type(Integer.class)
                 .when(Person.NAME.eq("Bob"), 1)
@@ -731,16 +731,16 @@ public class FunctionalQueryTest extends AbstractDomainTest {
     public void query_union() {
         Person person = RandomData.randomPerson();
         person.setName("Carol");
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
         Group group = new Group();
         group.setName("Hello!");
-        requeryTemplate.insert(group);
+        requeryOperations.insert(group);
 
         // select name as name from FuncPerson
         // union
         // select name as name from FuncGroup order by name
-        List<Tuple> result = requeryTemplate.select(Person.NAME.as("name"))
+        List<Tuple> result = requeryOperations.select(Person.NAME.as("name"))
             .union()
             .select(Group.NAME.as("name"))
             .orderBy(Group.NAME.as("name"))
@@ -751,20 +751,19 @@ public class FunctionalQueryTest extends AbstractDomainTest {
         assertThat(result.get(1).<String>get(0)).isEqualTo("Hello!");
     }
 
-
     @Test
-    @Transactional
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void query_raw() {
         int count = 5;
 
         List<Person> people = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
-            people.add(requeryTemplate.insert(RandomData.randomPerson()));
+            people.add(requeryOperations.insert(RandomData.randomPerson()));
         }
 
         List<Long> resultIds = new ArrayList<>();
 
-        Result<Tuple> result = requeryTemplate.raw("select * from Person");
+        Result<Tuple> result = requeryOperations.raw("select * from Person");
         List<Tuple> rows = result.toList();
         assertThat(rows).hasSize(count);
 
@@ -777,32 +776,33 @@ public class FunctionalQueryTest extends AbstractDomainTest {
             resultIds.add(id);
         }
 
-        result = requeryTemplate.raw("select * from Person WHERE personId in ?", resultIds);
+        result = requeryOperations.raw("select * from Person WHERE personId in ?", resultIds);
         rows = result.toList();
         List<Long> ids = rows.stream().map(it -> it.<Long>get("personId")).collect(Collectors.toList());
         assertThat(ids).isEqualTo(resultIds);
 
-        result = requeryTemplate.raw("select count(*) from Person");
+        result = requeryOperations.raw("select count(*) from Person");
         int number = result.first().<Number>get(0).intValue();
         assertThat(number).isEqualTo(count);
 
-        result = requeryTemplate.raw("select * from Person WHERE personId = ?", people.get(0));
+        result = requeryOperations.raw("select * from Person WHERE personId = ?", people.get(0));
         assertThat(result.first().<Long>get("personId")).isEqualTo(people.get(0).getId());
+
     }
 
     @Test
-    @Transactional
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void query_raw_entities() {
         int count = 5;
 
         List<Person> people = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
-            people.add(requeryTemplate.insert(RandomData.randomPerson()));
+            people.add(requeryOperations.insert(RandomData.randomPerson()));
         }
 
         List<Long> resultIds = new ArrayList<>();
 
-        Result<Person> result = requeryTemplate.raw(Person.class, "select * from Person");
+        Result<Person> result = requeryOperations.raw(Person.class, "select * from Person");
         List<Person> rows = result.toList();
         assertThat(rows).hasSize(count);
 
@@ -815,31 +815,31 @@ public class FunctionalQueryTest extends AbstractDomainTest {
             resultIds.add(id);
         }
 
-        result = requeryTemplate.raw(Person.class, "select * from Person WHERE personId in ?", resultIds);
+        result = requeryOperations.raw(Person.class, "select * from Person WHERE personId in ?", resultIds);
         rows = result.toList();
         List<Long> ids = rows.stream().map(Person::getId).collect(Collectors.toList());
         assertThat(ids).isEqualTo(resultIds);
 
-        result = requeryTemplate.raw(Person.class, "select * from Person WHERE personId = ?", people.get(0));
+        result = requeryOperations.raw(Person.class, "select * from Person WHERE personId = ?", people.get(0));
         assertThat(result.first().getId()).isEqualTo(people.get(0).getId());
     }
 
     @Test
-    @Transactional
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void query_raw_paging() {
         int count = 5;
         for (int i = 0; i < count; i++) {
-            requeryTemplate.insert(RandomData.randomPerson());
+            requeryOperations.insert(RandomData.randomPerson());
         }
 
-        long totals = requeryTemplate.raw("select count(*) from Person").first().get(0);
+        long totals = requeryOperations.raw("select count(*) from Person").first().get(0);
 
-        Result<Person> result = requeryTemplate.raw(Person.class, "select * from Person");
+        Result<Person> result = requeryOperations.raw(Person.class, "select * from Person");
         List<Person> rows = result.toList();
 
-        long totals2 = requeryTemplate.raw("select count(*) from Person").first().get(0);
+        long totals2 = requeryOperations.raw("select count(*) from Person").first().get(0);
 
-        Result<Person> result2 = requeryTemplate.raw(Person.class, "select * from Person");
+        Result<Person> result2 = requeryOperations.raw(Person.class, "select * from Person");
         List<Person> rows2 = result2.toList();
 
         log.debug("rows size={}, rows2 size={}, totals={}, totals2={}", rows.size(), rows2.size(), totals, totals2);
@@ -852,20 +852,20 @@ public class FunctionalQueryTest extends AbstractDomainTest {
     public void query_union_join_on_same_entities() {
         Group group = new Group();
         group.setName("Hello!");
-        requeryTemplate.insert(group);
+        requeryOperations.insert(group);
 
         Person person1 = RandomData.randomPerson();
         person1.setName("Carol");
         person1.getGroups().add(group);
-        requeryTemplate.insert(person1);
+        requeryOperations.insert(person1);
 
         Person person2 = RandomData.randomPerson();
         person2.setName("Bob");
         person2.getGroups().add(group);
-        requeryTemplate.insert(person2);
+        requeryOperations.insert(person2);
 
         Expression[] columns = { Person.NAME.as("personName"), Group.NAME.as("GroupName") };
-        List<Tuple> rows = requeryTemplate.select(columns).where(Person.ID.eq(person1.getId()))
+        List<Tuple> rows = requeryOperations.select(columns).where(Person.ID.eq(person1.getId()))
             .union()
             .select(columns).where(Person.ID.eq(person2.getId()))
             .orderBy(Person.NAME.as("personName"))
@@ -885,11 +885,11 @@ public class FunctionalQueryTest extends AbstractDomainTest {
             UUID uuid = UUID.randomUUID();
             Person p1 = RandomData.randomPerson();
             p1.setUUID(uuid);
-            requeryTemplate.insert(p1);
+            requeryOperations.insert(p1);
 
             Person p2 = RandomData.randomPerson();
             p2.setUUID(uuid);
-            requeryTemplate.insert(p2);
+            requeryOperations.insert(p2);
         }).isInstanceOf(PersistenceException.class);
     }
 }

@@ -49,10 +49,10 @@ public class SimpleRequeryRepositoryQueryTest extends AbstractDomainTest {
 
     @Before
     public void setup() {
-        requeryTemplate.deleteAll(BasicUser.class);
+        requeryOperations.deleteAll(BasicUser.class);
 
         users = RandomData.randomUsers(USER_COUNT);
-        requeryTemplate.insertAll(users);
+        requeryOperations.insertAll(users);
     }
 
     @SuppressWarnings("unchecked")
@@ -66,7 +66,7 @@ public class SimpleRequeryRepositoryQueryTest extends AbstractDomainTest {
 
         NamedExpression<Long> keyExpr = (NamedExpression<Long>) RequeryUtils.getKeyExpression(BasicUser.class);
 
-        List<BasicUser> savedUsers = requeryTemplate
+        List<BasicUser> savedUsers = requeryOperations
             .select(BasicUser.class)
             .where(keyExpr.in(ids))
             .get()
@@ -82,7 +82,7 @@ public class SimpleRequeryRepositoryQueryTest extends AbstractDomainTest {
 
         NamedExpression<Long> keyExpr = (NamedExpression<Long>) RequeryUtils.getKeyExpression(BasicUser.class);
 
-        Integer deletedCount = requeryTemplate
+        Integer deletedCount = requeryOperations
             .delete(BasicUser.class)
             .where(keyExpr.in(ids))
             .get()
@@ -97,7 +97,7 @@ public class SimpleRequeryRepositoryQueryTest extends AbstractDomainTest {
 
         OrderingExpression<?>[] orderingExprs = RequeryUtils.getOrderingExpressions(BasicUser.class, sort);
 
-        List<BasicUser> orderedUsers = requeryTemplate
+        List<BasicUser> orderedUsers = requeryOperations
             .select(BasicUser.class)
             .orderBy(orderingExprs)
             .get()
@@ -118,12 +118,12 @@ public class SimpleRequeryRepositoryQueryTest extends AbstractDomainTest {
 
         QueryElement<? extends Result<BasicUser>> query = (QueryElement<? extends Result<BasicUser>>)
             RequeryUtils.applyPageable(BasicUser.class,
-                                       (QueryElement<? extends Result<BasicUser>>) requeryTemplate.select(BasicUser.class),
+                                       (QueryElement<? extends Result<BasicUser>>) requeryOperations.select(BasicUser.class),
                                        pageable);
 
         List<BasicUser> content = query.get().toList();
 
-        long total = requeryTemplate.count(BasicUser.class).get().value().longValue();
+        long total = requeryOperations.count(BasicUser.class).get().value().longValue();
 
         Page<BasicUser> userPage = new PageImpl<>(content, pageable, total);
 
@@ -139,7 +139,7 @@ public class SimpleRequeryRepositoryQueryTest extends AbstractDomainTest {
         Long userId = users.iterator().next().getId();
         NamedExpression<Long> keyExpr = (NamedExpression<Long>) RequeryUtils.getKeyExpression(BasicUser.class);
 
-        Tuple result = requeryTemplate
+        Tuple result = requeryOperations
             .select(Count.count(BasicUser.class).as("count"))
             .where(keyExpr.eq(userId))
             .get()

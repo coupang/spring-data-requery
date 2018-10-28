@@ -22,6 +22,7 @@ import org.springframework.data.requery.repository.RequeryRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * org.springframework.data.requery.repository.sample.basic.BasicUserRepository
@@ -30,6 +31,11 @@ import java.util.List;
  * @since 18. 6. 9
  */
 public interface BasicUserRepository extends RequeryRepository<BasicUser, Long> {
+
+    @Transactional
+    @Override
+    Optional<BasicUser> findById(Long primaryKey);
+
 
     default List<BasicUser> findAllByName(String name) {
         return getOperations()

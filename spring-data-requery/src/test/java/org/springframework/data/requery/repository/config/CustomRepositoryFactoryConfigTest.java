@@ -30,7 +30,6 @@ import org.springframework.data.requery.repository.custom.UserCustomExtendedRepo
 import org.springframework.data.requery.repository.support.TransactionalRepositoryTest.DelegatingTransactionManager;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 
@@ -51,10 +50,9 @@ public class CustomRepositoryFactoryConfigTest {
                                basePackageClasses = { CustomGenericRequeryRepository.class },
                                repositoryFactoryBeanClass = CustomGenericRequeryRepositoryFactoryBean.class)
     static class TestConfiguration extends RequeryTestConfiguration {
-
         @Bean
         @Override
-        public PlatformTransactionManager transactionManager(EntityDataStore<Object> entityDataStore, DataSource dataSource) {
+        public DelegatingTransactionManager transactionManager(EntityDataStore<Object> entityDataStore, DataSource dataSource) {
             return new DelegatingTransactionManager(super.transactionManager(entityDataStore, dataSource));
         }
     }
@@ -78,11 +76,11 @@ public class CustomRepositoryFactoryConfigTest {
 
     @Test
     public void reconfiguresTransactionalMethodWithoutGenericParameter() {
-
         userRepository.findAll();
 
-        assertThat(transactionManager.getDefinition().isReadOnly()).isFalse();
         assertThat(transactionManager.getDefinition().getTimeout()).isEqualTo(100);
+        assertThat(transactionManager.getDefinition().isReadOnly()).isTrue();
+
     }
 
     @Test
@@ -90,8 +88,7 @@ public class CustomRepositoryFactoryConfigTest {
 
         userRepository.findById(1L);
 
-        assertThat(transactionManager.getDefinition().isReadOnly()).isFalse();
         assertThat(transactionManager.getDefinition().getTimeout()).isEqualTo(10);
+        assertThat(transactionManager.getDefinition().isReadOnly()).isTrue();
     }
-
 }

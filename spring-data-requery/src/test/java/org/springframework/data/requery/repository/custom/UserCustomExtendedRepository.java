@@ -26,12 +26,12 @@ import java.util.Optional;
 public interface UserCustomExtendedRepository extends CustomGenericRepository<BasicUser, Long> {
 
     @NotNull
-    @Transactional(timeout = 100)
+    @Transactional(readOnly = true, timeout = 100)
     List<BasicUser> findAll();
 
 
     @NotNull
-    @Transactional(timeout = 10)
+    @Transactional(readOnly = true, timeout = 10)
     Optional<BasicUser> findById(Long id);
 
 }

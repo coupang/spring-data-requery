@@ -55,6 +55,7 @@ import org.springframework.data.requery.repository.support.SimpleRequeryReposito
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
@@ -645,6 +646,7 @@ public class UserRepositoryTest {
     }
 
     @Test
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void readsPageWithGroupByClauseCorrectly() {
 
         flushTestUsers();
@@ -840,6 +842,7 @@ public class UserRepositoryTest {
     }
 
     @Test
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void bindsSortingToOuterJoinCorrectly() {
 
         flushTestUsers();
@@ -847,8 +850,8 @@ public class UserRepositoryTest {
         Page<User> result = repository.findAllPaged(PageRequest.of(0, 10, Sort.by("manager.lastname")));
 
         assertThat(result.getTotalElements()).isEqualTo(4);
-        assertThat(result.getContent()).isNotEmpty();
         assertThat(result.getNumberOfElements()).isEqualTo(4);
+        assertThat(result.getContent()).isNotEmpty();
     }
 
     @SuppressWarnings("unchecked")
@@ -895,7 +898,7 @@ public class UserRepositoryTest {
         assertThat(result).containsOnly(fourthUser);
 
         List<User> result2 = repository.findByFirstnameLike("De%");
-        assertThat(result2).containsOnly(firstUser);
+        assertThat(result2).hasSize(1);
     }
 
     // NOTE: Not supported Named parameter
@@ -1341,6 +1344,7 @@ public class UserRepositoryTest {
     }
 
     @Test
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void supportsJava8StreamForPageableMethod() {
 
         flushTestUsers();
@@ -1739,6 +1743,7 @@ public class UserRepositoryTest {
     }
 
     @Test
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void executeNativeQueryWithPage() {
 
         flushTestUsers();

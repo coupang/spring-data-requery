@@ -39,12 +39,12 @@ public class JacksonTest extends AbstractDomainTest {
 
     @Before
     public void setup() {
-        entityMapper = new EntityMapper(Models.DEFAULT, requeryTemplate.getDataStore());
+        entityMapper = new EntityMapper(Models.DEFAULT, requeryOperations.getDataStore());
 
-        requeryTemplate.deleteAll(UpsertTag.class);
-        requeryTemplate.deleteAll(UpsertEvent.class);
-        requeryTemplate.deleteAll(UpsertPlace.class);
-        requeryTemplate.deleteAll(UpsertLocation.class);
+        requeryOperations.deleteAll(UpsertTag.class);
+        requeryOperations.deleteAll(UpsertEvent.class);
+        requeryOperations.deleteAll(UpsertPlace.class);
+        requeryOperations.deleteAll(UpsertLocation.class);
     }
 
     @Ignore("StackOverflowError")
@@ -69,7 +69,7 @@ public class JacksonTest extends AbstractDomainTest {
 
         event.setPlace(place);
 
-        requeryTemplate.insert(event);
+        requeryOperations.insert(event);
 
         String jsonText = entityMapper.writeValueAsString(event);
         assertThat(jsonText).isNotEmpty();

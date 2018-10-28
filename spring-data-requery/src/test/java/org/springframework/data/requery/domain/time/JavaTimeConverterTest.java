@@ -39,9 +39,9 @@ public class JavaTimeConverterTest extends AbstractDomainTest {
         event.setId(eventId);
         event.setName("event");
 
-        requeryTemplate.insert(event);
+        requeryOperations.insert(event);
 
-        TimeEvent loaded = requeryTemplate.findById(TimeEvent.class, eventId);
+        TimeEvent loaded = requeryOperations.findById(TimeEvent.class, eventId);
 
         assertThat(loaded.getId()).isEqualTo(eventId);
         assertThat(loaded.getName()).isEqualTo(event.getName());

@@ -48,11 +48,11 @@ public abstract class AbstractDomainTest {
     protected EntityDataStore<Object> dataStore;
 
     @Autowired
-    protected RequeryOperations requeryTemplate;
+    protected RequeryOperations requeryOperations;
 
     @Test
     public void context_loading() {
         assertThat(dataStore).isNotNull();
-        assertThat(requeryTemplate).isNotNull();
+        assertThat(requeryOperations).isNotNull();
     }
 }

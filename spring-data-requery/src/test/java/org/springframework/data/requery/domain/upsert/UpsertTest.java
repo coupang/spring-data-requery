@@ -32,10 +32,10 @@ public class UpsertTest extends AbstractDomainTest {
 
     @Before
     public void setup() {
-        requeryTemplate.deleteAll(UpsertTag.class);
-        requeryTemplate.deleteAll(UpsertEvent.class);
-        requeryTemplate.deleteAll(UpsertPlace.class);
-        requeryTemplate.deleteAll(UpsertLocation.class);
+        requeryOperations.deleteAll(UpsertTag.class);
+        requeryOperations.deleteAll(UpsertEvent.class);
+        requeryOperations.deleteAll(UpsertPlace.class);
+        requeryOperations.deleteAll(UpsertLocation.class);
     }
 
     @Test
@@ -45,11 +45,11 @@ public class UpsertTest extends AbstractDomainTest {
         location.getAddress().setZipcode("12345");
         location.getAddress().setCity("seoul");
 
-        requeryTemplate.insert(location);
+        requeryOperations.insert(location);
 
         assertThat(location.isNew()).isFalse();
 
-        UpsertLocation loaded = requeryTemplate.findById(UpsertLocation.class, location.getId());
+        UpsertLocation loaded = requeryOperations.findById(UpsertLocation.class, location.getId());
         assertThat(loaded).isEqualTo(location);
         assertThat(loaded.getAddress().getZipcode()).isEqualTo("12345");
     }
@@ -71,20 +71,20 @@ public class UpsertTest extends AbstractDomainTest {
         event.getTags().add(tag1);
         event.getTags().add(tag2);
 
-        requeryTemplate.insert(event);
+        requeryOperations.insert(event);
 
-        assertThat(requeryTemplate.count(UpsertEvent.class).get().value()).isEqualTo(1);
-        assertThat(requeryTemplate.count(UpsertTag.class).get().value()).isEqualTo(2);
+        assertThat(requeryOperations.count(UpsertEvent.class).get().value()).isEqualTo(1);
+        assertThat(requeryOperations.count(UpsertTag.class).get().value()).isEqualTo(2);
 
-        UpsertEvent loaded = requeryTemplate.findById(UpsertEvent.class, event.getId());
+        UpsertEvent loaded = requeryOperations.findById(UpsertEvent.class, event.getId());
 
         assertThat(loaded.getTags()).hasSize(2).containsOnly(tag1, tag2);
 
-        requeryTemplate.delete(loaded);
-        requeryTemplate.refreshAllProperties(loaded);
+        requeryOperations.delete(loaded);
+        requeryOperations.refreshAllProperties(loaded);
 
-        assertThat(requeryTemplate.count(UpsertEvent.class).get().value()).isEqualTo(0);
-        assertThat(requeryTemplate.count(UpsertTag.class).get().value()).isEqualTo(0);
+        assertThat(requeryOperations.count(UpsertEvent.class).get().value()).isEqualTo(0);
+        assertThat(requeryOperations.count(UpsertTag.class).get().value()).isEqualTo(0);
     }
 
     @Test
@@ -94,15 +94,15 @@ public class UpsertTest extends AbstractDomainTest {
         event.setId(eventId);
         event.setName("test");
 
-        requeryTemplate.upsert(event);
+        requeryOperations.upsert(event);
 
-        assertThat(requeryTemplate.count(UpsertEvent.class).get().value()).isEqualTo(1);
+        assertThat(requeryOperations.count(UpsertEvent.class).get().value()).isEqualTo(1);
 
-        UpsertEvent loaded = requeryTemplate.findById(UpsertEvent.class, event.getId());
+        UpsertEvent loaded = requeryOperations.findById(UpsertEvent.class, event.getId());
         assertThat(loaded).isEqualTo(event);
 
-        requeryTemplate.delete(loaded);
-        assertThat(requeryTemplate.count(UpsertEvent.class).get().value()).isEqualTo(0);
+        requeryOperations.delete(loaded);
+        assertThat(requeryOperations.count(UpsertEvent.class).get().value()).isEqualTo(0);
     }
 
     @Test
@@ -118,8 +118,8 @@ public class UpsertTest extends AbstractDomainTest {
 
         place.getEvents().add(event);
 
-        requeryTemplate.upsert(place);
-        UpsertPlace savedPlace = requeryTemplate.findById(UpsertPlace.class, place.getId());
+        requeryOperations.upsert(place);
+        UpsertPlace savedPlace = requeryOperations.findById(UpsertPlace.class, place.getId());
 
         assertThat(savedPlace.getId()).isEqualTo(place.getId());
         assertThat(savedPlace.getEvents()).hasSize(1);
@@ -143,16 +143,16 @@ public class UpsertTest extends AbstractDomainTest {
         event.getTags().add(tag1);
         event.getTags().add(tag2);
 
-        requeryTemplate.upsert(event);
-        assertThat(requeryTemplate.count(UpsertEvent.class).get().value()).isEqualTo(1);
-        assertThat(requeryTemplate.count(UpsertTag.class).get().value()).isEqualTo(2);
+        requeryOperations.upsert(event);
+        assertThat(requeryOperations.count(UpsertEvent.class).get().value()).isEqualTo(1);
+        assertThat(requeryOperations.count(UpsertTag.class).get().value()).isEqualTo(2);
 
-        UpsertEvent loaded = requeryTemplate.findById(UpsertEvent.class, event.getId());
+        UpsertEvent loaded = requeryOperations.findById(UpsertEvent.class, event.getId());
 
-        requeryTemplate.delete(loaded);
+        requeryOperations.delete(loaded);
 
-        assertThat(requeryTemplate.count(UpsertEvent.class).get().value()).isEqualTo(0);
-        assertThat(requeryTemplate.count(UpsertTag.class).get().value()).isEqualTo(0);
+        assertThat(requeryOperations.count(UpsertEvent.class).get().value()).isEqualTo(0);
+        assertThat(requeryOperations.count(UpsertTag.class).get().value()).isEqualTo(0);
     }
 
     @Test
@@ -168,9 +168,9 @@ public class UpsertTest extends AbstractDomainTest {
 
         place.getEvents().add(event);
 
-        requeryTemplate.insert(place);
+        requeryOperations.insert(place);
 
-        UpsertPlace savedPlace = requeryTemplate.findById(UpsertPlace.class, place.getId());
+        UpsertPlace savedPlace = requeryOperations.findById(UpsertPlace.class, place.getId());
 
         assertThat(savedPlace.getId()).isEqualTo(place.getId());
         assertThat(savedPlace.getEvents()).hasSize(1);
@@ -190,8 +190,8 @@ public class UpsertTest extends AbstractDomainTest {
         place.getEvents().add(event);
         place.getEvents().remove(event);
 
-        requeryTemplate.upsert(place);
-        UpsertPlace savedPlace = requeryTemplate.findById(UpsertPlace.class, place.getId());
+        requeryOperations.upsert(place);
+        UpsertPlace savedPlace = requeryOperations.findById(UpsertPlace.class, place.getId());
 
         assertThat(savedPlace.getId()).isEqualTo(place.getId());
         assertThat(savedPlace.getEvents()).hasSize(0);
@@ -204,15 +204,15 @@ public class UpsertTest extends AbstractDomainTest {
         event.setId(eventId);
         event.setName("event1");
 
-        requeryTemplate.insert(event);
+        requeryOperations.insert(event);
 
         UpsertEvent event2 = new UpsertEvent();
         event2.setId(eventId);
         event2.setName("event2");
 
-        requeryTemplate.upsert(event2);
+        requeryOperations.upsert(event2);
 
-        Iterable<UpsertEvent> events = requeryTemplate.findAll(UpsertEvent.class);
+        Iterable<UpsertEvent> events = requeryOperations.findAll(UpsertEvent.class);
         assertThat(events).hasSize(1).containsOnly(event2);
     }
 

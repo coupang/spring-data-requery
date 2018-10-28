@@ -52,9 +52,9 @@ public class ReactiveTest extends AbstractDomainTest {
     @Before
     public void setup() {
         reactiveStore = ReactiveSupport.toReactiveStore(dataStore);
-        requeryTemplate.deleteAll(BasicGroup.class);
-        requeryTemplate.deleteAll(BasicLocation.class);
-        requeryTemplate.deleteAll(BasicUser.class);
+        requeryOperations.deleteAll(BasicGroup.class);
+        requeryOperations.deleteAll(BasicLocation.class);
+        requeryOperations.deleteAll(BasicUser.class);
     }
 
     @Test
@@ -114,7 +114,7 @@ public class ReactiveTest extends AbstractDomainTest {
             BasicGroup group = new BasicGroup();
             group.getMembers().add(it);
             return group;
-        }).map(group -> requeryTemplate.insert(group)).blockingGet();
+        }).map(group -> requeryOperations.insert(group)).blockingGet();
 
         assertThat(user.getGroups()).hasSize(1);
     }

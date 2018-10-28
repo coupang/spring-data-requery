@@ -66,10 +66,10 @@ public class FunctionalTest extends AbstractDomainTest {
 
     @Before
     public void setup() {
-        requeryTemplate.deleteAll(Address.class);
-        requeryTemplate.deleteAll(Group.class);
-        requeryTemplate.deleteAll(Phone.class);
-        requeryTemplate.deleteAll(Person.class);
+        requeryOperations.deleteAll(Address.class);
+        requeryOperations.deleteAll(Group.class);
+        requeryOperations.deleteAll(Phone.class);
+        requeryOperations.deleteAll(Person.class);
     }
 
     @Test
@@ -104,9 +104,9 @@ public class FunctionalTest extends AbstractDomainTest {
     public void custom_converter() {
         Phone phone = RandomData.randomPhone();
 
-        requeryTemplate.insert(phone);
+        requeryOperations.insert(phone);
 
-        Phone loaded = requeryTemplate.select(Phone.class)
+        Phone loaded = requeryOperations.select(Phone.class)
             .where(Phone.EXTENSIONS.eq(phone.getExtensions()))
             .get()
             .first();
@@ -118,13 +118,13 @@ public class FunctionalTest extends AbstractDomainTest {
     public void select_by_id() {
         Person person = RandomData.randomPerson();
 
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
         assertThat(person.getId()).isGreaterThan(0L);
 
-        Person loaded = requeryTemplate.findById(Person.class, person.getId());
+        Person loaded = requeryOperations.findById(Person.class, person.getId());
         assertThat(loaded).isEqualTo(person);
 
-        Person loaded2 = requeryTemplate.select(Person.class)
+        Person loaded2 = requeryOperations.select(Person.class)
             .where(Person.ID.eq(person.getId()))
             .get()
             .firstOrNull();
@@ -136,25 +136,25 @@ public class FunctionalTest extends AbstractDomainTest {
     public void insert_with_default_value() {
         Person person = RandomData.randomPerson();
 
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
         assertThat(person.getId()).isGreaterThan(0L);
 
-        Person loaded = requeryTemplate.findById(Person.class, person.getId());
+        Person loaded = requeryOperations.findById(Person.class, person.getId());
         assertThat(loaded).isEqualTo(person);
         assertThat(loaded.getDescription()).isEqualTo("empty");
     }
 
     @Test
     public void insert_select_null_key_reference() {
-        requeryTemplate.deleteAll(Person.class);
+        requeryOperations.deleteAll(Person.class);
 
         Person person = RandomData.randomPerson();
 
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
         assertThat(person.getId()).isGreaterThan(0L);
         assertThat(person.getAddress()).isNull();
 
-        AbstractAddress address = requeryTemplate.select(Person.class)
+        AbstractAddress address = requeryOperations.select(Person.class)
             .get()
             .first().getAddress();
         assertThat(address).isNull();
@@ -162,7 +162,7 @@ public class FunctionalTest extends AbstractDomainTest {
 
     @Test
     public void insert_many_people_with_transaction() {
-        requeryTemplate.withTransaction(entityStore -> {
+        requeryOperations.withTransaction(entityStore -> {
             IntStream.range(0, COUNT).forEach(it -> {
                 Person person = RandomData.randomPerson();
                 entityStore.insert(person);
@@ -177,11 +177,11 @@ public class FunctionalTest extends AbstractDomainTest {
     public void insert_many_people_with_batch() throws Exception {
         Set<Person> people = RandomData.randomPeople(COUNT);
         // Batch 방식으로 저장한다.
-        requeryTemplate.insertAll(people);
+        requeryOperations.insertAll(people);
 
         Thread.sleep(100);
 
-        int personCount = requeryTemplate.count(Person.class).get().value();
+        int personCount = requeryOperations.count(Person.class).get().value();
         assertThat(personCount).isEqualTo(COUNT);
     }
 
@@ -199,7 +199,7 @@ public class FunctionalTest extends AbstractDomainTest {
             IntStream.range(0, COUNT).forEach(
                 it -> executor.submit(() -> {
                     Person person = RandomData.randomPerson();
-                    requeryTemplate.insert(person);
+                    requeryOperations.insert(person);
                     assertThat(person.getId()).isGreaterThan(0L);
                     map.put(person.getId(), person);
                     latch.countDown();
@@ -207,7 +207,7 @@ public class FunctionalTest extends AbstractDomainTest {
             assertThat(latch.await(30, TimeUnit.SECONDS)).isTrue();
 
             map.forEach((key, value) -> {
-                Person loaded = requeryTemplate.findById(Person.class, key);
+                Person loaded = requeryOperations.findById(Person.class, key);
                 assertThat(loaded).isNotNull();
                 assertThat(loaded).isEqualTo(value);
             });
@@ -222,7 +222,7 @@ public class FunctionalTest extends AbstractDomainTest {
     @Test
     public void insert_empty_entity() {
         Phone phone = new Phone();
-        requeryTemplate.insert(phone);
+        requeryOperations.insert(phone);
         assertThat(phone.getId()).isNotNull();
     }
 
@@ -239,10 +239,10 @@ public class FunctionalTest extends AbstractDomainTest {
         DerivedPhone derivedPhone = new DerivedPhone();
         derivedPhone.setPhoneNumber("555-5555");
 
-        requeryTemplate.insert(derivedPhone);
+        requeryOperations.insert(derivedPhone);
         assertThat(derivedPhone.getId()).isNotNull();
 
-        Phone loaded = requeryTemplate.findById(Phone.class, derivedPhone.getId());
+        Phone loaded = requeryOperations.findById(Phone.class, derivedPhone.getId());
         assertThat(loaded).isNotNull();
 
         // NOTE: 하지만 FuncPhone 을 DerivedPhone으로 casting 은 하지 못한다 !!!
@@ -276,7 +276,7 @@ public class FunctionalTest extends AbstractDomainTest {
         group.setName("Bob");
         group.setDescription("Bob's group");
 
-        requeryTemplate.insert(group);
+        requeryOperations.insert(group);
 
 
         int count = dataStore.insert(Person.class, Person.NAME, Person.DESCRIPTION)
@@ -287,14 +287,14 @@ public class FunctionalTest extends AbstractDomainTest {
 
         assertThat(count).isEqualTo(1);
 
-        Person person = requeryTemplate.select(Person.class).get().first();
+        Person person = requeryOperations.select(Person.class).get().first();
         assertThat(person.getName()).isEqualTo(group.getName());
         assertThat(person.getDescription()).isEqualTo(group.getDescription());
     }
 
     @Test
     public void insert_with_transaction_callable() {
-        String result = requeryTemplate.withTransaction(entityStore -> {
+        String result = requeryOperations.withTransaction(entityStore -> {
             IntStream.range(0, COUNT).forEach(it -> {
                 Person person = RandomData.randomPerson();
                 entityStore.insert(person);
@@ -314,7 +314,7 @@ public class FunctionalTest extends AbstractDomainTest {
         Person person = RandomData.randomPerson();
         person.getGroups().add(group);
 
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
         assertThat(person.getId()).isNotNull();
 
         Map<NumericAttribute<Func_Group_Members, Long>, Long> map = new HashMap<>();
@@ -323,7 +323,7 @@ public class FunctionalTest extends AbstractDomainTest {
 
         CompositeKey<Func_Group_Members> compositeKey = new CompositeKey(map);
 
-        Func_Group_Members joined = requeryTemplate.findById(Func_Group_Members.class, compositeKey);
+        Func_Group_Members joined = requeryOperations.findById(Func_Group_Members.class, compositeKey);
         assertThat(joined.getPersonId()).isEqualTo(person.getId());
         assertThat(joined.getGroupsId()).isEqualTo(group.getId());
     }
@@ -335,16 +335,16 @@ public class FunctionalTest extends AbstractDomainTest {
 
         person.setAddress(address);
 
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
         assertThat(person.getId()).isNotNull();
 
-        Person loaded = requeryTemplate.findById(Person.class, person.getId());
+        Person loaded = requeryOperations.findById(Person.class, person.getId());
         assertThat(loaded).isNotNull();
         assertThat(loaded.getAddress()).isEqualTo(address);
 
-        requeryTemplate.delete(loaded);
+        requeryOperations.delete(loaded);
 
-        loaded = requeryTemplate.findById(Person.class, person.getId());
+        loaded = requeryOperations.findById(Person.class, person.getId());
         assertThat(loaded).isNull();
     }
 
@@ -355,14 +355,14 @@ public class FunctionalTest extends AbstractDomainTest {
 
         person.setAddress(address);
 
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
         assertThat(person.getId()).isNotNull();
 
-        requeryTemplate.delete(person);
+        requeryOperations.delete(person);
 
-        Person loaded = requeryTemplate.findById(Person.class, person.getId());
+        Person loaded = requeryOperations.findById(Person.class, person.getId());
         assertThat(loaded).isNull();
-        assertThat(requeryTemplate.count(Address.class).get().value()).isEqualTo(0);
+        assertThat(requeryOperations.count(Address.class).get().value()).isEqualTo(0);
     }
 
     @Test
@@ -370,7 +370,7 @@ public class FunctionalTest extends AbstractDomainTest {
         List<Long> ids = new ArrayList<>();
 
         try {
-            requeryTemplate.withTransaction(entityStore -> {
+            requeryOperations.withTransaction(entityStore -> {
                 IntStream.range(0, COUNT).forEach(it -> {
                     Person person = RandomData.randomPerson();
                     entityStore.insert(person);
@@ -387,13 +387,13 @@ public class FunctionalTest extends AbstractDomainTest {
             log.info("Rollback executed.");
         }
 
-        assertThat(requeryTemplate.count(Person.class).get().value()).isEqualTo(0);
+        assertThat(requeryOperations.count(Person.class).get().value()).isEqualTo(0);
     }
 
     @Test
     public void check_changed_attribute() {
         Person person = RandomData.randomPerson();
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
         assertThat(person.getId()).isNotNull();
 
         person.setName("Bob Smith");
@@ -410,7 +410,7 @@ public class FunctionalTest extends AbstractDomainTest {
             }
         });
         assertThat(count.get()).isEqualTo(2);
-        requeryTemplate.update(person);
+        requeryOperations.update(person);
 
         Person.$TYPE.getAttributes().forEach(attr -> {
             if (proxy.getState(attr).equals(PropertyState.MODIFIED)) {
@@ -423,26 +423,26 @@ public class FunctionalTest extends AbstractDomainTest {
     public void update_no_changed_entity() {
         Person person = RandomData.randomPerson();
 
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
         assertThat(person.getId()).isNotNull();
 
-        requeryTemplate.update(person);
+        requeryOperations.update(person);
     }
 
     @Test
     public void entity_listener() {
         Person person = RandomData.randomPerson();
 
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
         assertThat(person.getPrevious()).isEqualTo(EntityState.PRE_SAVE);
         assertThat(person.getCurrent()).isEqualTo(EntityState.POST_SAVE);
 
         person.setEmail("bob@example.com");
-        requeryTemplate.update(person);
+        requeryOperations.update(person);
         assertThat(person.getPrevious()).isEqualTo(EntityState.PRE_UPDATE);
         assertThat(person.getCurrent()).isEqualTo(EntityState.POST_UPDATE);
 
-        requeryTemplate.delete(person);
+        requeryOperations.delete(person);
         assertThat(person.getPrevious()).isEqualTo(EntityState.PRE_DELETE);
         assertThat(person.getCurrent()).isEqualTo(EntityState.POST_DELETE);
     }
@@ -450,42 +450,42 @@ public class FunctionalTest extends AbstractDomainTest {
     @Test
     public void insert_one_to_one_entity_with_null_association() {
         Person person = RandomData.randomPerson();
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
         assertThat(person.getAddress()).isNull();
     }
 
     @Test
     public void insert_one_to_one_entity_with_null_association_inverse() {
         Address address = RandomData.randomAddress();
-        requeryTemplate.insert(address);
+        requeryOperations.insert(address);
         assertThat(address.getPerson()).isNull();
     }
 
     @Test
     public void insert_one_to_one() {
         Address address = RandomData.randomAddress();
-        requeryTemplate.insert(address);
+        requeryOperations.insert(address);
         assertThat(address.getId()).isNotNull();
 
         Person person = RandomData.randomPerson();
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
         assertThat(person.getId()).isNotNull();
 
         person.setAddress(address);
-        requeryTemplate.update(person);
+        requeryOperations.update(person);
 
         // fetch inverse
         assertThat(address.getPerson()).isEqualTo(person);
 
         // unset
         person.setAddress(null);
-        requeryTemplate.update(person);
+        requeryOperations.update(person);
 
         // HINT: address는 update하지 않았지만 association에 변화를 적용하려면 refresh를 수행해야 한다
-        requeryTemplate.refresh(address);
+        requeryOperations.refresh(address);
         assertThat(address.getPerson()).isNull();
 
-        Person loaded = requeryTemplate.findById(Person.class, person.getId());
+        Person loaded = requeryOperations.findById(Person.class, person.getId());
         assertThat(loaded.getAddress()).isNull();
     }
 
@@ -495,25 +495,25 @@ public class FunctionalTest extends AbstractDomainTest {
         Person person = RandomData.randomPerson();
         person.setAddress(address);
 
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
         // HINT: JPA는 양방향에 대해 모두 설정해주어야 하지만, requery는 insert 시에 cascade 해준다
         assertThat(address.getPerson()).isEqualTo(person);
 
-        Address loadedAddr = requeryTemplate.findById(Address.class, address.getId());
+        Address loadedAddr = requeryOperations.findById(Address.class, address.getId());
         assertThat(loadedAddr.getPerson()).isEqualTo(person);
     }
 
     @Test
     public void refresh_all() {
         Person person = RandomData.randomPerson();
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
         Phone phone = RandomData.randomPhone();
         person.getPhoneNumbers().add(phone);
 
-        requeryTemplate.update(person);
-        requeryTemplate.refreshAllProperties(person);
+        requeryOperations.update(person);
+        requeryOperations.refreshAllProperties(person);
 
         assertThat(person.getPhoneNumberList()).contains(phone);
     }
@@ -524,9 +524,9 @@ public class FunctionalTest extends AbstractDomainTest {
             .range(0, 10)
             .mapToObj(i -> RandomData.randomPerson())
             .collect(Collectors.toList());
-        requeryTemplate.insertAll(people);
+        requeryOperations.insertAll(people);
 
-        int count = requeryTemplate.update().set(Person.NAME, "fff").get().value();
+        int count = requeryOperations.update().set(Person.NAME, "fff").get().value();
         assertThat(count).isEqualTo(people.size());
 
         // refreshAlL 을 각각의 entity에 대해서 호출해줘야 제대로 반영된다.
@@ -534,7 +534,7 @@ public class FunctionalTest extends AbstractDomainTest {
         // refresh(people, FuncPerson.NAME)
 
         people.forEach(person -> {
-            requeryTemplate.refresh(person, Person.NAME);
+            requeryOperations.refresh(person, Person.NAME);
             log.debug("person name={}", person.getName());
         });
         assertThat(people.stream().allMatch(it -> it.getName().equals("fff"))).isTrue();
@@ -543,13 +543,13 @@ public class FunctionalTest extends AbstractDomainTest {
     @Test
     public void refresh_attributes() {
         Person person = RandomData.randomPerson();
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
         Phone phone = RandomData.randomPhone();
         person.getPhoneNumbers().add(phone);
 
-        requeryTemplate.update(person);
-        requeryTemplate.refresh(person, Person.NAME, Person.PHONE_NUMBER_LIST, Person.ADDRESS, Person.EMAIL);
+        requeryOperations.update(person);
+        requeryOperations.refresh(person, Person.NAME, Person.PHONE_NUMBER_LIST, Person.ADDRESS, Person.EMAIL);
 
         assertThat(person.getPhoneNumberSet()).contains(phone);
     }
@@ -559,11 +559,11 @@ public class FunctionalTest extends AbstractDomainTest {
         Group group = new Group();
         group.setName("group");
         group.setType(GroupType.PRIVATE);
-        requeryTemplate.insert(group);
+        requeryOperations.insert(group);
 
         group.setType(GroupType.PUBLIC);
-        requeryTemplate.update(group);
-        requeryTemplate.refresh(group, Group.VERSION);
+        requeryOperations.update(group);
+        requeryOperations.refresh(group, Group.VERSION);
 
         log.debug("Group version={}", group.getVersion());
         assertThat(group.getVersion()).isGreaterThan(0);
@@ -572,8 +572,8 @@ public class FunctionalTest extends AbstractDomainTest {
         group2.setName("group2");
         group2.setType(GroupType.PRIVATE);
 
-        requeryTemplate.insert(group2);
-        requeryTemplate.refresh(Arrays.asList(group, group2), Group.VERSION);
+        requeryOperations.insert(group2);
+        requeryOperations.refresh(Arrays.asList(group, group2), Group.VERSION);
 
         log.debug("Group version={}", group.getVersion());
         log.debug("Group2 version={}", group2.getVersion());
@@ -583,24 +583,24 @@ public class FunctionalTest extends AbstractDomainTest {
     public void version_update() {
         Group group = new Group();
         group.setName("Test1");
-        requeryTemplate.upsert(group);
+        requeryOperations.upsert(group);
         assertThat(group.getVersion()).isGreaterThan(0);
 
         group.setName("Test2");
-        requeryTemplate.upsert(group);
+        requeryOperations.upsert(group);
         assertThat(group.getVersion()).isGreaterThan(1);
 
         group.setName("Test3");
-        requeryTemplate.upsert(group);
+        requeryOperations.upsert(group);
         assertThat(group.getVersion()).isGreaterThan(2);
     }
 
     @Test
     public void fill_result_by_collect() {
         Person person = RandomData.randomPerson();
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
-        Set<Person> people = requeryTemplate.select(Person.class)
+        Set<Person> people = requeryOperations.select(Person.class)
             .get()
             .collect(new HashSet<>());
         assertThat(people).hasSize(1);
@@ -609,9 +609,9 @@ public class FunctionalTest extends AbstractDomainTest {
     @Test
     public void result_to_list() {
         Person person = RandomData.randomPerson();
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
-        List<Person> people = requeryTemplate.select(Person.class)
+        List<Person> people = requeryOperations.select(Person.class)
             .get()
             .toList();
         assertThat(people).hasSize(1);
@@ -620,7 +620,7 @@ public class FunctionalTest extends AbstractDomainTest {
     @Test
     public void delete_cascade_one_to_one() {
         Address address = RandomData.randomAddress();
-        requeryTemplate.insert(address);
+        requeryOperations.insert(address);
 
         assertThat(address.getId()).isNotNull();
         int addressId = address.getId();
@@ -628,90 +628,90 @@ public class FunctionalTest extends AbstractDomainTest {
         Person person = RandomData.randomPerson();
         person.setAddress(address);
 
-        requeryTemplate.insert(person);
-        requeryTemplate.delete(person);
+        requeryOperations.insert(person);
+        requeryOperations.delete(person);
 
         assertThat(address.getPerson()).isNull();
-        assertThat(requeryTemplate.findById(Address.class, addressId)).isNull();
+        assertThat(requeryOperations.findById(Address.class, addressId)).isNull();
     }
 
     @Test
     public void delete_one() {
         Person person = RandomData.randomPerson();
 
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
         assertThat(person.getId()).isNotNull();
 
-        requeryTemplate.delete(person);
-        assertThat(requeryTemplate.findById(Person.class, person.getId())).isNull();
+        requeryOperations.delete(person);
+        assertThat(requeryOperations.findById(Person.class, person.getId())).isNull();
     }
 
     @Test
     public void delete_cascade_remove_one_to_many() {
         Person person = RandomData.randomPerson();
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
         Phone phone1 = RandomData.randomPhone();
         Phone phone2 = RandomData.randomPhone();
         phone1.setOwner(person);
         phone2.setOwner(person);
 
-        requeryTemplate.insert(phone1);
-        requeryTemplate.insert(phone2);
-        requeryTemplate.refresh(person);
+        requeryOperations.insert(phone1);
+        requeryOperations.insert(phone2);
+        requeryOperations.refresh(person);
 
         assertThat(person.getPhoneNumberList()).containsOnly(phone1, phone2);
 
-        requeryTemplate.delete(phone1);
+        requeryOperations.delete(phone1);
         assertThat(person.getPhoneNumberList()).containsOnly(phone2);
     }
 
     @Test
     public void delete_cascade_one_to_many() {
         Person person = RandomData.randomPerson();
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
         Phone phone1 = RandomData.randomPhone();
         phone1.setOwner(person);
-        requeryTemplate.insert(phone1);
+        requeryOperations.insert(phone1);
 
         Integer phoneId = phone1.getId();
 
         assertThat(person.getPhoneNumbers()).hasSize(1);
-        requeryTemplate.delete(person);
+        requeryOperations.delete(person);
 
-        assertThat(requeryTemplate.findById(Phone.class, phoneId)).isNull();
+        assertThat(requeryOperations.findById(Phone.class, phoneId)).isNull();
     }
 
     @Test
     public void delete_one_to_many_result() {
         Person person = RandomData.randomPerson();
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
         Phone phone1 = RandomData.randomPhone();
         phone1.setOwner(person);
         Phone phone2 = RandomData.randomPhone();
         phone2.setOwner(person);
-        requeryTemplate.insertAll(Arrays.asList(phone1, phone2));
-        requeryTemplate.refresh(person);
+        requeryOperations.insertAll(Arrays.asList(phone1, phone2));
+        requeryOperations.refresh(person);
 
         assertThat(person.getPhoneNumbers().toList()).hasSize(2);
 
-        requeryTemplate.deleteAll(person.getPhoneNumbers());
+        requeryOperations.deleteAll(person.getPhoneNumbers());
 
-        assertThat(requeryTemplate.count(Phone.class).get().value()).isEqualTo(0);
+        assertThat(requeryOperations.count(Phone.class).get().value()).isEqualTo(0);
     }
 
     @Test
     public void insert_one_to_many() {
         Person person = RandomData.randomPerson();
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
         Phone phone1 = RandomData.randomPhone();
         phone1.setOwner(person);
         Phone phone2 = RandomData.randomPhone();
         phone2.setOwner(person);
-        requeryTemplate.insertAll(Arrays.asList(phone1, phone2));
+        requeryOperations.insertAll(Arrays.asList(phone1, phone2));
 
         // both works
         Set<AbstractPhone> set = person.getPhoneNumbers()
@@ -724,14 +724,14 @@ public class FunctionalTest extends AbstractDomainTest {
     @Test
     public void insert_one_to_many_inverse_update() {
         Person person = RandomData.randomPerson();
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
         Phone phone1 = RandomData.randomPhone();
         Phone phone2 = RandomData.randomPhone();
         person.getPhoneNumbers().add(phone1);
         person.getPhoneNumbers().add(phone2);
 
-        requeryTemplate.update(person);
+        requeryOperations.update(person);
 
         Set<AbstractPhone> set = person.getPhoneNumbers().stream().collect(Collectors.toSet());
         assertThat(set).hasSize(2).containsOnly(phone1, phone2);
@@ -748,7 +748,7 @@ public class FunctionalTest extends AbstractDomainTest {
         person.getPhoneNumbers().add(phone1);
         person.getPhoneNumbers().add(phone2);
 
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
         Set<AbstractPhone> set = person.getPhoneNumbers().stream().collect(Collectors.toSet());
         assertThat(set).hasSize(2).containsOnly(phone1, phone2);
@@ -759,14 +759,14 @@ public class FunctionalTest extends AbstractDomainTest {
     @Test
     public void insert_one_to_many_inverse_through_set() {
         Person person = RandomData.randomPerson();
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
         Phone phone1 = RandomData.randomPhone();
         Phone phone2 = RandomData.randomPhone();
         person.getPhoneNumbers().add(phone1);
         person.getPhoneNumbers().add(phone2);
 
-        requeryTemplate.update(person);
+        requeryOperations.update(person);
 
         assertThat(person.getPhoneNumbers()).hasSize(2).containsOnly(phone1, phone2);
     }
@@ -779,10 +779,10 @@ public class FunctionalTest extends AbstractDomainTest {
         person.getPhoneNumbers().add(phone1);
         person.getPhoneNumbers().add(phone2);
 
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
         Set<AbstractPhone> set = person.getPhoneNumbers().stream().collect(Collectors.toSet());
         assertThat(set).hasSize(2).containsOnly(phone1, phone2);
-        assertThat(requeryTemplate.count(Phone.class).get().value()).isEqualTo(2);
+        assertThat(requeryOperations.count(Phone.class).get().value()).isEqualTo(2);
     }
 
     @Test
@@ -793,7 +793,7 @@ public class FunctionalTest extends AbstractDomainTest {
         person.getPhoneNumbers().add(phone1);
         person.getPhoneNumbers().add(phone2);
 
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
         Set<AbstractPhone> set = person.getPhoneNumberList().stream().collect(Collectors.toSet());
         assertThat(set).hasSize(2).containsOnly(phone1, phone2);
@@ -807,23 +807,23 @@ public class FunctionalTest extends AbstractDomainTest {
         person.getPhoneNumbers().add(phone1);
         person.getPhoneNumbers().add(phone2);
 
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
         assertThat(phone1.getOwner()).isEqualTo(person);
         assertThat(phone2.getOwner()).isEqualTo(person);
 
-        requeryTemplate.refresh(phone1, Phone.OWNER);
-        requeryTemplate.refresh(phone2, Phone.OWNER);
+        requeryOperations.refresh(phone1, Phone.OWNER);
+        requeryOperations.refresh(phone2, Phone.OWNER);
     }
 
     @Test
     public void insert_many_to_many() {
         Person person = RandomData.randomPerson();
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
         assertThat(person.getGroups().toList()).isEmpty();
 
         List<Group> addedGroups = new ArrayList<>();
 
-        requeryTemplate.withTransaction(entityStore -> {
+        requeryOperations.withTransaction(entityStore -> {
             IntStream.range(0, 10).forEach(it -> {
                 Group group = new Group();
                 group.setName("Group" + it);
@@ -836,7 +836,7 @@ public class FunctionalTest extends AbstractDomainTest {
             return entityStore.update(person);
         });
 
-        requeryTemplate.refresh(person, Person.GROUPS);
+        requeryOperations.refresh(person, Person.GROUPS);
 
         addedGroups.forEach(group -> assertThat(group.getMembers().toList()).contains(person));
     }
@@ -844,7 +844,7 @@ public class FunctionalTest extends AbstractDomainTest {
     @Test
     public void insert_many_to_many_self_referencing() {
         Person person = RandomData.randomPerson();
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
         List<Person> addedPeople = new ArrayList<>();
         IntStream.range(0, 10).forEach(it -> {
@@ -853,10 +853,10 @@ public class FunctionalTest extends AbstractDomainTest {
             addedPeople.add(p);
         });
 
-        requeryTemplate.update(person);
+        requeryOperations.update(person);
 
         assertThat(person.getFriends()).containsAll(addedPeople);
-        assertThat(requeryTemplate.count(Person.class).get().value()).isEqualTo(11);
+        assertThat(requeryOperations.count(Person.class).get().value()).isEqualTo(11);
     }
 
     @Test
@@ -879,17 +879,17 @@ public class FunctionalTest extends AbstractDomainTest {
             count.getAndIncrement();
         });
         assertThat(count.get()).isEqualTo(10);
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
     }
 
     @Test
     public void delete_many_to_many() {
         Person person = RandomData.randomPerson();
-        requeryTemplate.insert(person);
+        requeryOperations.insert(person);
 
         Set<Group> groups = new HashSet<>();
 
-        requeryTemplate.withTransaction(entityStore -> {
+        requeryOperations.withTransaction(entityStore -> {
             IntStream.range(0, 10).forEach(it -> {
                 Group group = new Group();
                 group.setName("DeleteGroup" + it);
@@ -900,29 +900,29 @@ public class FunctionalTest extends AbstractDomainTest {
             return entityStore.update(person);
         });
         groups.forEach(it -> person.getGroups().remove(it));
-        requeryTemplate.update(person);
+        requeryOperations.update(person);
         assertThat(person.getGroups().toList()).isEmpty();
 
         // many to many 관계를 끊은 것이므로 group 은 삭제되지 않는다.
-        assertThat(requeryTemplate.count(Group.class).get().value()).isEqualTo(10);
+        assertThat(requeryOperations.count(Group.class).get().value()).isEqualTo(10);
     }
 
     @Test
     public void many_to_many_order_by() {
         Group group = new Group();
         group.setName("Group");
-        requeryTemplate.insert(group);
+        requeryOperations.insert(group);
 
         IntStream.iterate(3, i -> i - 1).limit(4).forEach(it -> {
             Person person = RandomData.randomPerson();
             char c = (char) (65 + it);
             person.setName(Character.toString(c));
-            requeryTemplate.insert(person);
+            requeryOperations.insert(person);
             group.getOwners().add(person);
         });
 
-        requeryTemplate.update(group);
-        requeryTemplate.refresh(group, Group.OWNERS);
+        requeryOperations.update(group);
+        requeryOperations.refresh(group, Group.OWNERS);
 
         List<AbstractPerson> owners = group.getOwners().toList();
 

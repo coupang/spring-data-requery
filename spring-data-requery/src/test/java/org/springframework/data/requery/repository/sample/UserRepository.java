@@ -47,14 +47,15 @@ import java.util.stream.Stream;
  * @since 18. 6. 12
  */
 @SuppressWarnings("SpringDataRepositoryMethodReturnTypeInspection")
+@Transactional(readOnly = true)
 public interface UserRepository extends RequeryRepository<User, Integer>, UserRepositoryCustom {
 
     List<User> findByLastname(String lastname);
 
     @Override
-    @Transactional(readOnly = true)
     Optional<User> findById(Integer primaryKey);
 
+    @Transactional
     @Override
     void deleteById(Integer id);
 
@@ -95,6 +96,7 @@ public interface UserRepository extends RequeryRepository<User, Integer>, UserRe
     /**
      * Manipulating query to set all {@link User}'s names to the given one.
      */
+    @Transactional
     @Query("update SD_User u set u.lastname = ?")
     void renameAllUsersTo(String lastname);
 
@@ -213,6 +215,7 @@ public interface UserRepository extends RequeryRepository<User, Integer>, UserRe
     // NOTE: Not supported Spring expression
     // DATAJPA-415
 
+    @Transactional
     @Query("update SD_User u set u.active = ? where u.id in ?")
     void updateUserActiveState(boolean activeState, Integer... ids);
 
@@ -228,14 +231,12 @@ public interface UserRepository extends RequeryRepository<User, Integer>, UserRe
 //    // DATAJPA-496
 //    List<User> findByAttributesIn(Set<String> attributes);
 
-    // DATAJPA-460
+    @Transactional
     Integer removeByLastname(String lastname);
 
-    // DATAJPA-460
+    @Transactional
     Integer deleteByLastname(String lastname);
 
-
-    @Transactional(readOnly = true)
     @Query(value = "select * from SD_User u where u.firstname like ?")
     Page<User> findAllByFirstnameLike(String firstname, Pageable page);
 

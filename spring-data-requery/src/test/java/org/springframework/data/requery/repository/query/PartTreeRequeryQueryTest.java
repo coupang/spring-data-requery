@@ -61,7 +61,7 @@ public class PartTreeRequeryQueryTest extends AbstractDomainTest {
     public void getQueryMethodHasPaging() throws Exception {
 
         RequeryQueryMethod queryMethod = getQueryMethod("findByFirstname", String.class, Pageable.class);
-        PartTreeRequeryQuery requeryQuery = new PartTreeRequeryQuery(queryMethod, requeryTemplate);
+        PartTreeRequeryQuery requeryQuery = new PartTreeRequeryQuery(queryMethod, requeryOperations);
 
         QueryElement<?> query = requeryQuery.createQueryElement(new Object[] { "Debop", PageRequest.of(0, 1) });
         assertThat(query).isNotNull();
@@ -90,7 +90,7 @@ public class PartTreeRequeryQueryTest extends AbstractDomainTest {
     public void recreatesQueryIfNullValueIsGiven() throws Exception {
 
         RequeryQueryMethod queryMethod = getQueryMethod("findByFirstname", String.class, Pageable.class);
-        PartTreeRequeryQuery requeryQuery = new PartTreeRequeryQuery(queryMethod, requeryTemplate);
+        PartTreeRequeryQuery requeryQuery = new PartTreeRequeryQuery(queryMethod, requeryOperations);
 
         // eq 
         QueryElement<?> query = requeryQuery.createQueryElement(new Object[] { "Debop", PageRequest.of(0, 1) });
@@ -113,7 +113,7 @@ public class PartTreeRequeryQueryTest extends AbstractDomainTest {
     public void shouldLimitExistsProjectionQueries() throws Exception {
 
         RequeryQueryMethod queryMethod = getQueryMethod("existsByFirstname", String.class);
-        PartTreeRequeryQuery requeryQuery = new PartTreeRequeryQuery(queryMethod, requeryTemplate);
+        PartTreeRequeryQuery requeryQuery = new PartTreeRequeryQuery(queryMethod, requeryOperations);
 
         QueryElement<?> query = requeryQuery.createQueryElement(new Object[] { "Debop" });
 
@@ -126,7 +126,7 @@ public class PartTreeRequeryQueryTest extends AbstractDomainTest {
     public void shouldSelectForExistsProjectionQueries() throws Exception {
 
         RequeryQueryMethod queryMethod = getQueryMethod("existsByFirstname", String.class);
-        PartTreeRequeryQuery requeryQuery = new PartTreeRequeryQuery(queryMethod, requeryTemplate);
+        PartTreeRequeryQuery requeryQuery = new PartTreeRequeryQuery(queryMethod, requeryOperations);
 
         QueryElement<?> query = requeryQuery.createQueryElement(new Object[] { "Debop" });
 
@@ -137,7 +137,7 @@ public class PartTreeRequeryQueryTest extends AbstractDomainTest {
     public void isEmptyCollection() throws Exception {
 
         RequeryQueryMethod queryMethod = getQueryMethod("findByRolesIsEmpty");
-        PartTreeRequeryQuery requeryQuery = new PartTreeRequeryQuery(queryMethod, requeryTemplate);
+        PartTreeRequeryQuery requeryQuery = new PartTreeRequeryQuery(queryMethod, requeryOperations);
 
         QueryElement<?> query = requeryQuery.createQueryElement(new Object[] {});
         assertThat(query).isNotNull();
@@ -147,7 +147,7 @@ public class PartTreeRequeryQueryTest extends AbstractDomainTest {
     public void isNotEmptyCollection() throws Exception {
 
         RequeryQueryMethod queryMethod = getQueryMethod("findByRolesIsNotEmpty");
-        PartTreeRequeryQuery requeryQuery = new PartTreeRequeryQuery(queryMethod, requeryTemplate);
+        PartTreeRequeryQuery requeryQuery = new PartTreeRequeryQuery(queryMethod, requeryOperations);
 
         QueryElement<?> query = requeryQuery.createQueryElement(new Object[] {});
         assertThat(query).isNotNull();
@@ -157,7 +157,7 @@ public class PartTreeRequeryQueryTest extends AbstractDomainTest {
     public void rejectsIsEmptyOnNonCollectionProperty() throws Exception {
 
         RequeryQueryMethod queryMethod = getQueryMethod("findByFirstnameIsEmpty");
-        PartTreeRequeryQuery requeryQuery = new PartTreeRequeryQuery(queryMethod, requeryTemplate);
+        PartTreeRequeryQuery requeryQuery = new PartTreeRequeryQuery(queryMethod, requeryOperations);
 
         QueryElement<?> query = requeryQuery.createQueryElement(new Object[] { "Debop" });
         assertThat(query).isNotNull();
@@ -169,7 +169,7 @@ public class PartTreeRequeryQueryTest extends AbstractDomainTest {
         RequeryQueryMethod queryMethod = getQueryMethod("findByFirstname");
 
         assertThatThrownBy(() -> {
-            new PartTreeRequeryQuery(queryMethod, requeryTemplate);
+            new PartTreeRequeryQuery(queryMethod, requeryOperations);
         }).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -180,7 +180,7 @@ public class PartTreeRequeryQueryTest extends AbstractDomainTest {
 
         assertThatThrownBy(() -> {
             // HINT: PartTree 생성 시, 엔티티에 존재하지 않는 속성명을 사용하는 경우에 예외를 발생시킨다. 
-            new PartTreeRequeryQuery(queryMethod, requeryTemplate);
+            new PartTreeRequeryQuery(queryMethod, requeryOperations);
         }).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -192,7 +192,7 @@ public class PartTreeRequeryQueryTest extends AbstractDomainTest {
         }
 
         RequeryQueryMethod queryMethod = getQueryMethod(methodName, parameterTypes);
-        PartTreeRequeryQuery requeryQuery = new PartTreeRequeryQuery(queryMethod, requeryTemplate);
+        PartTreeRequeryQuery requeryQuery = new PartTreeRequeryQuery(queryMethod, requeryOperations);
         requeryQuery.createQueryElement(values);
     }
 
