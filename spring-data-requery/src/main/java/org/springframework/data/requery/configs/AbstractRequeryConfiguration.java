@@ -31,9 +31,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.requery.core.RequeryOperations;
 import org.springframework.data.requery.core.RequeryTemplate;
-import org.springframework.data.requery.core.RequeryTransactionManager;
 import org.springframework.data.requery.listeners.LogbackListener;
 import org.springframework.data.requery.mapping.RequeryMappingContext;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.Assert;
 
@@ -114,8 +114,8 @@ public abstract class AbstractRequeryConfiguration {
     }
 
     @Bean
-    public PlatformTransactionManager transactionManager(EntityDataStore<Object> entityDataStore, DataSource dataSource) {
-        return new RequeryTransactionManager(entityDataStore, dataSource);
+    public PlatformTransactionManager transactionManager(DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
     }
 
     @Autowired

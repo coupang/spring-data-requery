@@ -17,6 +17,7 @@
 package org.springframework.data.requery.repository;
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.aop.support.AopUtils;
@@ -44,6 +45,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class RoleRepositoryTest {
 
     @Inject RoleRepository repository;
+
+    @Before
+    public void setup() {
+        repository.deleteAll();
+    }
 
     @Test
     public void instancingRepository() {
@@ -97,6 +103,7 @@ public class RoleRepositoryTest {
 
     @Test
     public void shouldUseExplicitlyConfiguredEntityNameInDerivedCountQueries() {
+
         Role reference = new Role("ADMIN");
         repository.save(reference);
 

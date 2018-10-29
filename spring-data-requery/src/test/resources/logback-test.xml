@@ -11,6 +11,8 @@
     </appender>
 
     <logger name="org.springframework.data.requery" level="TRACE"/>
+    <logger name="org.springframework.data.transaction" level="TRACE"/>
+    <logger name="org.springframework.jdbc.datasource" level="TRACE"/>
 
     <logger name="io.requery.sql" level="WARN"/>
     <logger name="requery" level="WARN"/>

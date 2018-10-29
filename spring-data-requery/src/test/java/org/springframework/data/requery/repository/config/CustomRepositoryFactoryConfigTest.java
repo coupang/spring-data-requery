@@ -16,7 +16,6 @@
 
 package org.springframework.data.requery.repository.config;
 
-import io.requery.sql.EntityDataStore;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,14 +45,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CustomRepositoryFactoryConfigTest {
 
     @Configuration
-    @EnableRequeryRepositories(basePackages = { "com.coupang.springframework.data.requery.repository.custom" },
+    @EnableRequeryRepositories(//basePackages = { "com.coupang.springframework.data.requery.repository.custom" },
                                basePackageClasses = { CustomGenericRequeryRepository.class },
                                repositoryFactoryBeanClass = CustomGenericRequeryRepositoryFactoryBean.class)
     static class TestConfiguration extends RequeryTestConfiguration {
         @Bean
         @Override
-        public DelegatingTransactionManager transactionManager(EntityDataStore<Object> entityDataStore, DataSource dataSource) {
-            return new DelegatingTransactionManager(super.transactionManager(entityDataStore, dataSource));
+        public DelegatingTransactionManager transactionManager(DataSource dataSource) {
+            return new DelegatingTransactionManager(super.transactionManager(dataSource));
         }
     }
 
@@ -76,11 +75,11 @@ public class CustomRepositoryFactoryConfigTest {
 
     @Test
     public void reconfiguresTransactionalMethodWithoutGenericParameter() {
+
         userRepository.findAll();
 
         assertThat(transactionManager.getDefinition().getTimeout()).isEqualTo(100);
-        assertThat(transactionManager.getDefinition().isReadOnly()).isTrue();
-
+        assertThat(transactionManager.getDefinition().isReadOnly()).isFalse();
     }
 
     @Test
@@ -89,6 +88,6 @@ public class CustomRepositoryFactoryConfigTest {
         userRepository.findById(1L);
 
         assertThat(transactionManager.getDefinition().getTimeout()).isEqualTo(10);
-        assertThat(transactionManager.getDefinition().isReadOnly()).isTrue();
+        assertThat(transactionManager.getDefinition().isReadOnly()).isFalse();
     }
 }

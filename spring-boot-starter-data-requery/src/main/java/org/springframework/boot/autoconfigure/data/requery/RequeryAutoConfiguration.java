@@ -31,8 +31,8 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.requery.core.RequeryTransactionManager;
 import org.springframework.data.requery.listeners.LogbackListener;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.StringUtils;
 
@@ -103,9 +103,8 @@ public class RequeryAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnBean({ DataSource.class, EntityDataStore.class })
-    public PlatformTransactionManager platformTransactionManager(@NotNull final EntityDataStore<Object> entityDataStore,
-                                                                 @NotNull final DataSource dataSource) {
-        return new RequeryTransactionManager(entityDataStore, dataSource);
+    public PlatformTransactionManager platformTransactionManager(@NotNull final DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
     }
 
     @Autowired io.requery.sql.Configuration configuration;

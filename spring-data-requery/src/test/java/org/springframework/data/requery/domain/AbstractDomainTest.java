@@ -25,6 +25,7 @@ import org.springframework.data.requery.configs.RequeryTestConfiguration;
 import org.springframework.data.requery.core.RequeryOperations;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Random;
 
@@ -40,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = { RequeryTestConfiguration.class })
+@Transactional
 public abstract class AbstractDomainTest {
 
     protected static Random rnd = new Random(System.currentTimeMillis());

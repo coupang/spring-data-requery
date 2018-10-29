@@ -32,11 +32,12 @@ import java.util.Optional;
  */
 public interface BasicUserRepository extends RequeryRepository<BasicUser, Long> {
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     Optional<BasicUser> findById(Long primaryKey);
 
 
+    @Transactional(readOnly = true)
     default List<BasicUser> findAllByName(String name) {
         return getOperations()
             .select(BasicUser.class)
@@ -45,6 +46,7 @@ public interface BasicUserRepository extends RequeryRepository<BasicUser, Long> 
             .toList();
     }
 
+    @Transactional(readOnly = true)
     default BasicUser findByEmail(String email) {
         return getOperations()
             .select(BasicUser.class)
@@ -53,7 +55,7 @@ public interface BasicUserRepository extends RequeryRepository<BasicUser, Long> 
             .firstOrNull();
     }
 
-    @Query("select * from basic_user u where u.email = ?")
     @Transactional(readOnly = true)
+    @Query("select * from basic_user u where u.email = ?")
     BasicUser findByAnnotatedQuery(String email);
 }

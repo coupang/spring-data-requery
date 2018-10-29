@@ -17,6 +17,7 @@
 package org.springframework.data.requery.repository.support;
 
 import org.jetbrains.annotations.Nullable;
+import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.requery.repository.RequeryRepository;
 
 /**
@@ -25,6 +26,7 @@ import org.springframework.data.requery.repository.RequeryRepository;
  * @author debop
  * @since 18. 6. 6
  */
+@NoRepositoryBean
 public interface RequeryRepositoryImplementation<T, ID> extends RequeryRepository<T, ID> {
 
     void setRepositoryMethodMetadata(@Nullable final CrudMethodMetadata crudMethodMetadata);

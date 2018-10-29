@@ -16,16 +16,18 @@
 
 package org.springframework.data.requery.configs;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import io.requery.meta.EntityModel;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.requery.domain.Models;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 
 @Configuration
+@EnableTransactionManagement(proxyTargetClass = true)
 public class RequeryTestConfiguration extends AbstractRequeryConfiguration {
 
     @Override
@@ -36,12 +38,20 @@ public class RequeryTestConfiguration extends AbstractRequeryConfiguration {
 
     @Bean
     public DataSource dataSource() {
-        return new EmbeddedDatabaseBuilder()
-            .setName("test")
-            .setType(EmbeddedDatabaseType.H2)
-            .setScriptEncoding("UTF-8")
-            .continueOnError(true)
-            .ignoreFailedDrops(true)
-            .build();
+        HikariConfig config = new HikariConfig();
+        config.setDriverClassName("org.h2.Driver");
+        config.setJdbcUrl("jdbc:h2:mem:test");
+        config.setUsername("sa");
+
+        return new HikariDataSource(config);
+
+
+//        return new EmbeddedDatabaseBuilder()
+//            .setName("test")
+//            .setType(EmbeddedDatabaseType.H2)
+//            .setScriptEncoding("UTF-8")
+//            .continueOnError(true)
+//            .ignoreFailedDrops(true)
+//            .build();
     }
 }
