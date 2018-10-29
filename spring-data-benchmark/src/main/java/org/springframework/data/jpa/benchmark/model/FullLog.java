@@ -16,11 +16,8 @@
 
 package org.springframework.data.jpa.benchmark.model;
 
-import com.coupang.kotlinx.data.jpa.entity.AbstractJpaEntity;
-import com.coupang.kotlinx.objectx.ToStringBuilder;
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -37,7 +34,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
-public class FullLog extends AbstractJpaEntity<Long> {
+public class FullLog {
 
     private static final long serialVersionUID = -415197041952755379L;
 
@@ -69,12 +66,13 @@ public class FullLog extends AbstractJpaEntity<Long> {
     }
 
     @Override
-    protected @NotNull ToStringBuilder buildStringHelper() {
-        return super.buildStringHelper()
-            .add("createAt", createAt)
-            .add("systemId", systemId)
-            .add("systenName", systemName)
-            .add("threadName", threadName)
-            .add("logMessage", logMessage);
+    public String toString() {
+        return "FullLog{" +
+               "createAt=" + createAt +
+               ", systemId='" + systemId + '\'' +
+               ", systemName='" + systemName + '\'' +
+               ", threadName='" + threadName + '\'' +
+               ", logMessage='" + logMessage + '\'' +
+               '}';
     }
 }

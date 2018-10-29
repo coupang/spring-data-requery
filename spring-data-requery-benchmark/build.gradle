@@ -47,8 +47,14 @@ idea {
 
 dependencies {
 
-    compile "org.springframework.boot:spring-boot-starter-data-jpa"
+    compile project(":spring-data-requery")
     compile "com.h2database:h2:1.4.197"
+
+    optional "io.requery:requery-jackson"
+
+    // For Java classes
+    annotationProcessor "io.requery:requery-processor"
+    testAnnotationProcessor "io.requery:requery-processor"
 
     // lombok을 gradle 에서 사용하기 위해 annotation process를 설정해주어야 합니다.
     compileOnly "org.projectlombok:lombok"

@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.data.jpa.benchmark;
+package org.springframework.data.jpa.benchmark.simple;
 
 import org.openjdk.jmh.annotations.*;
+import org.springframework.data.jpa.benchmark.JpaUtils;
 import org.springframework.data.jpa.benchmark.model.FullLog;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -26,12 +27,10 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import java.util.Date;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+
+import static org.springframework.data.jpa.benchmark.model.FullLogHelper.randomFullLogs;
 
 /*
 Benchmark                                                            Mode  Cnt         Score          Error   Units
@@ -75,27 +74,6 @@ JpaBulkInsertBenchmark.insTen:·gc.time                               avgt   10 
 @Measurement(iterations = 10)
 @Fork(1)
 public class JpaBulkInsertBenchmark {
-
-    private static Random rnd = new Random(System.currentTimeMillis());
-
-    private static FullLog randomFullLog() {
-        FullLog fullLog = new FullLog();
-        fullLog.setCreateAt(new Date());
-        fullLog.setSystemId("SystemId:" + rnd.nextInt(1000));
-        fullLog.setSystemName("SystemName:" + rnd.nextInt(1000));
-        fullLog.setLogLevel(rnd.nextInt(5));
-        fullLog.setThreadName("main-" + rnd.nextInt(16));
-        fullLog.setLogMessage("동해물과 백두산이 마르고 닳도록, 동해물과 백두산이 마르고 닳도록, 동해물과 백두산이 마르고 닳도록");
-
-        return fullLog;
-    }
-
-    private static List<FullLog> randomFullLogs(int count) {
-        return IntStream
-            .range(0, count)
-            .mapToObj(it -> randomFullLog())
-            .collect(Collectors.toList());
-    }
 
     private static EntityManagerFactory emf = JpaUtils.getEntityManagerFactory();
     private static PlatformTransactionManager tm = new JpaTransactionManager(emf);

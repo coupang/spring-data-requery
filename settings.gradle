@@ -25,5 +25,6 @@ include 'spring-boot-starter-data-requery'
 //include 'spring-data-requery-kotlin-test'
 
 // for benchmark
-// include 'spring-data-benchmark'
+include 'spring-data-benchmark'
+include 'spring-data-requery-benchmark'
 
