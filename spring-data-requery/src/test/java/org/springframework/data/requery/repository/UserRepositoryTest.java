@@ -55,7 +55,6 @@ import org.springframework.data.requery.repository.support.SimpleRequeryReposito
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
@@ -646,7 +645,6 @@ public class UserRepositoryTest {
     }
 
     @Test
-    @Transactional(propagation = Propagation.SUPPORTS)
     public void readsPageWithGroupByClauseCorrectly() {
 
         flushTestUsers();
@@ -842,7 +840,6 @@ public class UserRepositoryTest {
     }
 
     @Test
-    @Transactional(propagation = Propagation.SUPPORTS)
     public void bindsSortingToOuterJoinCorrectly() {
 
         flushTestUsers();
@@ -1344,7 +1341,6 @@ public class UserRepositoryTest {
     }
 
     @Test
-    @Transactional(propagation = Propagation.SUPPORTS)
     public void supportsJava8StreamForPageableMethod() {
 
         flushTestUsers();
@@ -1743,7 +1739,6 @@ public class UserRepositoryTest {
     }
 
     @Test
-    @Transactional(propagation = Propagation.SUPPORTS)
     public void executeNativeQueryWithPage() {
 
         flushTestUsers();

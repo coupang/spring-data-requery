@@ -30,7 +30,6 @@ import org.springframework.data.requery.repository.RequeryRepository;
 import org.springframework.data.requery.repository.support.RequeryRepositoryFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
@@ -40,16 +39,10 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * org.springframework.data.requery.repository.query.DeclaredRequeryQueryTest
- *
- * @author debop
- * @since 18. 6. 16
- */
 @Slf4j
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = { RequeryTestConfiguration.class })
-@Transactional(propagation = Propagation.SUPPORTS)
+@Transactional
 public class DeclaredRequeryQueryTest {
 
     @Inject RequeryOperations operations;
@@ -89,7 +82,6 @@ public class DeclaredRequeryQueryTest {
     }
 
     @Test
-    @Transactional(propagation = Propagation.SUPPORTS)
     public void queryWithLimits() {
         Set<BasicUser> users = RandomData.randomUsers(10);
         repository.saveAll(users);
