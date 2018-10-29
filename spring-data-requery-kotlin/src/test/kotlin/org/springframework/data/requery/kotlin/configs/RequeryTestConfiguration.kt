@@ -49,7 +49,7 @@ class RequeryTestConfiguration : AbstractRequeryConfiguration() {
         log.info { "Create Datasource for Embedded H2 Database..." }
 
         return EmbeddedDatabaseBuilder()
-            .setName("data")
+            .setName("kotlin-data")
             .setType(EmbeddedDatabaseType.H2)
             .setScriptEncoding("UTF-8")
             .ignoreFailedDrops(true)
