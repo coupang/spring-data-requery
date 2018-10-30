@@ -8,6 +8,49 @@ Spring Data for [requery](http://requery.io)
 
 참고: [Requery Overview](doc/Requery%20Overview.pdf)
 
+## Setup
+
+#### Maven
+
+Add jcenter repository 
+```xml
+<repositories>
+    <repository>
+        <id>jcenter</id>
+        <url>http://jcenter.bintray.com</url>
+    </repository>
+</repositories>
+```
+
+Add dependency
+```xml
+<dependency>
+    <groupId>com.coupang</groupId>
+    <artifactId>spring-data-requery</artifactId>
+    <version>2.0.1</version>
+</dependency>
+```
+
+#### Gradle
+
+Use jcenter repository only 
+
+```groovy
+repository {
+    jcenter()
+}
+dependencies {
+    // for Java
+    compile "com.coupang:spring-data-requery:2.0.1"
+    
+    // for Kotlin
+    compile "com.coupang:spring-data-requery-kotlin:2.0.1"
+    
+    // for Spring Boopt 2
+    compile "com.coupang:spring-boot-starter-data-requery:2.0.1"
+}
+```
+
 
 ## 제공 모듈
 
