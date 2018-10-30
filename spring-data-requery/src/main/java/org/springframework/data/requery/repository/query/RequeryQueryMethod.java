@@ -86,23 +86,30 @@ public class RequeryQueryMethod extends QueryMethod {
         Assert.isTrue(!(isModifyingQuery() && getParameters().hasSpecialParameter()),
                       String.format("Modifying queryMethod must not contains %s!", Parameters.TYPES));
 
-        assertParamterNamesInAnnotatedQuery();
+        if (isAnnotatedQuery()) {
+            assertParamterNamesInAnnotatedQuery();
+        }
     }
 
+    /**
+     * Check for named paraemter in AnnotatedQuery
+     */
+    // FIXME: AnnotatedQuery 가 없는 경우에도 Named Parameter 때문에 문제가 된다고 예외를 일으킨다. 이 것을 수정해야 한다.
     private void assertParamterNamesInAnnotatedQuery() {
 
         String annotatedQuery = getAnnotatedQuery();
 
         for (Parameter parameter : getParameters()) {
+            log.debug("parameter={}", parameter.getName().orElse(""));
             if (!parameter.isNamedParameter()) {
                 continue;
             }
 
             String paramName = parameter.getName().orElse("");
-            if (StringUtils.isEmpty(annotatedQuery)
-                || StringUtils.hasText(paramName)
-                   && !annotatedQuery.contains(":" + paramName)
-                   && !annotatedQuery.contains("#" + paramName)) {
+
+            if (StringUtils.hasText(annotatedQuery) && StringUtils.hasText(paramName)
+                && !annotatedQuery.contains(":" + paramName)
+                && !annotatedQuery.contains("#" + paramName)) {
                 throw new IllegalStateException(
                     String.format("Using named parameters for queryMethod [%s] but parameter '%s' not found in annotated query '%s'!",
                                   method, parameter.getName(), annotatedQuery));

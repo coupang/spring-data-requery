@@ -158,6 +158,8 @@ public interface UserRepository extends RequeryRepository<User, Integer>, UserRe
     // DATAJPA-132
     List<User> findByActiveFalse();
 
+    User findByIdAndActiveFalse(Integer id);
+    
     // HINT: @Query 를 쓰던가, requery api 를 사용하던가 같다.
     // @Query("select u.* from SD_User u inner join User_Colleagues uc on (u.id = uc.SD_UserId1) where uc.SD_UserId2 = ?")
     default List<User> findColleaguesFor(Integer userId) {

@@ -703,6 +703,15 @@ public class UserRepositoryTest {
     }
 
     @Test
+    public void executesFindsIdAndWithFalseKeywordCorrectly() {
+        flushTestUsers();
+        firstUser.setActive(false);
+        repository.upsert(firstUser);
+
+        assertThat(repository.findByIdAndActiveFalse(firstUser.getId())).isEqualTo(firstUser);
+    }
+
+    @Test
     public void executesAnnotatedCollectionMethodCorrectly() throws InterruptedException {
 
         flushTestUsers();
