@@ -21,12 +21,14 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.requery.repository.RequeryRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Repository for {@link City}
  *
  * @author debop
  */
+@Transactional(readOnly = true)
 public interface CityRepository extends RequeryRepository<City, Long> {
 
     @NotNull
@@ -39,4 +41,7 @@ public interface CityRepository extends RequeryRepository<City, Long> {
 
     @Nullable
     City findByIdAndDeletedFalse(long cityId);
+
+    @Nullable
+    City findFirstByName(String cityName);
 }

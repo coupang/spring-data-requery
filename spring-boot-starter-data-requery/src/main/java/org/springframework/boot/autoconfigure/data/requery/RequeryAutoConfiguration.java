@@ -34,6 +34,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.requery.listeners.LogbackListener;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
@@ -61,7 +62,7 @@ public class RequeryAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public EntityModel getEntityModel() {
+    public EntityModel entityModel() {
         try {
             String modelFullName = properties.getModelName();
             if (StringUtils.isEmpty(modelFullName)) {
@@ -71,7 +72,9 @@ public class RequeryAutoConfiguration {
             String modelName = StringUtils.getFilenameExtension(modelFullName);
             log.debug("Entity model name={}", modelFullName);
 
-            Class<?> clazz = Class.forName(className);
+            // Class<?> clazz = Class.forName(className, false, Thread.currentThread().getContextClassLoader());
+            Class<?> clazz = ClassUtils.forName(className, Thread.currentThread().getContextClassLoader());
+
             Field field = clazz.getField(modelName);
             return (EntityModel) field.get(null);
 
@@ -89,7 +92,7 @@ public class RequeryAutoConfiguration {
             .setStatementCacheSize(properties.getStatementCacheSize())
             .setBatchUpdateSize(properties.getBatchUpdateSize())
             .setEntityCache(new WeakEntityCache())
-            .addEntityStateListener(new LogbackListener())
+            .addStatementListener(new LogbackListener<>())
             .build();
     }
 
