@@ -20,14 +20,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.Repository;
+import org.springframework.data.requery.repository.RequeryRepository;
 
 /**
  * Repository for {@link City}
  *
  * @author debop
  */
-public interface CityRepository extends Repository<City, Long> {
+public interface CityRepository extends RequeryRepository<City, Long> {
 
     @NotNull
     Page<City> findByNameLikeAndCountryLikeAllIgnoringCase(@NotNull final String name,
@@ -36,4 +36,7 @@ public interface CityRepository extends Repository<City, Long> {
 
     @Nullable
     City findByNameAndCountryAllIgnoringCase(@NotNull final String name, @NotNull final String country);
+
+    @Nullable
+    City findByIdAndDeletedFalse(long cityId);
 }

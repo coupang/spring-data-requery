@@ -22,7 +22,6 @@ import io.requery.Generated;
 import io.requery.Key;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.data.requery.domain.AbstractPersistable;
 import org.springframework.data.requery.domain.ToStringBuilder;
 
 import java.util.Objects;
@@ -34,7 +33,7 @@ import java.util.Objects;
  */
 @Getter
 @Entity
-public class AbstractCity extends AbstractPersistable<Long> {
+public class AbstractCity extends AbstractLifecycleEntity {
 
     private static final long serialVersionUID = 6441380830729259194L;
 
@@ -45,13 +44,10 @@ public class AbstractCity extends AbstractPersistable<Long> {
     @Column(nullable = false)
     protected String name;
 
-    @Column(nullable = false)
     protected String state;
 
-    @Column(nullable = false)
     protected String country;
 
-    @Column(nullable = false)
     protected String map;
 
     protected AbstractCity() {}

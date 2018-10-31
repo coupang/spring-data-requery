@@ -102,8 +102,8 @@ public class RequeryAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnBean({ DataSource.class, EntityDataStore.class })
-    public PlatformTransactionManager platformTransactionManager(@NotNull final DataSource dataSource) {
+    @ConditionalOnBean({ DataSource.class })
+    public PlatformTransactionManager transactionManager(@NotNull final DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
     }
 
