@@ -61,16 +61,17 @@ class SimpleCoroutineRequeryRepository<E : Any, ID : Any> @Autowired constructor
 
     companion object : KLogging()
 
-    init {
-        logger.info { "Create ${javaClass.simpleName} for domain class `$domainClassName`" }
-    }
-
     final override val domainKlass: KClass<E> get() = entityInformation.kotlinType
     final val domainClassName: String = domainKlass.simpleName ?: "Unknown"
 
+    @Suppress("LeakingThis")
     val coroutineEntityStore: CoroutineEntityStore<Any> = operations.entityStore
 
     private var crudMethodMetadata: CrudMethodMetadata? = null
+
+    init {
+        logger.info { "Create ${javaClass.simpleName} for domain class `$domainClassName`" }
+    }
 
     override fun setRepositoryMethodMetadata(crudMethodMetadata: CrudMethodMetadata?) {
         this.crudMethodMetadata = crudMethodMetadata

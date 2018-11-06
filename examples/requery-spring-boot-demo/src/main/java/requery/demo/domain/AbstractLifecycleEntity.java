@@ -1,9 +1,3 @@
-rootProject.name = 'spring-data-requery-parent'
-
-include 'spring-data-requery'
-include 'spring-data-requery-kotlin'
-include 'spring-boot-starter-data-requery'
-
 /*
  * Copyright 2018 Coupang Ltd.
  *
@@ -20,9 +14,22 @@ include 'spring-boot-starter-data-requery'
  * limitations under the License.
  */
 
-// for benchmark
-include 'spring-data-benchmark'
-include 'spring-data-requery-benchmark'
+package requery.demo.domain;
 
-include ':examples:requery-spring-boot-demo'
+import io.requery.Superclass;
+import lombok.Getter;
+import org.springframework.data.requery.domain.AuditableLongEntity;
 
+/**
+ * AbstractLifecycleEntity
+ *
+ * @author debop (Sunghyouk Bae)
+ */
+@Getter
+@Superclass
+public abstract class AbstractLifecycleEntity extends AuditableLongEntity {
+
+    private static final long serialVersionUID = -2278434123348362778L;
+
+    protected boolean deleted;
+}

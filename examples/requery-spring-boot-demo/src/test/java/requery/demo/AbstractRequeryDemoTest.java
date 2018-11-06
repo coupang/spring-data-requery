@@ -1,9 +1,3 @@
-rootProject.name = 'spring-data-requery-parent'
-
-include 'spring-data-requery'
-include 'spring-data-requery-kotlin'
-include 'spring-boot-starter-data-requery'
-
 /*
  * Copyright 2018 Coupang Ltd.
  *
@@ -20,9 +14,23 @@ include 'spring-boot-starter-data-requery'
  * limitations under the License.
  */
 
-// for benchmark
-include 'spring-data-benchmark'
-include 'spring-data-requery-benchmark'
+package requery.demo;
 
-include ':examples:requery-spring-boot-demo'
+import lombok.extern.slf4j.Slf4j;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+import requery.demo.configs.DemoTestConfiguration;
 
+/**
+ * AbstractRequeryDemoTest
+ *
+ * @author debop
+ * @since 18. 10. 31
+ */
+@Slf4j
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = { DemoTestConfiguration.class })
+public abstract class AbstractRequeryDemoTest {
+
+}

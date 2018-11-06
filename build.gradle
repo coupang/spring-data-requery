@@ -49,6 +49,7 @@ allprojects {
         mavenCentral()
         jcenter()
         maven { url "https://repo.spring.io/release" }
+        mavenLocal()
     }
 }
 
@@ -298,5 +299,9 @@ subprojects {
                 vcsTag = "$version"
             }
         }
+    }
+
+    clean {
+        delete('./out')
     }
 }

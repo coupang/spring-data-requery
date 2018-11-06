@@ -28,11 +28,20 @@ import kotlinx.coroutines.experimental.coroutineScope
  * @author debop
  * @since 18. 5. 16
  */
-class DeferredScalar<E>(delegate: Scalar<E>)
-    : ScalarDelegate<E>(delegate) {
+class DeferredScalar<E>(delegate: Scalar<E>) : ScalarDelegate<E>(delegate) {
+
+    /**
+     * Scalar 수형의 결과 값을 받을 때 까지 기다립니다.
+     *
+     * <code>
+     *     runBlocking {
+     *          val deleteCount:Int = coroutineEntityStore.delete(user).await()
+     *     }
+     * </code>
+     */
+    suspend fun await(): E = toDeferred().await()
 
     suspend fun toDeferred(): Deferred<E> {
-        // return RequeryScope.async { call() }
         return coroutineScope {
             async {
                 call()

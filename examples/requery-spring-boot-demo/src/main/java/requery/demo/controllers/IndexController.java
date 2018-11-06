@@ -1,9 +1,3 @@
-rootProject.name = 'spring-data-requery-parent'
-
-include 'spring-data-requery'
-include 'spring-data-requery-kotlin'
-include 'spring-boot-starter-data-requery'
-
 /*
  * Copyright 2018 Coupang Ltd.
  *
@@ -20,9 +14,24 @@ include 'spring-boot-starter-data-requery'
  * limitations under the License.
  */
 
-// for benchmark
-include 'spring-data-benchmark'
-include 'spring-data-requery-benchmark'
+package requery.demo.controllers;
 
-include ':examples:requery-spring-boot-demo'
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+
+/**
+ * IndexController
+ *
+ * @author debop
+ * @since 18. 11. 1
+ */
+@RestController("/index")
+public class IndexController {
+
+    @GetMapping
+    public String index() {
+        return "spring-data-requery demo application at " + LocalDateTime.now();
+    }
+}

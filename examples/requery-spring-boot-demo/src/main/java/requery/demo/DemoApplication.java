@@ -1,9 +1,3 @@
-rootProject.name = 'spring-data-requery-parent'
-
-include 'spring-data-requery'
-include 'spring-data-requery-kotlin'
-include 'spring-boot-starter-data-requery'
-
 /*
  * Copyright 2018 Coupang Ltd.
  *
@@ -20,9 +14,17 @@ include 'spring-boot-starter-data-requery'
  * limitations under the License.
  */
 
-// for benchmark
-include 'spring-data-benchmark'
-include 'spring-data-requery-benchmark'
+package requery.demo;
 
-include ':examples:requery-spring-boot-demo'
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+@SpringBootApplication
+@Slf4j
+public class DemoApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(DemoApplication.class, args);
+    }
+}

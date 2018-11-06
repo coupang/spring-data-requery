@@ -17,7 +17,6 @@
 package org.springframework.data.requery.domain;
 
 import io.requery.Convert;
-import io.requery.Lazy;
 import io.requery.Nullable;
 import io.requery.PreInsert;
 import io.requery.PreUpdate;
@@ -28,6 +27,7 @@ import java.time.LocalDateTime;
 
 /**
  * Abstract Auditable Entity
+ * NOTE: Entity에 Custom Constructor를 만들면 event listener가 동작하지 않습니다. static constructor를 만든세요.
  *
  * @author debop
  * @since 18. 6. 4
@@ -42,10 +42,8 @@ public abstract class AbstractAuditable<ID> extends AbstractPersistable<ID> {
     protected LocalDateTime createdDate;
 
     @Nullable
-    @Lazy
     @Convert(LocalDateTimeConverter.class)
     protected LocalDateTime lastModifiedDate;
-
 
     @PreInsert
     protected void onPreInsert() {

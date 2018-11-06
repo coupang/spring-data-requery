@@ -25,6 +25,7 @@ import org.springframework.data.requery.kotlin.domain.AbstractDomainTest
 import org.springframework.data.requery.kotlin.domain.RandomData
 import java.util.concurrent.Executors
 import java.util.concurrent.ForkJoinPool
+import kotlin.test.assertTrue
 
 /**
  * org.springframework.data.requery.kotlin.domain.basic.CompletableFutureTest
@@ -70,10 +71,11 @@ class CompletableFutureTest : AbstractDomainTest() {
         val user = RandomData.randomBasicUser()
 
         with(asyncEntityStore) {
-            insert(user)
+            val rowCount = insert(user)
                 .thenAccept { assertThat(it.id).isNotNull() }
                 .thenCompose { count(BasicUserEntity::class).get().toCompletableFuture() }
                 .get()
+            assertTrue { rowCount > 0 }
         }
     }
 

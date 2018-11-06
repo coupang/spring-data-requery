@@ -1,9 +1,3 @@
-rootProject.name = 'spring-data-requery-parent'
-
-include 'spring-data-requery'
-include 'spring-data-requery-kotlin'
-include 'spring-boot-starter-data-requery'
-
 /*
  * Copyright 2018 Coupang Ltd.
  *
@@ -20,9 +14,28 @@ include 'spring-boot-starter-data-requery'
  * limitations under the License.
  */
 
-// for benchmark
-include 'spring-data-benchmark'
-include 'spring-data-requery-benchmark'
+package requery.demo.services;
 
-include ':examples:requery-spring-boot-demo'
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import requery.demo.domain.City;
+import requery.demo.repository.CityRepository;
 
+import java.util.List;
+
+/**
+ * CityService
+ *
+ * @author debop
+ * @since 18. 10. 31
+ */
+@Service
+public class CityService {
+
+    @Autowired
+    private CityRepository repository;
+
+    public List<City> findAll() {
+        return repository.findAll();
+    }
+}
