@@ -35,5 +35,5 @@ interface CoroutineRepository<E : Any, ID : Any> : Repository<E, ID> {
      */
     @JvmDefault
     val coroutineDispatcher: CoroutineDispatcher
-        get() = Dispatchers.Unconfined
+        get() = Dispatchers.IO
 }

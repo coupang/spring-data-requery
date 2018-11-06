@@ -14,18 +14,28 @@
  * limitations under the License.
  */
 
-package org.springframework.data.requery.kotlin.coroutines
+package requery.demo.services;
 
-import kotlinx.coroutines.experimental.CoroutineScope
-import kotlinx.coroutines.experimental.Dispatchers
-import kotlin.coroutines.experimental.CoroutineContext
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import requery.demo.domain.City;
+import requery.demo.repository.CityRepository;
+
+import java.util.List;
 
 /**
- * Requery용 CoroutineScope
- * @author debop (Sunghyouk Bae)
+ * CityService
+ *
+ * @author debop
+ * @since 18. 10. 31
  */
-object RequeryScope : CoroutineScope {
+@Service
+public class CityService {
 
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Default // CompletableEntityStore 가 ForkJoin commonPool 을 사용한다. 이는 ResultSet에 대한 처리만 수행한다는 뜻이다.
+    @Autowired
+    private CityRepository repository;
+
+    public List<City> findAll() {
+        return repository.findAll();
+    }
 }

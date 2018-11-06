@@ -33,10 +33,9 @@ import kotlin.reflect.KClass
  * @since 18. 10. 14
  */
 @NoRepositoryBean
-interface CoroutineRequeryRepository<E : Any, ID : Any>
-    : CoroutinePagingAndSortingRepository<E, ID>,
-      CoroutineQueryByExampleExecutor<E>,
-      CoroutineRequeryConditionExecutor<E> {
+interface CoroutineRequeryRepository<E : Any, ID : Any> : CoroutinePagingAndSortingRepository<E, ID>,
+                                                          CoroutineQueryByExampleExecutor<E>,
+                                                          CoroutineRequeryConditionExecutor<E> {
 
     val operations: CoroutineRequeryOperations
     val domainKlass: KClass<E>
@@ -57,8 +56,18 @@ interface CoroutineRequeryRepository<E : Any, ID : Any>
      */
     suspend fun <K : Any> insert(entity: E, keyKlass: KClass<K>): K
 
+    /**
+     * 엔티티들을 insert 합니다.
+     * @param entities entities to insert
+     */
     suspend fun insertAll(entities: Iterable<E>): List<E>
 
+    /**
+     * 엔티티들을 insert 하고, 새로 발급받은 key 값을 반환합니다.
+     * @param K
+     * @param entities entities to insert
+     * @param keyKlass Class for key of entity
+     */
     suspend fun <K : Any> insertAll(entities: Iterable<E>, keyKlass: KClass<K>): List<K>
 
     suspend fun upsert(entity: E): E

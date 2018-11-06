@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-package org.springframework.data.requery.kotlin.coroutines
+package requery.demo;
 
-import kotlinx.coroutines.experimental.CoroutineScope
-import kotlinx.coroutines.experimental.Dispatchers
-import kotlin.coroutines.experimental.CoroutineContext
+import lombok.extern.slf4j.Slf4j;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+import requery.demo.configs.DemoTestConfiguration;
 
 /**
- * Requery용 CoroutineScope
- * @author debop (Sunghyouk Bae)
+ * AbstractRequeryDemoTest
+ *
+ * @author debop
+ * @since 18. 10. 31
  */
-object RequeryScope : CoroutineScope {
+@Slf4j
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = { DemoTestConfiguration.class })
+public abstract class AbstractRequeryDemoTest {
 
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Default // CompletableEntityStore 가 ForkJoin commonPool 을 사용한다. 이는 ResultSet에 대한 처리만 수행한다는 뜻이다.
 }

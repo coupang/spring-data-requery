@@ -35,15 +35,6 @@ import java.util.stream.Stream
  */
 internal val defaultCoroutineDispatcher: CoroutineDispatcher = Dispatchers.Default
 
-suspend fun <T : Any?> T.toDeferred(): Deferred<T> {
-    //     return RequeryScope.async { this@toDeferred }
-    return coroutineScope {
-        async {
-            this@toDeferred
-        }
-    }
-}
-
 suspend fun <T> CompletionStage<T>.asDeferred(): Deferred<T> {
     return coroutineScope {
         async {
@@ -62,7 +53,11 @@ suspend fun <T> CompletionStage<T>.toDeferred(): Deferred<T> {
 }
 
 suspend fun <T> Iterable<Deferred<T>>.flatten(): Deferred<List<T>> {
-    return this@flatten.map { it.await() }.toDeferred()
+    return coroutineScope {
+        async {
+            this@flatten.map { runBlocking { it.await() } }
+        }
+    }
 }
 
 suspend fun <T> Stream<Deferred<T>>.flatten(): Deferred<Stream<T>> {

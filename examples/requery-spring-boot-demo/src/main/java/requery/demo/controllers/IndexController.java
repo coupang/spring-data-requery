@@ -14,18 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.data.requery.kotlin.coroutines
+package requery.demo.controllers;
 
-import kotlinx.coroutines.experimental.CoroutineScope
-import kotlinx.coroutines.experimental.Dispatchers
-import kotlin.coroutines.experimental.CoroutineContext
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDateTime;
 
 /**
- * Requery용 CoroutineScope
- * @author debop (Sunghyouk Bae)
+ * IndexController
+ *
+ * @author debop
+ * @since 18. 11. 1
  */
-object RequeryScope : CoroutineScope {
+@RestController("/index")
+public class IndexController {
 
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Default // CompletableEntityStore 가 ForkJoin commonPool 을 사용한다. 이는 ResultSet에 대한 처리만 수행한다는 뜻이다.
+    @GetMapping
+    public String index() {
+        return "spring-data-requery demo application at " + LocalDateTime.now();
+    }
 }

@@ -33,8 +33,22 @@ import kotlinx.coroutines.experimental.coroutineScope
 class DeferredResult<E>(delegate: Result<E>)
     : ResultDelegate<E>(delegate), QueryWrapper<E> {
 
-    suspend inline fun <reified V : Any> toDefered(crossinline block: suspend (DeferredResult<E>) -> V): Deferred<V> {
-        // return RequeryScope.async { block(this@DeferredResult) }
+    /**
+     * 비동기 ResultSet 의 결과를 기다렸다가 원하는 형태로 변환하는 `block` 을 실행합니다.
+     *
+     * <code>
+     * runBlocking {
+     *     val users = coroutineEntityStore.select(User::class).get().await { toList() }
+     * }
+     * </code>
+     * @param V
+     * @param block
+     */
+    suspend inline fun <reified V : Any> await(crossinline block: suspend DeferredResult<E>.() -> V): V {
+        return toDeferred { block() }.await()
+    }
+
+    suspend inline fun <reified V : Any> toDeferred(crossinline block: suspend (DeferredResult<E>) -> V): Deferred<V> {
         return coroutineScope {
             async {
                 block(this@DeferredResult)

@@ -76,7 +76,7 @@ interface CoroutineRequeryOperations {
         return entityStore
             .select(entityType)
             .get()
-            .toDefered { it.toList() }
+            .toDeferred { it.toList() }
             .await()
     }
 

@@ -45,14 +45,5 @@ public class RequeryTestConfiguration extends AbstractRequeryConfiguration {
 
 
         return new HikariDataSource(config);
-
-
-//        return new EmbeddedDatabaseBuilder()
-//            .setName("test")
-//            .setType(EmbeddedDatabaseType.H2)
-//            .setScriptEncoding("UTF-8")
-//            .continueOnError(true)
-//            .ignoreFailedDrops(true)
-//            .build();
     }
 }

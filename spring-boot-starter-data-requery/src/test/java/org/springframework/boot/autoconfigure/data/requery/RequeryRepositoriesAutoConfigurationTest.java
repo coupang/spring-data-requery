@@ -21,11 +21,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.requery.configs.TestRequeryConfiguration;
 import org.springframework.boot.autoconfigure.data.requery.domain.CityRepository;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.requery.core.RequeryOperations;
 import org.springframework.data.requery.repository.config.EnableRequeryRepositories;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -42,14 +41,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @Slf4j
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = { TestRequeryConfiguration.class })
 @EnableRequeryRepositories(basePackageClasses = { CityRepository.class })
 public class RequeryRepositoriesAutoConfigurationTest {
-
-    @Configuration
-    @EnableAutoConfiguration
-    static class TestConfiguration {
-    }
 
     @Autowired
     private ApplicationContext applicationContext;

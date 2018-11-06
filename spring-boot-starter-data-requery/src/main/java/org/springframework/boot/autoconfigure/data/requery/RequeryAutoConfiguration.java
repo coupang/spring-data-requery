@@ -72,7 +72,6 @@ public class RequeryAutoConfiguration {
             String modelName = StringUtils.getFilenameExtension(modelFullName);
             log.debug("Entity model name={}", modelFullName);
 
-            // Class<?> clazz = Class.forName(className, false, Thread.currentThread().getContextClassLoader());
             Class<?> clazz = ClassUtils.forName(className, Thread.currentThread().getContextClassLoader());
 
             Field field = clazz.getField(modelName);
