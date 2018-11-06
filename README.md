@@ -42,13 +42,13 @@ repository {
 }
 dependencies {
     // for Java
-    compile "com.coupang:spring-data-requery:2.0.1"
+    compile "com.coupang:spring-data-requery:2.0.2"
     
     // for Kotlin
-    compile "com.coupang:spring-data-requery-kotlin:2.0.1"
+    compile "com.coupang:spring-data-requery-kotlin:2.0.2"
     
     // for Spring Boopt 2
-    compile "com.coupang:spring-boot-starter-data-requery:2.0.1"
+    compile "com.coupang:spring-boot-starter-data-requery:2.0.2"
 }
 ```
 
