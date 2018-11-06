@@ -1,5 +1,6 @@
 # spring-data-requery
 [![Build Status](https://travis-ci.org/coupang/spring-data-requery.svg?branch=2.x)](https://travis-ci.org/coupang/spring-data-requery)
+[![jcenter](https://api.bintray.com/packages/coupang/coupang-oss-repository/spring-data-requery/images/download.svg) ](https://bintray.com/coupang/coupang-oss-repository/spring-data-requery/_latestVersion)
 
 Spring Data for [requery](http://requery.io) 
 
@@ -27,7 +28,7 @@ Add dependency
 <dependency>
     <groupId>com.coupang</groupId>
     <artifactId>spring-data-requery</artifactId>
-    <version>2.0.1</version>
+    <version>2.0.2</version>
 </dependency>
 ```
 
