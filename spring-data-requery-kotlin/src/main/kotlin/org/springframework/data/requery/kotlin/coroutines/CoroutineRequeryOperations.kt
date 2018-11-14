@@ -48,11 +48,11 @@ interface CoroutineRequeryOperations {
 
     @JvmDefault
     val entityModel: EntityModel
-        get() = entityStore.dataStore.getEntityModel()
+        get() = entityStore.delegate.getEntityModel()
 
     @JvmDefault
     val entityContext: EntityContext<out Any>
-        get() = entityStore.dataStore.getEntityContext()
+        get() = entityStore.delegate.getEntityContext()
 
     @JvmDefault
     suspend infix fun <T : Any> select(entityType: KClass<T>): Selection<out DeferredResult<T>> =
@@ -218,7 +218,7 @@ interface CoroutineRequeryOperations {
 
     @JvmDefault
     suspend fun <T : Any> withDataStore(block: KotlinEntityDataStore<Any>.() -> T): T {
-        return block.invoke(entityStore.dataStore)
+        return block.invoke(entityStore.delegate)
     }
 
 }

@@ -21,6 +21,7 @@ import io.requery.query.ScalarDelegate
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.coroutineScope
+import kotlinx.coroutines.experimental.runBlocking
 
 /**
  * Kotlin Coroutines 을 이용하여 Scala 수형의 질의 반환 값을 받을 때 사용하는 클래스입니다.
@@ -40,6 +41,8 @@ class DeferredScalar<E>(delegate: Scalar<E>) : ScalarDelegate<E>(delegate) {
      * </code>
      */
     suspend fun await(): E = toDeferred().await()
+
+    override fun value(): E = runBlocking { await() }
 
     suspend fun toDeferred(): Deferred<E> {
         return coroutineScope {

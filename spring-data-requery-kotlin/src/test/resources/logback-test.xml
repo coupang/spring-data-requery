@@ -5,17 +5,17 @@
         <withJansi>true</withJansi>
         <immediateFlush>true</immediateFlush>
         <encoder>
-            <pattern>%d{ISO8601} %-5level [%.32thread] %logger{36}: %m%n</pattern>
+            <pattern>%d{ISO8601} %highlight(%-5level) [%blue(%t)] %yellow(%logger): %msg%n%throwable</pattern>
             <charset>UTF-8</charset>
         </encoder>
     </appender>
 
     <logger name="org.springframework.data.requery.kotlin" level="TRACE"/>
 
-    <logger name="io.requery.sql" level="DEBUG"/>
-    <logger name="requery" level="DEBUG"/>
+    <logger name="io.requery.sql" level="TRACE"/>
+    <logger name="requery" level="TRACE"/>
 
-    <root level="INFO">
+    <root level="DEBUG">
         <appender-ref ref="console"/>
     </root>
 

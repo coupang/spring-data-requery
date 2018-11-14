@@ -44,136 +44,136 @@ import kotlin.reflect.KClass
  * 이 클래스는 Requery의 [io.requery.async.CompletableEntityStore]를 대체할 수 있는 기능을 제공합니다.
  *
  * 비동기 방식이지만, Coroutine은 Lightweight thread이므로 Transaction에 안정하게 구현됩니다.
- * 다만 Dispatchers.Default를 쓰면 안되고, caller thread에 속해서 작동해야 하므로 [Dispatchers.Unconfined]를 사용해야 합니다.
+ * 다만 Dispatchers.Default를 쓰면 안되고, caller thread에 속해서 작동해야 하므로 [Dispatchers.Main]를 사용해야 합니다.
  *
  * @author debop
  * @since 18. 5. 16
  */
-class CoroutineEntityStore<T : Any>(val dataStore: KotlinEntityDataStore<T>) : EntityStore<T, Any> {
+class CoroutineEntityStore<T : Any>(val delegate: KotlinEntityDataStore<T>) : EntityStore<T, Deferred<*>> {
 
     companion object : KLogging()
 
-    override fun close() = dataStore.close()
+    override fun close() = delegate.close()
 
     override infix fun <E : T> select(type: KClass<E>): Selection<out DeferredResult<E>> {
-        return resultAsync(dataStore.select(type))
+        return resultAsync(delegate.select(type))
     }
 
     override fun <E : T> select(type: KClass<E>, vararg attributes: QueryableAttribute<E, *>): Selection<out DeferredResult<E>> {
-        return resultAsync(dataStore.select(type, *attributes))
+        return resultAsync(delegate.select(type, *attributes))
     }
 
     override fun select(vararg expressions: Expression<*>): Selection<out DeferredResult<Tuple>> {
-        return resultAsync(dataStore.select(*expressions))
+        return resultAsync(delegate.select(*expressions))
     }
 
     override fun <E : T> insert(type: KClass<E>): Insertion<out DeferredResult<Tuple>> {
-        return resultAsync(dataStore.insert(type))
+        return resultAsync(delegate.insert(type))
     }
 
     override fun <E : T> insert(type: KClass<E>,
                                 vararg attributes: QueryableAttribute<E, *>): InsertInto<out DeferredResult<Tuple>> {
-        return resultAsync(dataStore.insert(type, *attributes))
+        return resultAsync(delegate.insert(type, *attributes))
     }
 
     override fun update(): Update<out DeferredScalar<Int>> {
-        return scalarAsync(dataStore.update())
+        return scalarAsync(delegate.update())
     }
 
     override fun <E : T> update(type: KClass<E>): Update<out DeferredScalar<Int>> {
-        return scalarAsync(dataStore.update(type))
+        return scalarAsync(delegate.update(type))
     }
 
     override fun delete(): Deletion<out DeferredScalar<Int>> {
-        return scalarAsync(dataStore.delete())
+        return scalarAsync(delegate.delete())
     }
 
     override fun <E : T> delete(type: KClass<E>): Deletion<out DeferredScalar<Int>> {
-        return scalarAsync(dataStore.delete(type))
+        return scalarAsync(delegate.delete(type))
     }
 
     override fun <E : T> count(type: KClass<E>): Selection<out DeferredScalar<Int>> {
-        return scalarAsync(dataStore.count(type))
+        return scalarAsync(delegate.count(type))
     }
 
     override fun count(vararg attributes: QueryableAttribute<T, *>): Selection<out DeferredScalar<Int>> {
-        return scalarAsync(dataStore.count(*attributes))
+        return scalarAsync(delegate.count(*attributes))
     }
 
     override fun <E : T> insert(entity: E): Deferred<E> {
-        return execute { dataStore.insert(entity) }
+        return execute { delegate.insert(entity) }
     }
 
     override fun <E : T> insert(entities: Iterable<E>): Deferred<List<E>> {
-        return execute { dataStore.insert(entities).toList() }
+        return execute { delegate.insert(entities).toList() }
     }
 
     override fun <K : Any, E : T> insert(entity: E, keyClass: KClass<K>): Deferred<K> {
-        return execute { dataStore.insert(entity, keyClass) }
+        return execute { delegate.insert(entity, keyClass) }
     }
 
     override fun <K : Any, E : T> insert(entities: Iterable<E>, keyClass: KClass<K>): Deferred<List<K>> {
-        return execute { dataStore.insert(entities, keyClass).toList() }
+        return execute { delegate.insert(entities, keyClass).toList() }
     }
 
     override fun <E : T> update(entity: E): Deferred<E> {
-        return execute { dataStore.update(entity) }
+        return execute { delegate.update(entity) }
     }
 
     override fun <E : T> update(entities: Iterable<E>): Deferred<List<E>> {
-        return execute { dataStore.update(entities).toList() }
+        return execute { delegate.update(entities).toList() }
     }
 
     override fun <E : T> upsert(entity: E): Deferred<E> {
-        return execute { dataStore.upsert(entity) }
+        return execute { delegate.upsert(entity) }
     }
 
     override fun <E : T> upsert(entities: Iterable<E>): Deferred<List<E>> {
-        return execute { dataStore.upsert(entities).toList() }
+        return execute { delegate.upsert(entities).toList() }
     }
 
     override fun <E : T> refresh(entity: E): Deferred<E> {
-        return execute { dataStore.refresh(entity) }
+        return execute { delegate.refresh(entity) }
     }
 
     override fun <E : T> refresh(entity: E, vararg attributes: Attribute<*, *>): Deferred<E> {
-        return execute { dataStore.refresh(entity, *attributes) }
+        return execute { delegate.refresh(entity, *attributes) }
     }
 
     override fun <E : T> refresh(entities: Iterable<E>, vararg attributes: Attribute<*, *>): Deferred<List<E>> {
-        return execute { dataStore.refresh(entities, *attributes).toList() }
+        return execute { delegate.refresh(entities, *attributes).toList() }
     }
 
     override fun <E : T> refreshAll(entity: E): Deferred<E> {
-        return execute { dataStore.refreshAll(entity) }
+        return execute { delegate.refreshAll(entity) }
     }
 
     override fun <E : T> delete(entity: E): Deferred<*> {
-        return execute { dataStore.delete(entity) }
+        return execute { delegate.delete(entity) }
     }
 
-    override fun <E : T> delete(entities: Iterable<E>): Deferred<*> = execute { dataStore.delete(entities) }
+    override fun <E : T> delete(entities: Iterable<E>): Deferred<*> = execute { delegate.delete(entities) }
 
 
     override fun raw(query: String, vararg parameters: Any): DeferredResult<Tuple> {
-        return DeferredResult(dataStore.raw(query, parameters))
+        return DeferredResult(delegate.raw(query, parameters))
     }
 
     override fun <E : T> raw(type: KClass<E>, query: String, vararg parameters: Any): DeferredResult<E> {
-        return DeferredResult(dataStore.raw(type, query, *parameters))
+        return DeferredResult(delegate.raw(type, query, *parameters))
     }
 
     override fun <E : T, K> findByKey(type: KClass<E>, key: K): Deferred<E?> =
-        execute { dataStore.findByKey(type, key) }
+        execute { delegate.findByKey(type, key) }
 
-    override fun toBlocking(): BlockingEntityStore<T> = dataStore
+    override fun toBlocking(): BlockingEntityStore<T> = delegate
 
     fun <V> withTransaction(body: BlockingEntityStore<T>.() -> V): Deferred<V> =
-        execute { dataStore.withTransaction(body) }
+        execute { delegate.withTransaction(body) }
 
     fun <V> withTransaction(isolation: TransactionIsolation = TransactionIsolation.SERIALIZABLE,
                             body: BlockingEntityStore<T>.() -> V): Deferred<V> =
-        execute { dataStore.withTransaction(isolation, body) }
+        execute { delegate.withTransaction(isolation, body) }
 
     /**
      * [CoroutineEntityStore]에서 제공하는 모든 메소드는 이 함수를 통해서 실행됩니다.
@@ -182,7 +182,7 @@ class CoroutineEntityStore<T : Any>(val dataStore: KotlinEntityDataStore<T>) : E
      * @param block code block of requery operations
      */
     inline fun <V> execute(crossinline block: suspend CoroutineEntityStore<T>.() -> V): Deferred<V> {
-        return RequeryScope.async {
+        return RequeryScope.async(Dispatchers.Default) {
             block.invoke(this@CoroutineEntityStore)
         }
     }

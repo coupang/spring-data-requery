@@ -26,6 +26,10 @@ import kotlin.coroutines.experimental.CoroutineContext
  */
 object RequeryScope : CoroutineScope {
 
+    /**
+     * 기본 CoroutineContext는 [Dispatchers.Default] 입니다.
+     * 기본적으로 Tx 를 고려하지 않는다. 꼭 Tx를 고려해야 하는 상황에서는 Dispatchers.Main을 써야 합니다.
+     */
     override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Default // CompletableEntityStore 가 ForkJoin commonPool 을 사용한다. 이는 ResultSet에 대한 처리만 수행한다는 뜻이다.
+        get() = Dispatchers.Default
 }

@@ -84,22 +84,23 @@ class Cache2kEntityCache @JvmOverloads constructor(
     override fun clear() {
         synchronized(syncObj) {
             cacheManager.forEach { _, cache ->
-                cache.clear()
+                cache.close()
             }
+            cacheManager.clear()
         }
     }
 
-    override fun <T : Any?> put(type: Class<T>?, key: Any?, value: T) {
-        value?.let { _ ->
+    override fun <T : Any> put(type: Class<T>?, key: Any?, value: T?) {
+        value?.let {
             key?.let { type?.cache?.put(key, value) }
         } ?: invalidate(type, key)
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T : Any?> get(type: Class<T>?, key: Any?): T {
+    override fun <T : Any> get(type: Class<T>?, key: Any?): T? {
         return key?.let {
             type?.cast(type.cache.get(key))
-        } ?: null as T
+        }
     }
 
 }

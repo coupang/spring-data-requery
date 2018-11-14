@@ -16,6 +16,7 @@
 
 package org.springframework.data.requery.kotlin.coroutines
 
+import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
@@ -45,9 +46,9 @@ class KotlinCoroutineTemplateTest : AbstractDomainTest() {
     fun setup() {
         runBlocking {
             with(coroutineTemplate) {
-                val work1 = RequeryScope.async { deleteAll(BasicLocation::class) }
-                val work2 = RequeryScope.async { deleteAll(BasicGroup::class) }
-                val work3 = RequeryScope.async { deleteAll(BasicUser::class) }
+                val work1 = async(Dispatchers.Default) { deleteAll(BasicLocation::class) }
+                val work2 = async(Dispatchers.Default) { deleteAll(BasicGroup::class) }
+                val work3 = async(Dispatchers.Default) { deleteAll(BasicUser::class) }
 
                 work1.await()
                 work2.await()
@@ -67,9 +68,9 @@ class KotlinCoroutineTemplateTest : AbstractDomainTest() {
                 select(BasicUser::class)
                     .where(BasicUserEntity.ID.eq(savedUser.id))
                     .get()
-                    .firstOrNull()
+                    .toDeferred { it.firstOrNull() }
 
-            assertEquals(user, loaded)
+            assertEquals(user, loaded.await())
         }
     }
 
@@ -81,8 +82,8 @@ class KotlinCoroutineTemplateTest : AbstractDomainTest() {
             insert(user)
             assertNotNull(user.id)
 
-            val count = count(BasicUser::class).get().value()
-            assertEquals(1, count)
+            val count = count(BasicUser::class).get()
+            assertEquals(1, count.await())
         }
     }
 
@@ -104,7 +105,7 @@ class KotlinCoroutineTemplateTest : AbstractDomainTest() {
     }
 
     @Test
-    fun `async query udpate`() = runBlocking<Unit> {
+    fun `async query udpate`() = runBlocking {
         val user = randomBasicUser().apply { age = 100 }
 
         with(coroutineTemplate) {
@@ -114,23 +115,21 @@ class KotlinCoroutineTemplateTest : AbstractDomainTest() {
             insert1.await()
             insert2.await()
 
-            val affectedCount = async {
+            val affectedCount =
                 update(BasicUser::class)
                     .set(BasicUserEntity.ABOUT, "nothing")
                     .set(BasicUserEntity.AGE, 50)
                     .where(BasicUserEntity.AGE eq user.age)
                     .get()
-                    .value()
-            }
 
-            val affectedCount2 = async {
+
+            val affectedCount2 =
                 update(BasicUser::class)
                     .set(BasicUserEntity.ABOUT, "twenty")
                     .set(BasicUserEntity.AGE, 20)
                     .where(BasicUserEntity.AGE eq 10)
                     .get()
-                    .value()
-            }
+
             assertEquals(1, affectedCount.await())
             assertEquals(1, affectedCount2.await())
         }
@@ -141,14 +140,20 @@ class KotlinCoroutineTemplateTest : AbstractDomainTest() {
         val users = RandomData.randomBasicUsers(100)
 
         with(coroutineTemplate) {
-            RequeryScope.async { insertAll(users) }.await()
+            // Insert 시에 다중 Client로부터 입력 받는 것으로 가정한다.
+            users.chunked(8).forEach { groupedUsers ->
+                async(Dispatchers.Default) {
+                    insertAll(groupedUsers)
+                }.await()
+            }
 
             val loadedUsers =
                 select(BasicUser::class)
                     .orderBy(BasicUserEntity.NAME.asc().nullsFirst())
                     .limit(200)
                     .get()
-                    .stream()
+                    .toDeferred { it.stream() }
+                    .await()
 
             assertEquals(100L, loadedUsers.count())
         }
