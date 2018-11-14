@@ -16,10 +16,10 @@
 
 package org.springframework.data.requery;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.core.annotation.AnnotationUtils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
@@ -36,14 +36,14 @@ public final class Annotations {
     private Annotations() {}
 
     @Nullable
-    public static <A extends Annotation> A findAnnotation(@NotNull final Class<?> clazz,
-                                                          @NotNull final Class<A> annotationType) {
+    public static <A extends Annotation> A findAnnotation(@Nonnull final Class<?> clazz,
+                                                          @Nonnull final Class<A> annotationType) {
         return AnnotationUtils.findAnnotation(clazz, annotationType);
     }
 
     @Nullable
-    public static <A extends Annotation> A findAnnotation(@NotNull final Method method,
-                                                          @NotNull final Class<A> annotationType) {
+    public static <A extends Annotation> A findAnnotation(@Nonnull final Method method,
+                                                          @Nonnull final Class<A> annotationType) {
         return AnnotationUtils.findAnnotation(method, annotationType);
     }
 }

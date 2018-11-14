@@ -19,8 +19,8 @@ package org.springframework.data.requery.query;
 import io.requery.query.Expression;
 import io.requery.query.FieldExpression;
 import io.requery.query.LogicalCondition;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 
 /**
@@ -36,16 +36,16 @@ public final class Expressions {
     private Expressions() {}
 
     @SuppressWarnings("unchecked")
-    @NotNull
-    public static <V> LogicalCondition<? extends Expression<V>, Collection<V>> in(@NotNull final FieldExpression<V> expression,
-                                                                                  @NotNull final Collection<V> values) {
+    @Nonnull
+    public static <V> LogicalCondition<? extends Expression<V>, Collection<V>> in(@Nonnull final FieldExpression<V> expression,
+                                                                                  @Nonnull final Collection<V> values) {
         return expression.in(values);
     }
 
     @SuppressWarnings("unchecked")
-    @NotNull
-    public static <V> LogicalCondition<? extends Expression<V>, Collection<V>> notIn(@NotNull final FieldExpression<V> expression,
-                                                                                     @NotNull final Collection<V> values) {
+    @Nonnull
+    public static <V> LogicalCondition<? extends Expression<V>, Collection<V>> notIn(@Nonnull final FieldExpression<V> expression,
+                                                                                     @Nonnull final Collection<V> values) {
         return expression.notIn(values);
     }
 }

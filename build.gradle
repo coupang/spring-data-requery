@@ -141,6 +141,9 @@ subprojects {
 
     dependencies {
 
+        compileOnly "org.jetbrains:annotations"
+        compileOnly "com.google.code.findbugs:jsr305"
+
         implementation "org.slf4j:slf4j-api"
         testImplementation "ch.qos.logback:logback-classic"
 

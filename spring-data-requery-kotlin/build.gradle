@@ -75,9 +75,6 @@ dependencies {
 
     compile "io.github.microutils:kotlin-logging"
 
-    implementation "org.jetbrains:annotations"
-    implementation "com.google.code.findbugs:jsr305"
-
     // spring framework
     compile "org.springframework:spring-beans"
     compile "org.springframework:spring-context"
