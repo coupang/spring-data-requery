@@ -5,7 +5,7 @@
         <withJansi>true</withJansi>
         <immediateFlush>true</immediateFlush>
         <encoder>
-            <pattern>%d{ISO8601} %-5level [%.16thread] %logger{36}: %m%n</pattern>
+            <pattern>%d{ISO8601} %highlight(%-5level) [%blue(%t)] %yellow(%logger): %msg%n%throwable</pattern>
             <charset>UTF-8</charset>
         </encoder>
     </appender>

@@ -19,6 +19,7 @@ package org.springframework.data.requery.configs;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.requery.meta.EntityModel;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.requery.domain.Models;
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 
+@Slf4j
 @Configuration
 @EnableTransactionManagement(proxyTargetClass = true)
 public class RequeryTestConfiguration extends AbstractRequeryConfiguration {
@@ -38,12 +40,20 @@ public class RequeryTestConfiguration extends AbstractRequeryConfiguration {
 
     @Bean
     public DataSource dataSource() {
+//        return DataSourceBuilder.create()
+//            .type(HikariDataSource.class)
+//            .driverClassName("org.h2.Driver")
+//            .url("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false")
+//            .username("sa")
+//            .build();
+
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.h2.Driver");
         config.setJdbcUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false");
         config.setUsername("sa");
 
-
-        return new HikariDataSource(config);
+        DataSource dataSource = new HikariDataSource(config);
+        log.trace("DataSource={}", dataSource);
+        return dataSource;
     }
 }
