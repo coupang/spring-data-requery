@@ -16,7 +16,6 @@
 
 package org.springframework.data.requery.repository.custom;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.repository.core.RepositoryInformation;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.requery.core.RequeryOperations;
@@ -24,6 +23,7 @@ import org.springframework.data.requery.repository.support.RequeryEntityInformat
 import org.springframework.data.requery.repository.support.RequeryRepositoryFactory;
 import org.springframework.data.requery.repository.support.SimpleRequeryRepository;
 
+import javax.annotation.Nonnull;
 import java.io.Serializable;
 
 import static org.mockito.Mockito.mock;
@@ -43,8 +43,8 @@ public class CustomGenericRequeryRepositoryFactory extends RequeryRepositoryFact
 
     @SuppressWarnings("unchecked")
     @Override
-    protected SimpleRequeryRepository<?, ?> getTargetRepository(@NotNull final RepositoryInformation information,
-                                                                @NotNull final RequeryOperations operations) {
+    protected SimpleRequeryRepository<?, ?> getTargetRepository(@Nonnull final RepositoryInformation information,
+                                                                @Nonnull final RequeryOperations operations) {
 
         RequeryEntityInformation<Object, Serializable> entityMetadata = mock(RequeryEntityInformation.class);
         when(entityMetadata.getJavaType()).thenReturn((Class<Object>) information.getDomainType());
@@ -53,7 +53,8 @@ public class CustomGenericRequeryRepositoryFactory extends RequeryRepositoryFact
     }
 
     @Override
-    protected @NotNull Class<?> getRepositoryBaseClass(@NotNull RepositoryMetadata metadata) {
+    protected @Nonnull
+    Class<?> getRepositoryBaseClass(@Nonnull RepositoryMetadata metadata) {
         return CustomGenericRequeryRepository.class;
     }
 }

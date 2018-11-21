@@ -19,7 +19,8 @@ package org.springframework.data.requery.repository.query;
 import io.requery.query.Tuple;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 
 /**
  * RequeryResultConverter

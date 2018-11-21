@@ -41,8 +41,6 @@ import io.requery.sql.EntityContext;
 import io.requery.sql.EntityDataStore;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.util.Assert;
@@ -50,6 +48,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.ReflectionUtils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -76,8 +76,8 @@ public class RequeryUtils {
     private static final Map<Class<?>, NamedExpression<?>> classKeys = new ConcurrentHashMap<>();
     public static final NamedExpression<?> UNKNOWN_KEY_EXPRESSION = NamedExpression.of("Unknown", Object.class);
 
-    @NotNull
-    public static NamedExpression<?> getKeyExpression(@NotNull final Class<?> domainClass) {
+    @Nonnull
+    public static NamedExpression<?> getKeyExpression(@Nonnull final Class<?> domainClass) {
         Assert.notNull(domainClass, "domainClass must not be null!");
         log.trace("Retrieve Key property. domainClass={}", domainClass.getSimpleName());
 
@@ -91,8 +91,8 @@ public class RequeryUtils {
     }
 
     @SuppressWarnings("ConstantConditions")
-    @NotNull
-    public static EntityContext getEntityContext(@NotNull final EntityDataStore entityDataStore) {
+    @Nonnull
+    public static EntityContext getEntityContext(@Nonnull final EntityDataStore entityDataStore) {
         Assert.notNull(entityDataStore, "entityDataStore must not be null!");
 
         try {
@@ -107,8 +107,8 @@ public class RequeryUtils {
     }
 
     @SuppressWarnings("ConstantConditions")
-    @NotNull
-    public static EntityModel getEntityModel(@NotNull final EntityDataStore entityDataStore) {
+    @Nonnull
+    public static EntityModel getEntityModel(@Nonnull final EntityDataStore entityDataStore) {
         Assert.notNull(entityDataStore, "entityDataStore must not be null!");
 
         try {
@@ -122,8 +122,8 @@ public class RequeryUtils {
         }
     }
 
-    @NotNull
-    public static Set<Type<?>> getEntityTypes(@NotNull final EntityDataStore entityDataStore) {
+    @Nonnull
+    public static Set<Type<?>> getEntityTypes(@Nonnull final EntityDataStore entityDataStore) {
         Assert.notNull(entityDataStore, "entityDataStore must not be null!");
 
         EntityModel model = getEntityModel(entityDataStore);
@@ -132,8 +132,8 @@ public class RequeryUtils {
         return model.getTypes();
     }
 
-    @NotNull
-    public static List<Class<?>> getEntityClasses(@NotNull final EntityDataStore entityDataStore) {
+    @Nonnull
+    public static List<Class<?>> getEntityClasses(@Nonnull final EntityDataStore entityDataStore) {
         Assert.notNull(entityDataStore, "entityDataStore must not be null!");
 
         return getEntityTypes(entityDataStore)
@@ -144,8 +144,8 @@ public class RequeryUtils {
 
     @SuppressWarnings("unchecked")
     @Nullable
-    public static <E> Type<E> getType(@NotNull final EntityDataStore entityDataStore,
-                                      @NotNull final Class<E> entityClass) {
+    public static <E> Type<E> getType(@Nonnull final EntityDataStore entityDataStore,
+                                      @Nonnull final Class<E> entityClass) {
         Assert.notNull(entityDataStore, "entityDataStore must not be null!");
         Assert.notNull(entityClass, "entityClass must not be null!");
 
@@ -158,8 +158,8 @@ public class RequeryUtils {
             .orElse(null);
     }
 
-    public static <E> Set<? extends Attribute<E, ?>> getKeyAttributes(@NotNull final EntityDataStore entityDataStore,
-                                                                      @NotNull final Class<E> entityClass) {
+    public static <E> Set<? extends Attribute<E, ?>> getKeyAttributes(@Nonnull final EntityDataStore entityDataStore,
+                                                                      @Nonnull final Class<E> entityClass) {
         Assert.notNull(entityDataStore, "entityDataStore must not be null!");
         Assert.notNull(entityClass, "entityClass must not be null!");
 
@@ -176,8 +176,8 @@ public class RequeryUtils {
      * @return {@link Attribute} of Key property
      */
     @Nullable
-    public static <E> Attribute<E, ?> getSingleKeyAttribute(@NotNull final EntityDataStore entityDataStore,
-                                                            @NotNull final Class<E> entityClass) {
+    public static <E> Attribute<E, ?> getSingleKeyAttribute(@Nonnull final EntityDataStore entityDataStore,
+                                                            @Nonnull final Class<E> entityClass) {
         Assert.notNull(entityDataStore, "entityDataStore must not be null!");
         Assert.notNull(entityClass, "entityClass must not be null!");
 
@@ -193,8 +193,8 @@ public class RequeryUtils {
      * @return {@link QueryElement} instance
      */
     @SuppressWarnings("ConstantConditions")
-    @NotNull
-    public static QueryElement<?> unwrap(@NotNull final Return<?> wrapper) {
+    @Nonnull
+    public static QueryElement<?> unwrap(@Nonnull final Return<?> wrapper) {
         if (wrapper instanceof QueryWrapper) {
             return ((QueryWrapper<?>) wrapper).unwrapQuery();
         } else {
@@ -203,10 +203,10 @@ public class RequeryUtils {
     }
 
     @SuppressWarnings("unchecked")
-    @NotNull
-    public static <E> QueryElement<?> applyPageable(@NotNull final Class<E> domainClass,
-                                                    @NotNull final QueryElement<?> baseQuery,
-                                                    @NotNull final Pageable pageable) {
+    @Nonnull
+    public static <E> QueryElement<?> applyPageable(@Nonnull final Class<E> domainClass,
+                                                    @Nonnull final QueryElement<?> baseQuery,
+                                                    @Nonnull final Pageable pageable) {
         Assert.notNull(domainClass, "domainClass must not be null!");
         Assert.notNull(baseQuery, "baseQuery must not be null!");
         Assert.notNull(pageable, "pageable must not be null!");
@@ -242,9 +242,9 @@ public class RequeryUtils {
      * @return {@link QueryElement} which added {@link Sort}
      */
     @SuppressWarnings("unchecked")
-    public static <E> QueryElement<?> applySort(@NotNull final Class<E> domainClass,
-                                                @NotNull final QueryElement<?> baseQuery,
-                                                @NotNull final Sort sort) {
+    public static <E> QueryElement<?> applySort(@Nonnull final Class<E> domainClass,
+                                                @Nonnull final QueryElement<?> baseQuery,
+                                                @Nonnull final Sort sort) {
         log.trace("Apply sort, domainClass={}, sort={}", domainClass.getSimpleName(), sort);
 
         QueryElement<?> query = baseQuery;
@@ -280,8 +280,9 @@ public class RequeryUtils {
         return query;
     }
 
-    public static @NotNull OrderingExpression<?>[] getOrderingExpressions(@NotNull final Class<?> domainClass,
-                                                                          @Nullable final Sort sort) {
+    public static @Nonnull
+    OrderingExpression<?>[] getOrderingExpressions(@Nonnull final Class<?> domainClass,
+                                                   @Nullable final Sort sort) {
         Assert.notNull(domainClass, "domainClass must not null.");
 
         if (sort == null || sort.isUnsorted()) {
@@ -306,7 +307,8 @@ public class RequeryUtils {
     }
 
     @SuppressWarnings("unchecked")
-    public static <E> @Nullable LogicalCondition<E, ?> foldConditions(@NotNull final Iterable<Condition<E, ?>> conditions) {
+    @Nullable
+    public static <E> LogicalCondition<E, ?> foldConditions(@Nonnull final Iterable<Condition<E, ?>> conditions) {
         LogicalCondition<E, ?> condition = null;
         for (Condition<E, ?> cond : conditions) {
             if (condition == null) {
@@ -319,8 +321,9 @@ public class RequeryUtils {
     }
 
     @SuppressWarnings("unchecked")
-    public static <E> @Nullable LogicalCondition<E, ?> foldConditions(@NotNull final Iterable<Condition<E, ?>> conditions,
-                                                                      @NotNull final LogicalOperator operator) {
+    @Nullable
+    public static <E> LogicalCondition<E, ?> foldConditions(@Nonnull final Iterable<Condition<E, ?>> conditions,
+                                                            @Nonnull final LogicalOperator operator) {
         LogicalCondition<E, ?> condition = null;
         for (Condition<E, ?> cond : conditions) {
             if (condition == null) {
@@ -341,9 +344,9 @@ public class RequeryUtils {
         return condition;
     }
 
-    @NotNull
-    public static QueryElement<?> applyWhereClause(@NotNull final QueryElement<?> baseQuery,
-                                                   @NotNull final Set<WhereConditionElement<?>> conditionElements) {
+    @Nonnull
+    public static QueryElement<?> applyWhereClause(@Nonnull final QueryElement<?> baseQuery,
+                                                   @Nonnull final Set<WhereConditionElement<?>> conditionElements) {
         if (conditionElements.isEmpty()) {
             return baseQuery;
         } else if (conditionElements.size() == 1) {
@@ -394,8 +397,8 @@ public class RequeryUtils {
      * @return {@link Field} 정보를 가져온다. 없다면 null 반환
      */
     @Nullable
-    public static Field findField(@NotNull final Class<?> domainClass,
-                                  @NotNull final String fieldName) {
+    public static Field findField(@Nonnull final Class<?> domainClass,
+                                  @Nonnull final String fieldName) {
 
         Assert.notNull(domainClass, "domainClass must not be null!");
         Assert.hasText(fieldName, "fieldName must not be empty!");
@@ -428,9 +431,9 @@ public class RequeryUtils {
      * @param fieldPredicate 원하는 {@link Field} 인지 판단하는 predicate
      * @return 조건에 맞는 Field 정보
      */
-    @NotNull
-    public static List<Field> findFields(@NotNull final Class<?> domainClass,
-                                         @NotNull final Predicate<Field> fieldPredicate) {
+    @Nonnull
+    public static List<Field> findFields(@Nonnull final Class<?> domainClass,
+                                         @Nonnull final Predicate<Field> fieldPredicate) {
         Assert.notNull(domainClass, "domainClass must not be null!");
         Assert.notNull(fieldPredicate, "predicate must not be null!");
 
@@ -453,8 +456,8 @@ public class RequeryUtils {
     }
 
     @Nullable
-    public static Field findFirstField(@NotNull final Class<?> domainClass,
-                                       @NotNull final Predicate<Field> fieldPredicate) {
+    public static Field findFirstField(@Nonnull final Class<?> domainClass,
+                                       @Nonnull final Predicate<Field> fieldPredicate) {
         Assert.notNull(domainClass, "domainClass must not be null!");
         Assert.notNull(fieldPredicate, "predicate must not be null!");
 
@@ -486,18 +489,18 @@ public class RequeryUtils {
      * @param domainClass Requery 엔티티의 클래스
      * @return Field collection
      */
-    @NotNull
-    public static List<Field> findEntityFields(@NotNull final Class<?> domainClass) {
+    @Nonnull
+    public static List<Field> findEntityFields(@Nonnull final Class<?> domainClass) {
         return entityFields.computeIfAbsent(domainClass, clazz ->
             findFields(clazz, RequeryUtils::isRequeryEntityField)
         );
     }
 
-    public static boolean isRequeryEntityField(@NotNull final Field field) {
+    public static boolean isRequeryEntityField(@Nonnull final Field field) {
         return !isRequeryGeneratedField(field);
     }
 
-    public static boolean isRequeryGeneratedField(@NotNull final Field field) {
+    public static boolean isRequeryGeneratedField(@Nonnull final Field field) {
         String fieldName = field.getName();
 
         return (field.getModifiers() & Modifier.STATIC) > 0 ||
@@ -505,15 +508,15 @@ public class RequeryUtils {
                (fieldName.startsWith("$") && fieldName.endsWith("_state"));
     }
 
-    public static boolean isTransientField(@NotNull final Field field) {
+    public static boolean isTransientField(@Nonnull final Field field) {
         return field.isAnnotationPresent(Transient.class);
     }
 
-    public static boolean isEmbededField(@NotNull final Field field) {
+    public static boolean isEmbededField(@Nonnull final Field field) {
         return field.isAnnotationPresent(Embedded.class);
     }
 
-    public static boolean isAssociationField(@NotNull final Field field) {
+    public static boolean isAssociationField(@Nonnull final Field field) {
         return field.isAnnotationPresent(OneToOne.class) ||
                field.isAnnotationPresent(OneToMany.class) ||
                field.isAnnotationPresent(ManyToOne.class) ||

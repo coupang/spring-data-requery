@@ -22,8 +22,6 @@ import io.requery.query.Tuple;
 import io.requery.query.element.QueryElement;
 import io.requery.query.function.Count;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
@@ -39,6 +37,8 @@ import org.springframework.data.requery.utils.RequeryUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -79,7 +79,7 @@ public abstract class RequeryQueryExecution {
      *
      * @param conversionService must not be {@literal null}.
      */
-    public static void potentiallyRemoveOptionalConverter(@NotNull final ConfigurableConversionService conversionService) {
+    public static void potentiallyRemoveOptionalConverter(@Nonnull final ConfigurableConversionService conversionService) {
 
         ClassLoader classLoader = RequeryQueryExecution.class.getClassLoader();
 
@@ -97,7 +97,7 @@ public abstract class RequeryQueryExecution {
      * Executes the given {@link AbstractRequeryQuery} with the given values.
      */
     @Nullable
-    public Object execute(@NotNull final AbstractRequeryQuery query, @NotNull final Object[] values) {
+    public Object execute(@Nonnull final AbstractRequeryQuery query, @Nonnull final Object[] values) {
 
         Assert.notNull(query, "query must not be null.");
         Assert.notNull(values, "values must not be null.");
@@ -134,7 +134,8 @@ public abstract class RequeryQueryExecution {
      */
     static class CollectionExecution extends RequeryQueryExecution {
         @Override
-        protected @Nullable Object doExecute(@NotNull final AbstractRequeryQuery query, final Object[] values) {
+        protected @Nullable
+        Object doExecute(@Nonnull final AbstractRequeryQuery query, final Object[] values) {
             Result<?> result = (Result<?>) query.createQueryElement(values).get();
             return result.toList();
         }
@@ -153,7 +154,8 @@ public abstract class RequeryQueryExecution {
 
         @Override
         @SuppressWarnings("unchecked")
-        protected @Nullable SliceImpl doExecute(@NotNull final AbstractRequeryQuery query, final Object[] values) {
+        protected @Nullable
+        SliceImpl doExecute(@Nonnull final AbstractRequeryQuery query, final Object[] values) {
             ParametersParameterAccessor accessor = new ParametersParameterAccessor(parameters, values);
             Pageable pageable = accessor.getPageable();
 
@@ -194,7 +196,8 @@ public abstract class RequeryQueryExecution {
 
         @Override
         @SuppressWarnings("unchecked")
-        protected @Nullable Page<?> doExecute(@NotNull final AbstractRequeryQuery query, final Object[] values) {
+        protected @Nullable
+        Page<?> doExecute(@Nonnull final AbstractRequeryQuery query, final Object[] values) {
             ParameterAccessor accessor = new ParametersParameterAccessor(parameters, values);
             Pageable pageable = accessor.getPageable();
 
@@ -221,7 +224,7 @@ public abstract class RequeryQueryExecution {
         }
 
         @SuppressWarnings("unchecked")
-        private long count(@NotNull final AbstractRequeryQuery query, final Object[] values) {
+        private long count(@Nonnull final AbstractRequeryQuery query, final Object[] values) {
             QueryElement<?> queryElement = unwrap(query.createQueryElement(values));
             queryElement.limit(1);
             queryElement.offset(0);
@@ -288,7 +291,7 @@ public abstract class RequeryQueryExecution {
 
         private final RequeryOperations operations;
 
-        DeleteExecution(@NotNull RequeryOperations operations) {
+        DeleteExecution(@Nonnull RequeryOperations operations) {
             Assert.notNull(operations, "operations must not be null!");
             this.operations = operations;
         }

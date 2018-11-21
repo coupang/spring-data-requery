@@ -20,7 +20,6 @@ import io.requery.query.Operator;
 import io.requery.query.Result;
 import io.requery.query.element.QueryElement;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,6 +36,7 @@ import org.springframework.data.requery.domain.sample.User;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.Assert;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Date;
@@ -197,7 +197,7 @@ public class PartTreeRequeryQueryTest extends AbstractDomainTest {
     }
 
 
-    @NotNull
+    @Nonnull
     private RequeryQueryMethod getQueryMethod(String methodName, Class<?>... parameterTypes) throws Exception {
         Method method = UserRepository.class.getMethod(methodName, parameterTypes);
 

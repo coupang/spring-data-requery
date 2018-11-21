@@ -17,9 +17,9 @@
 package org.springframework.data.requery.converters;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.util.StreamUtils;
 
+import javax.annotation.Nullable;
 import javax.sql.rowset.serial.SerialBlob;
 import java.sql.Blob;
 import java.sql.SQLException;
@@ -50,7 +50,7 @@ public class ByteArrayToBlobConverter implements io.requery.Converter<byte[], Bl
 
     @Nullable
     @Override
-    public Blob convertToPersisted(@Nullable byte[] value) {
+    public Blob convertToPersisted(@Nullable final byte[] value) {
         try {
             return (value != null) ? new SerialBlob(value) : null;
         } catch (SQLException e) {
@@ -61,7 +61,7 @@ public class ByteArrayToBlobConverter implements io.requery.Converter<byte[], Bl
 
     @Nullable
     @Override
-    public byte[] convertToMapped(Class<? extends byte[]> type, @Nullable Blob value) {
+    public byte[] convertToMapped(final Class<? extends byte[]> type, @Nullable final Blob value) {
         try {
             return (value != null) ? StreamUtils.copyToByteArray(value.getBinaryStream()) : null;
         } catch (Exception e) {

@@ -17,11 +17,11 @@
 package org.springframework.data.requery.repository.config;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.data.repository.config.RepositoryBeanDefinitionRegistrarSupport;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
 
+import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
 
 /**
@@ -33,13 +33,13 @@ import java.lang.annotation.Annotation;
 @Slf4j
 public class RequeryRepositoriesRegistar extends RepositoryBeanDefinitionRegistrarSupport {
 
-    @NotNull
+    @Nonnull
     @Override
     protected Class<? extends Annotation> getAnnotation() {
         return EnableRequeryRepositories.class;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     protected RepositoryConfigurationExtension getExtension() {
         return new RequeryRepositoryConfigurationExtension();

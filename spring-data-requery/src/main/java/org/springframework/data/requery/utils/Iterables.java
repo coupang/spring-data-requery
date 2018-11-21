@@ -17,8 +17,8 @@
 package org.springframework.data.requery.utils;
 
 import lombok.experimental.UtilityClass;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -33,8 +33,8 @@ import java.util.Set;
 @UtilityClass
 public class Iterables {
 
-    @NotNull
-    public static <T> List<T> toList(@NotNull final Iterable<T> iterable) {
+    @Nonnull
+    public static <T> List<T> toList(@Nonnull final Iterable<T> iterable) {
         if (iterable instanceof List) {
             return (List<T>) iterable;
         } else {
@@ -46,8 +46,8 @@ public class Iterables {
         }
     }
 
-    @NotNull
-    public static <T> Set<T> toSet(@NotNull Iterable<T> source) {
+    @Nonnull
+    public static <T> Set<T> toSet(@Nonnull Iterable<T> source) {
         if (source instanceof Set) {
             return (Set<T>) source;
         } else {

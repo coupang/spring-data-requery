@@ -17,8 +17,6 @@
 package org.springframework.data.requery.repository.support;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.data.repository.Repository;
@@ -26,6 +24,9 @@ import org.springframework.data.repository.core.support.RepositoryFactorySupport
 import org.springframework.data.repository.core.support.TransactionalRepositoryFactoryBeanSupport;
 import org.springframework.data.requery.core.RequeryOperations;
 import org.springframework.util.Assert;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Special adapter for Springs {@link org.springframework.beans.factory.FactoryBean} interface to allow easy setup of
@@ -41,7 +42,7 @@ public class RequeryRepositoryFactoryBean<T extends Repository<S, ID>, S, ID>
     @Nullable
     private RequeryOperations operations;
 
-    public RequeryRepositoryFactoryBean(@NotNull final Class<? extends T> repositoryInterface) {
+    public RequeryRepositoryFactoryBean(@Nonnull final Class<? extends T> repositoryInterface) {
         super(repositoryInterface);
     }
 
@@ -55,15 +56,15 @@ public class RequeryRepositoryFactoryBean<T extends Repository<S, ID>, S, ID>
         super.setMappingContext(mappingContext);
     }
 
-    @NotNull
+    @Nonnull
     @Override
     protected RepositoryFactorySupport doCreateRepositoryFactory() {
         Assert.state(operations != null, "RequeryOperations must not be null!");
         return createRepositoryFactory(operations);
     }
 
-    @NotNull
-    protected RepositoryFactorySupport createRepositoryFactory(@NotNull final RequeryOperations requeryOperations) {
+    @Nonnull
+    protected RepositoryFactorySupport createRepositoryFactory(@Nonnull final RequeryOperations requeryOperations) {
         return new RequeryRepositoryFactory(requeryOperations);
     }
 

@@ -16,7 +16,6 @@
 
 package org.springframework.data.requery.repository.query;
 
-import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,6 +35,7 @@ import org.springframework.data.requery.domain.sample.User;
 import org.springframework.data.requery.repository.RequeryRepository;
 import org.springframework.data.requery.repository.sample.UserRepository;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
@@ -259,7 +259,7 @@ public class RequeryQueryMethodTest {
 
     static interface RequeryRepositoryOverride extends RequeryRepository<User, Integer> {
 
-        @NotNull
+        @Nonnull
         List<User> findAll();
 
         Optional<User> findOne(Integer id);

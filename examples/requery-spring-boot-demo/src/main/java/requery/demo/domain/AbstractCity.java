@@ -20,8 +20,8 @@ import io.requery.Column;
 import io.requery.Entity;
 import io.requery.Generated;
 import io.requery.Key;
+import javax.annotation.Nonnull;
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.requery.domain.ToStringBuilder;
 
 import java.util.Objects;
@@ -37,7 +37,7 @@ public class AbstractCity extends AbstractLifecycleEntity {
 
     private static final long serialVersionUID = 6441380830729259194L;
 
-    public static City of(@NotNull final String name, @NotNull final String country) {
+    public static City of(@NotNull final String name, @Nonnull final String country) {
         City city = new City();
         city.setName(name);
         city.setCountry(country);
@@ -63,7 +63,7 @@ public class AbstractCity extends AbstractLifecycleEntity {
     }
 
     @Override
-    protected @NotNull ToStringBuilder buildStringHelper() {
+    protected  ToStringBuilder buildStringHelper() {
         return super.buildStringHelper()
             .add("name", name)
             .add("state", state)

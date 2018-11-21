@@ -21,9 +21,9 @@ import io.requery.Entity;
 import io.requery.Generated;
 import io.requery.Key;
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.requery.domain.ToStringBuilder;
 
+import javax.annotation.Nonnull;
 import java.util.Objects;
 
 /**
@@ -62,8 +62,9 @@ public class AbstractCity extends AbstractLifecycleEntity {
         return Objects.hash(name, state, country);
     }
 
+    @Nonnull
     @Override
-    protected @NotNull ToStringBuilder buildStringHelper() {
+    protected ToStringBuilder buildStringHelper() {
         return super.buildStringHelper()
             .add("name", name)
             .add("state", state)

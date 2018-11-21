@@ -26,7 +26,6 @@ import io.requery.ManyToOne;
 import io.requery.Table;
 import io.requery.Transient;
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.requery.domain.AbstractPersistable;
 import org.springframework.data.requery.domain.ToStringBuilder;
 
@@ -63,7 +62,7 @@ public abstract class AbstractUpsertEvent extends AbstractPersistable<UUID> {
 
     @Transient
     @Override
-    protected @NotNull ToStringBuilder buildStringHelper() {
+    protected ToStringBuilder buildStringHelper() {
         return super.buildStringHelper()
             .add("name", name);
     }

@@ -20,16 +20,16 @@ import io.requery.query.Expression;
 import io.requery.query.FieldExpression;
 import io.requery.query.NamedExpression;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.ParametersParameterAccessor;
 import org.springframework.data.repository.query.parser.Part;
-import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -51,7 +51,7 @@ public class ParameterMetadataProvider {
     private final List<ParameterMetadata<?>> expressions;
     private final @Nullable Iterator<Object> bindableParameterValues;
 
-    public ParameterMetadataProvider(@NotNull final ParametersParameterAccessor accessor) {
+    public ParameterMetadataProvider(@Nonnull final ParametersParameterAccessor accessor) {
         this(accessor.iterator(), accessor.getParameters());
     }
 
@@ -88,9 +88,9 @@ public class ParameterMetadataProvider {
     }
 
     @SuppressWarnings("unchecked")
-    @NotNull
+    @Nonnull
     private <T> ParameterMetadata<T> next(final Part part,
-                                          @NotNull final Class<T> type,
+                                          @Nonnull final Class<T> type,
                                           final Parameter parameter) {
         log.debug("get next parameter ... part={}, type={}, parameter={}", part, type, parameter);
 
@@ -199,7 +199,7 @@ public class ParameterMetadataProvider {
          * @param value the value to be converted to a {@link Collection}.
          * @return the object itself as a {@link Collection} or a {@link Collection} constructed from the value.
          */
-        @NotNull
+        @Nonnull
         private static Collection<?> toCollection(@Nullable Object value) {
 
             if (value == null) {

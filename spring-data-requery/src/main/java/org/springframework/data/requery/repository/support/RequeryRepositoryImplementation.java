@@ -16,9 +16,10 @@
 
 package org.springframework.data.requery.repository.support;
 
-import org.jetbrains.annotations.Nullable;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.requery.repository.RequeryRepository;
+
+import javax.annotation.Nullable;
 
 /**
  * org.springframework.data.requery.repository.support.RequeryRepositoryImplementation

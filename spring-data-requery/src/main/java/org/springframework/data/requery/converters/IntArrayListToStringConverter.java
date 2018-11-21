@@ -17,9 +17,9 @@
 package org.springframework.data.requery.converters;
 
 import io.requery.Converter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 /**
@@ -61,7 +61,7 @@ public class IntArrayListToStringConverter implements Converter<ArrayList<Intege
         return null;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public ArrayList<Integer> convertToMapped(Class<? extends ArrayList<Integer>> type, @Nullable String value) {
         if (value != null && value.length() > 0) {

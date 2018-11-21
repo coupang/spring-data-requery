@@ -20,7 +20,6 @@ import io.requery.Column;
 import io.requery.Entity;
 import io.requery.Key;
 import io.requery.Transient;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.requery.domain.AbstractValueObject;
 import org.springframework.data.requery.domain.ToStringBuilder;
 
@@ -57,7 +56,6 @@ public abstract class AbstractSimpleEntity extends AbstractValueObject implement
     }
 
     @Transient
-    @NotNull
     @Override
     protected ToStringBuilder buildStringHelper() {
         return super.buildStringHelper()

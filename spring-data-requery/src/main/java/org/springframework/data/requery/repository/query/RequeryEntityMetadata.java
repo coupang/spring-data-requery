@@ -16,8 +16,9 @@
 
 package org.springframework.data.requery.repository.query;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.repository.core.EntityMetadata;
+
+import javax.annotation.Nonnull;
 
 /**
  * Requery specific extension of {@link EntityMetadata}.
@@ -30,7 +31,7 @@ public interface RequeryEntityMetadata<T> extends EntityMetadata<T> {
     /**
      * Returns the name of the entity
      */
-    @NotNull
+    @Nonnull
     String getEntityName();
 
     /**

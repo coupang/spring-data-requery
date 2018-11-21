@@ -21,7 +21,6 @@ import io.requery.proxy.CompositeKey;
 import io.requery.proxy.EntityProxy;
 import io.requery.proxy.PropertyState;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.requery.domain.AbstractDomainTest;
@@ -37,6 +36,7 @@ import org.springframework.data.requery.domain.model.Person;
 import org.springframework.data.requery.domain.model.Phone;
 import org.springframework.data.requery.domain.model.RandomData;
 
+import javax.annotation.Nonnull;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -227,7 +227,7 @@ public class FunctionalTest extends AbstractDomainTest {
     }
 
     private class DerivedPhone extends Phone {
-        @NotNull
+        @Nonnull
         @Override
         public String toString() {
             return "DerivedPhone";

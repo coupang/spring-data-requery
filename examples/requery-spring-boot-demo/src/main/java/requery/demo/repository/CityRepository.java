@@ -16,8 +16,8 @@
 
 package requery.demo.repository;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.requery.repository.RequeryRepository;
@@ -31,13 +31,13 @@ import requery.demo.domain.City;
  */
 public interface CityRepository extends RequeryRepository<City, Long> {
 
-    @NotNull
-    Page<City> findByNameLikeAndCountryLikeAllIgnoringCase(@NotNull final String name,
-                                                           @NotNull final String country,
-                                                           @NotNull final Pageable pageable);
+    @Nonnull
+    Page<City> findByNameLikeAndCountryLikeAllIgnoringCase(@Nonnull final String name,
+                                                           @Nonnull final String country,
+                                                           @Nonnull final Pageable pageable);
 
     @Nullable
-    City findByNameAndCountryAllIgnoringCase(@NotNull final String name, @NotNull final String country);
+    City findByNameAndCountryAllIgnoringCase(@Nonnull final String name, @Nonnull final String country);
 
     @Nullable
     City findByIdAndDeletedFalse(long cityId);

@@ -17,7 +17,8 @@
 package org.springframework.data.requery.domain;
 
 import io.requery.Persistable;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 /**
  * Value Object 를 나타내는 최상위 추상 클래스 
@@ -43,12 +44,12 @@ public class AbstractValueObject implements ValueObject, Persistable {
         return buildStringHelper().toString();
     }
 
-    @NotNull
+    @Nonnull
     public String toString(int limit) {
         return buildStringHelper().toString(limit);
     }
 
-    @NotNull
+    @Nonnull
     protected ToStringBuilder buildStringHelper() {
         return ToStringBuilder.of(this);
     }

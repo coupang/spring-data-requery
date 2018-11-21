@@ -17,8 +17,9 @@
 package org.springframework.data.requery.repository.query;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.repository.query.ParametersParameterAccessor;
+
+import javax.annotation.Nonnull;
 
 /**
  * This class provides access to parameters of a user-defined queryMethod. It wraps ParametersParameterAccessor which catches
@@ -30,22 +31,22 @@ import org.springframework.data.repository.query.ParametersParameterAccessor;
 @Slf4j
 public class RequeryParametersParameterAccessor extends ParametersParameterAccessor implements RequeryParameterAccessor {
 
-    @NotNull
+    @Nonnull
     private final RequeryParameters parameters;
 
-    public RequeryParametersParameterAccessor(@NotNull final RequeryQueryMethod method,
-                                              @NotNull final Object[] values) {
+    public RequeryParametersParameterAccessor(@Nonnull final RequeryQueryMethod method,
+                                              @Nonnull final Object[] values) {
         this(method.getParameters(), values);
     }
 
-    public RequeryParametersParameterAccessor(@NotNull final RequeryParameters parameters,
-                                              @NotNull final Object[] values) {
+    public RequeryParametersParameterAccessor(@Nonnull final RequeryParameters parameters,
+                                              @Nonnull final Object[] values) {
         super(parameters, values);
         this.parameters = parameters;
     }
 
     @Override
-    @NotNull
+    @Nonnull
     public RequeryParameters getParameters() {
         return parameters;
     }

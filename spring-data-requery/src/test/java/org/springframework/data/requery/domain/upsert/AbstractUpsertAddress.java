@@ -19,7 +19,6 @@ package org.springframework.data.requery.domain.upsert;
 import io.requery.Embedded;
 import io.requery.Transient;
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.requery.domain.AbstractComponent;
 import org.springframework.data.requery.domain.ToStringBuilder;
 
@@ -39,7 +38,6 @@ public abstract class AbstractUpsertAddress extends AbstractComponent {
         return zipcode.hashCode();
     }
 
-    @NotNull
     @Override
     @Transient
     protected ToStringBuilder buildStringHelper() {

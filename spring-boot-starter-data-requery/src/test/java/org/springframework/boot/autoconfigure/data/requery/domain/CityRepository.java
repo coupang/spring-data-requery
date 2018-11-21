@@ -16,12 +16,13 @@
 
 package org.springframework.boot.autoconfigure.data.requery.domain;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.requery.repository.RequeryRepository;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Repository for {@link City}
@@ -31,13 +32,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public interface CityRepository extends RequeryRepository<City, Long> {
 
-    @NotNull
-    Page<City> findByNameLikeAndCountryLikeAllIgnoringCase(@NotNull final String name,
-                                                           @NotNull final String country,
-                                                           @NotNull final Pageable pageable);
+    @Nonnull
+    Page<City> findByNameLikeAndCountryLikeAllIgnoringCase(@Nonnull final String name,
+                                                           @Nonnull final String country,
+                                                           @Nonnull final Pageable pageable);
 
     @Nullable
-    City findByNameAndCountryAllIgnoringCase(@NotNull final String name, @NotNull final String country);
+    City findByNameAndCountryAllIgnoringCase(@Nonnull final String name, @Nonnull final String country);
 
     @Nullable
     City findByIdAndDeletedFalse(long cityId);

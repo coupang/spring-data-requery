@@ -18,7 +18,6 @@ package org.springframework.data.requery.repository.support;
 
 import io.requery.meta.Attribute;
 import io.requery.meta.EntityModel;
-import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -27,6 +26,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.requery.core.RequeryOperations;
 import org.springframework.data.requery.domain.basic.AbstractBasicUser;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -73,7 +73,8 @@ public class RequeryEntityInformationSupportTest {
         }
 
         @Override
-        public @Nullable Attribute<? super T, ?> getIdAttribute() {
+        @Nullable
+        public Attribute<? super T, ?> getIdAttribute() {
             return null;
         }
 
@@ -88,7 +89,8 @@ public class RequeryEntityInformationSupportTest {
         }
 
         @Override
-        public @Nullable Object getCompositeIdAttributeValue(Object id, String idAttribute) {
+        @Nullable
+        public Object getCompositeIdAttributeValue(Object id, String idAttribute) {
             return null;
         }
 

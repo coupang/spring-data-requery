@@ -21,8 +21,6 @@ import io.requery.query.Tuple;
 import io.requery.query.element.QueryElement;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.repository.query.ReturnedType;
 import org.springframework.data.requery.core.RequeryOperations;
@@ -35,6 +33,8 @@ import org.springframework.data.requery.utils.RequeryMetamodel;
 import org.springframework.data.requery.utils.RequeryUtils;
 import org.springframework.util.Assert;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 
@@ -53,8 +53,8 @@ public abstract class AbstractRequeryQuery implements RepositoryQuery {
     protected final RequeryMetamodel metamodel;
     protected final Class<?> domainClass;
 
-    public AbstractRequeryQuery(@NotNull final RequeryQueryMethod method,
-                                @NotNull final RequeryOperations operations) {
+    public AbstractRequeryQuery(@Nonnull final RequeryQueryMethod method,
+                                @Nonnull final RequeryOperations operations) {
         Assert.notNull(method, "queryMethod must not be null");
         Assert.notNull(operations, "operations must not be null");
 
@@ -66,12 +66,12 @@ public abstract class AbstractRequeryQuery implements RepositoryQuery {
 
     @SuppressWarnings("NullableProblems")
     @Nullable
-    public Object execute(@NotNull final Object[] parameters) {
+    public Object execute(@Nonnull final Object[] parameters) {
         return doExecute(getExecution(), parameters);
     }
 
     @Nullable
-    private Object doExecute(@NotNull RequeryQueryExecution execution, Object[] values) {
+    private Object doExecute(@Nonnull RequeryQueryExecution execution, Object[] values) {
 
         Object result = execution.execute(this, values);
         // ParametersParameterAccessor accessor = new ParametersParameterAccessor(queryMethod.getParameters(), values);
@@ -80,7 +80,7 @@ public abstract class AbstractRequeryQuery implements RepositoryQuery {
         return result;
     }
 
-    @NotNull
+    @Nonnull
     protected RequeryQueryExecution getExecution() {
 
         RequeryQueryExecution execution;
@@ -101,29 +101,29 @@ public abstract class AbstractRequeryQuery implements RepositoryQuery {
         return execution;
     }
 
-    @NotNull
-    protected QueryElement<?> createQueryElement(@NotNull final Object[] values) {
+    @Nonnull
+    protected QueryElement<?> createQueryElement(@Nonnull final Object[] values) {
         log.debug("Create QueryElement with domainClass={}, values={}", domainClass.getName(), values);
         return doCreateQuery(values);
     }
 
-    @NotNull
-    protected QueryElement<? extends Scalar<Integer>> createCountQueryElement(@NotNull final Object[] values) {
+    @Nonnull
+    protected QueryElement<? extends Scalar<Integer>> createCountQueryElement(@Nonnull final Object[] values) {
         return doCreateCountQuery(values);
     }
 
-    @NotNull
-    protected Optional<Class<?>> getTypeToRead(@NotNull final ReturnedType returnedType) {
+    @Nonnull
+    protected Optional<Class<?>> getTypeToRead(@Nonnull final ReturnedType returnedType) {
         return returnedType.isProjecting() && !getMetamodel().isRequeryManaged(returnedType.getReturnedType())
                ? Optional.of(Tuple.class)
                : Optional.empty();
     }
 
-    @NotNull
-    protected abstract QueryElement<?> doCreateQuery(@NotNull final Object[] values);
+    @Nonnull
+    protected abstract QueryElement<?> doCreateQuery(@Nonnull final Object[] values);
 
-    @NotNull
-    protected abstract QueryElement<? extends Scalar<Integer>> doCreateCountQuery(@NotNull final Object[] values);
+    @Nonnull
+    protected abstract QueryElement<? extends Scalar<Integer>> doCreateCountQuery(@Nonnull final Object[] values);
 
 
 }

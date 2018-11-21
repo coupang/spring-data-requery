@@ -16,11 +16,12 @@
 
 package org.springframework.data.requery.repository.custom;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.requery.core.RequeryOperations;
 import org.springframework.data.requery.repository.support.RequeryEntityInformation;
 import org.springframework.data.requery.repository.support.SimpleRequeryRepository;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Nonnull;
 
 /**
  * org.springframework.data.requery.repository.custom.CustomGenericRequeryRepository
@@ -33,8 +34,8 @@ public class CustomGenericRequeryRepository<T, ID>
     extends SimpleRequeryRepository<T, ID>
     implements CustomGenericRepository<T, ID> {
 
-    public CustomGenericRequeryRepository(@NotNull RequeryEntityInformation<T, ID> entityInformation,
-                                          @NotNull RequeryOperations operations) {
+    public CustomGenericRequeryRepository(@Nonnull RequeryEntityInformation<T, ID> entityInformation,
+                                          @Nonnull RequeryOperations operations) {
         super(entityInformation, operations);
     }
 

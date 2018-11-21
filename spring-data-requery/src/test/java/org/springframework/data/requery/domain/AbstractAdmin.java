@@ -21,8 +21,8 @@ import io.requery.Generated;
 import io.requery.Key;
 import io.requery.Transient;
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.Objects;
 
 /**
@@ -49,7 +49,8 @@ public class AbstractAdmin extends AbstractPersistable<Integer> {
 
     @Transient
     @Override
-    protected @NotNull ToStringBuilder buildStringHelper() {
+    @Nonnull
+    protected ToStringBuilder buildStringHelper() {
         return super.buildStringHelper()
             .add("name", name);
     }

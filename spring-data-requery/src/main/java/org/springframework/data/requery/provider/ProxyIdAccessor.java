@@ -16,7 +16,7 @@
 
 package org.springframework.data.requery.provider;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 /**
  * Entity의 Identifier 속성에 접근할 수 있는 Accessor
@@ -32,7 +32,7 @@ public interface ProxyIdAccessor {
      * @param entity entity to check which can access
      * @return accessable
      */
-    boolean shouldUseAccessorFor(Object entity);
+    boolean shouldUseAccessorFor(@Nullable final Object entity);
 
     /**
      * Entity 로부터 identifier 속성 값을 가져옵니다.
@@ -41,5 +41,5 @@ public interface ProxyIdAccessor {
      * @return identifier of requery entity
      */
     @Nullable
-    Object getIdentifierFrom(Object entity);
+    Object getIdentifierFrom(@Nullable final Object entity);
 }

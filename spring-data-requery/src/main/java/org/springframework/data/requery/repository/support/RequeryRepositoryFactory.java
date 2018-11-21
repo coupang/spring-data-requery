@@ -17,8 +17,6 @@
 package org.springframework.data.requery.repository.support;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.data.repository.core.RepositoryInformation;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
@@ -28,6 +26,8 @@ import org.springframework.data.requery.core.RequeryOperations;
 import org.springframework.data.requery.repository.query.RequeryQueryLookupStrategy;
 import org.springframework.util.Assert;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 /**
@@ -39,10 +39,10 @@ import java.util.Optional;
 @Slf4j
 public class RequeryRepositoryFactory extends RepositoryFactorySupport {
 
-    @NotNull private final RequeryOperations operations;
-    @NotNull private final CrudMethodMetadataPostProcessor crudMethodMetadataPostProcessor;
+    @Nonnull private final RequeryOperations operations;
+    @Nonnull private final CrudMethodMetadataPostProcessor crudMethodMetadataPostProcessor;
 
-    public RequeryRepositoryFactory(@NotNull final RequeryOperations operations) {
+    public RequeryRepositoryFactory(@Nonnull final RequeryOperations operations) {
         Assert.notNull(operations, "operations must not be null!");
         log.info("Create RequeryRepositoryFactory with operations={}", operations);
 
@@ -56,9 +56,9 @@ public class RequeryRepositoryFactory extends RepositoryFactorySupport {
         this.crudMethodMetadataPostProcessor.setBeanClassLoader(classLoader);
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    protected final SimpleRequeryRepository<?, ?> getTargetRepository(@NotNull final RepositoryInformation metadata) {
+    protected final SimpleRequeryRepository<?, ?> getTargetRepository(@Nonnull final RepositoryInformation metadata) {
 
         SimpleRequeryRepository<?, ?> repository = getTargetRepository(metadata, operations);
         repository.setRepositoryMethodMetadata(crudMethodMetadataPostProcessor.getCrudMethodMetadata());
@@ -68,32 +68,32 @@ public class RequeryRepositoryFactory extends RepositoryFactorySupport {
     }
 
     @SuppressWarnings("unchecked")
-    protected SimpleRequeryRepository<?, ?> getTargetRepository(@NotNull final RepositoryInformation information,
-                                                                @NotNull final RequeryOperations operations) {
+    protected SimpleRequeryRepository<?, ?> getTargetRepository(@Nonnull final RepositoryInformation information,
+                                                                @Nonnull final RequeryOperations operations) {
         log.debug("Get target repository. information={}", information);
 
         RequeryEntityInformation<?, ?> entityInformation = getEntityInformation(information.getDomainType());
         return getTargetRepositoryViaReflection(information, entityInformation, operations);
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    protected Class<?> getRepositoryBaseClass(@NotNull final RepositoryMetadata metadata) {
+    protected Class<?> getRepositoryBaseClass(@Nonnull final RepositoryMetadata metadata) {
         return SimpleRequeryRepository.class;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     protected Optional<QueryLookupStrategy> getQueryLookupStrategy(@Nullable final QueryLookupStrategy.Key key,
-                                                                   @NotNull final EvaluationContextProvider evaluationContextProvider) {
+                                                                   @Nonnull final EvaluationContextProvider evaluationContextProvider) {
         log.debug("Create QueryLookupStrategy by key={}", key);
         return Optional.of(RequeryQueryLookupStrategy.create(operations, key, evaluationContextProvider));
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    @NotNull
-    public <T, ID> RequeryEntityInformation<T, ID> getEntityInformation(@NotNull final Class<T> domainClass) {
+    @Nonnull
+    public <T, ID> RequeryEntityInformation<T, ID> getEntityInformation(@Nonnull final Class<T> domainClass) {
         return (RequeryEntityInformation<T, ID>) RequeryEntityInformationSupport.getEntityInformation(domainClass, operations);
     }
 }

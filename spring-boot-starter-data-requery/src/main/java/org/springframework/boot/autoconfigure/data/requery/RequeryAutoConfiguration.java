@@ -22,7 +22,6 @@ import io.requery.sql.ConfigurationBuilder;
 import io.requery.sql.EntityDataStore;
 import io.requery.sql.SchemaModifier;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -37,6 +36,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
@@ -53,10 +53,10 @@ import java.lang.reflect.Field;
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class })
 public class RequeryAutoConfiguration {
 
-    @NotNull
+    @Nonnull
     private final RequeryProperties properties;
 
-    public RequeryAutoConfiguration(@NotNull final RequeryProperties properties) {
+    public RequeryAutoConfiguration(@Nonnull final RequeryProperties properties) {
         this.properties = properties;
     }
 
@@ -85,8 +85,8 @@ public class RequeryAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnBean({ DataSource.class, EntityModel.class })
-    public io.requery.sql.Configuration requeryConfiguration(@NotNull final DataSource dataSource,
-                                                             @NotNull final EntityModel entityModel) {
+    public io.requery.sql.Configuration requeryConfiguration(@Nonnull final DataSource dataSource,
+                                                             @Nonnull final EntityModel entityModel) {
         return new ConfigurationBuilder(dataSource, entityModel)
             .setStatementCacheSize(properties.getStatementCacheSize())
             .setBatchUpdateSize(properties.getBatchUpdateSize())
@@ -98,14 +98,14 @@ public class RequeryAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnBean({ io.requery.sql.Configuration.class })
-    public EntityDataStore<Object> entityDataStore(@NotNull final io.requery.sql.Configuration configuration) {
+    public EntityDataStore<Object> entityDataStore(@Nonnull final io.requery.sql.Configuration configuration) {
         return new EntityDataStore<>(configuration);
     }
 
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnBean({ DataSource.class })
-    public PlatformTransactionManager transactionManager(@NotNull final DataSource dataSource) {
+    public PlatformTransactionManager transactionManager(@Nonnull final DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
     }
 

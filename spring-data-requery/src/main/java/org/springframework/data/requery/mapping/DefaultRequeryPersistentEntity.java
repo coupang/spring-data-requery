@@ -17,14 +17,14 @@
 package org.springframework.data.requery.mapping;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.data.mapping.model.BasicPersistentEntity;
 import org.springframework.data.util.TypeInformation;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,7 +47,7 @@ public class DefaultRequeryPersistentEntity<T>
     implements RequeryPersistentEntity<T> {
 
 
-    @NotNull
+    @Nonnull
     private String name;
     private final List<RequeryPersistentProperty> idProperties = new ArrayList<>();
     private final List<RequeryPersistentProperty> embeddedProperties = new ArrayList<>();
@@ -56,7 +56,7 @@ public class DefaultRequeryPersistentEntity<T>
     private final Map<Class<? extends Annotation>, Optional<Annotation>> annotationCache;
     private final Map<Class<? extends Annotation>, Set<? extends Annotation>> repeatableAnnotationCache;
 
-    public DefaultRequeryPersistentEntity(@NotNull final TypeInformation<T> information) {
+    public DefaultRequeryPersistentEntity(@Nonnull final TypeInformation<T> information) {
         super(information);
 
         this.name = information.getType().getSimpleName();
@@ -70,19 +70,19 @@ public class DefaultRequeryPersistentEntity<T>
         }
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public String getName() {
         return name;
     }
 
     @Override
-    public void setApplicationContext(@NotNull final ApplicationContext applicationContext) {
+    public void setApplicationContext(@Nonnull final ApplicationContext applicationContext) {
         // Nothing to do.
     }
 
     @Override
-    public void addPersistentProperty(@NotNull final RequeryPersistentProperty property) {
+    public void addPersistentProperty(@Nonnull final RequeryPersistentProperty property) {
         super.addPersistentProperty(property);
 
         if (property.isIdProperty()) {
@@ -120,7 +120,7 @@ public class DefaultRequeryPersistentEntity<T>
     @SuppressWarnings("unchecked")
     @Nullable
     @Override
-    public <A extends Annotation> A findAnnotation(@NotNull final Class<A> annotationType) {
+    public <A extends Annotation> A findAnnotation(@Nonnull final Class<A> annotationType) {
         return (A) annotationCache
             .computeIfAbsent(annotationType,
                              it -> Optional.ofNullable(AnnotatedElementUtils.findMergedAnnotation(getType(), it)))
@@ -128,7 +128,7 @@ public class DefaultRequeryPersistentEntity<T>
     }
 
     @SuppressWarnings("unchecked")
-    public <A extends Annotation> Set<A> findAnnotations(@NotNull final Class<A> annotationType) {
+    public <A extends Annotation> Set<A> findAnnotations(@Nonnull final Class<A> annotationType) {
         return (Set<A>) repeatableAnnotationCache
             .computeIfAbsent(annotationType,
                              it -> AnnotatedElementUtils.findMergedRepeatableAnnotations(getType(), it));

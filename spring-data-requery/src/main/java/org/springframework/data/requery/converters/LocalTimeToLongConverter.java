@@ -17,8 +17,8 @@
 package org.springframework.data.requery.converters;
 
 import io.requery.Converter;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nullable;
 import java.time.LocalTime;
 
 /**

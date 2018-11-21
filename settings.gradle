@@ -21,8 +21,8 @@ include 'spring-boot-starter-data-requery'
  */
 
 // for benchmark
-include 'spring-data-benchmark'
-include 'spring-data-requery-benchmark'
+// include 'spring-data-benchmark'
+// include 'spring-data-requery-benchmark'
 
 // include ':examples:requery-spring-boot-demo'
 

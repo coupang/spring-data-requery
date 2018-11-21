@@ -18,10 +18,11 @@ package org.springframework.data.requery.repository.query;
 
 import io.requery.Entity;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import javax.annotation.Nonnull;
 
 /**
  * Default implementation for {@link RequeryEntityMetadata}.
@@ -32,20 +33,20 @@ import org.springframework.util.StringUtils;
 @Slf4j
 public class DefaultRequeryEntityMetadata<T> implements RequeryEntityMetadata<T> {
 
-    @NotNull
-    public static <T> DefaultRequeryEntityMetadata<T> of(@NotNull Class<T> domainClass) {
+    @Nonnull
+    public static <T> DefaultRequeryEntityMetadata<T> of(@Nonnull Class<T> domainClass) {
         Assert.notNull(domainClass, "domainClass must not be null");
         return new DefaultRequeryEntityMetadata<>(domainClass);
     }
 
     private final Class<T> domainClass;
 
-    public DefaultRequeryEntityMetadata(@NotNull Class<T> domainClass) {
+    public DefaultRequeryEntityMetadata(@Nonnull Class<T> domainClass) {
         Assert.notNull(domainClass, "domainClass must not be null!");
         this.domainClass = domainClass;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public String getEntityName() {
         Entity entity = AnnotatedElementUtils.findMergedAnnotation(domainClass, Entity.class);

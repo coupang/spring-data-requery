@@ -19,8 +19,6 @@ package org.springframework.data.requery.repository.support;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.aop.TargetSource;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aop.interceptor.ExposeInvocationInterceptor;
@@ -31,6 +29,8 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -54,8 +54,8 @@ public class CrudMethodMetadataPostProcessor implements RepositoryProxyPostProce
     }
 
     @Override
-    public void postProcess(@NotNull final ProxyFactory factory,
-                            @NotNull final RepositoryInformation repositoryInformation) {
+    public void postProcess(@Nonnull final ProxyFactory factory,
+                            @Nonnull final RepositoryInformation repositoryInformation) {
         factory.addAdvice(CrudMethodMetadataPopulatingMethodInterceptor.INSTANCE);
     }
 
@@ -104,7 +104,7 @@ public class CrudMethodMetadataPostProcessor implements RepositoryProxyPostProce
     private static class DefaultCrudMethodMetadata implements CrudMethodMetadata {
         private final Method method;
 
-        DefaultCrudMethodMetadata(@NotNull final Method method) {
+        DefaultCrudMethodMetadata(@Nonnull final Method method) {
             Assert.notNull(method, "Method must not be null!");
             this.method = method;
         }
@@ -134,7 +134,7 @@ public class CrudMethodMetadataPostProcessor implements RepositoryProxyPostProce
         }
 
         @Override
-        public void releaseTarget(@NotNull final Object target) {
+        public void releaseTarget(@Nonnull final Object target) {
             // Nothing to do.
         }
     }

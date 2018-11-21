@@ -20,14 +20,14 @@ import io.requery.meta.Attribute;
 import io.requery.meta.EntityModel;
 import io.requery.meta.Type;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.data.requery.utils.RequeryMetamodel;
 import org.springframework.data.util.DirectFieldAccessFallbackBeanWrapper;
 import org.springframework.util.Assert;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;
@@ -44,16 +44,16 @@ import java.util.stream.Collectors;
 public class RequeryEntityModelEntityInformation<T, ID> extends RequeryEntityInformationSupport<T, ID> {
 
 
-    @NotNull private final IdMetadata<T> idMetadata;
+    @Nonnull private final IdMetadata<T> idMetadata;
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    @NotNull private final Optional<Attribute<? super T, ?>> versionAttribute;
+    @Nonnull private final Optional<Attribute<? super T, ?>> versionAttribute;
 
-    @NotNull private final EntityModel entityModel;
+    @Nonnull private final EntityModel entityModel;
     @Nullable private final String entityName;
 
 
-    public RequeryEntityModelEntityInformation(@NotNull final Class<T> domainClass, @NotNull final EntityModel entityModel) {
+    public RequeryEntityModelEntityInformation(@Nonnull final Class<T> domainClass, @Nonnull final EntityModel entityModel) {
         super(domainClass);
 
         log.debug("Create RequeryEntityModelEntityInformation, domainClass={}, entityModel={}", domainClass, entityModel.getName());
@@ -76,7 +76,7 @@ public class RequeryEntityModelEntityInformation<T, ID> extends RequeryEntityInf
     }
 
     @SuppressWarnings("unchecked")
-    @NotNull
+    @Nonnull
     private static <T> Optional<Attribute<? super T, ?>> findVersionAttribute(Type<T> type, EntityModel entityModel) {
 
         log.debug("Find version attribute, type={}", type);
@@ -99,15 +99,16 @@ public class RequeryEntityModelEntityInformation<T, ID> extends RequeryEntityInf
         }
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public String getEntityName() {
         return (entityName != null) ? entityName : super.getEntityName();
     }
 
+    @Nullable
     @SuppressWarnings("unchecked")
     @Override
-    public ID getId(@NotNull final T entity) {
+    public ID getId(@Nonnull final T entity) {
         log.debug("Get id value. entity={}", entity);
 
         BeanWrapper entityWrapper = new DirectFieldAccessFallbackBeanWrapper(entity);
@@ -133,7 +134,7 @@ public class RequeryEntityModelEntityInformation<T, ID> extends RequeryEntityInf
     }
 
     @SuppressWarnings("unchecked")
-    @NotNull
+    @Nonnull
     @Override
     public Class<ID> getIdType() {
         return (Class<ID>) idMetadata.getType();
@@ -167,7 +168,7 @@ public class RequeryEntityModelEntityInformation<T, ID> extends RequeryEntityInf
     }
 
     @Override
-    public boolean isNew(@NotNull final T entity) {
+    public boolean isNew(@Nonnull final T entity) {
         log.trace("is new entity? ... entity={}", entity);
 
         if (!versionAttribute.isPresent() ||
@@ -189,7 +190,7 @@ public class RequeryEntityModelEntityInformation<T, ID> extends RequeryEntityInf
         @Nullable
         private Class<?> idType;
 
-        public IdMetadata(@NotNull Type<T> source) {
+        public IdMetadata(@Nonnull Type<T> source) {
             this.domainType = source;
             if (source.getKeyAttributes().size() == 1) {
                 this.attributes = Collections.singleton(source.getSingleKeyAttribute());
@@ -230,7 +231,7 @@ public class RequeryEntityModelEntityInformation<T, ID> extends RequeryEntityInf
             return attributes.iterator().next();
         }
 
-        @NotNull
+        @Nonnull
         public Iterator<Attribute<? super T, ?>> iterator() {
             return attributes.iterator();
         }
@@ -255,7 +256,7 @@ public class RequeryEntityModelEntityInformation<T, ID> extends RequeryEntityInf
          */
         @SuppressWarnings("unchecked")
         @Override
-        public void setPropertyValue(@NotNull final String propertyName, final Object value) {
+        public void setPropertyValue(@Nonnull final String propertyName, final Object value) {
             if (!isIdentifierDerivationNecessary(value)) {
                 super.setPropertyValue(propertyName, value);
                 return;
@@ -273,8 +274,8 @@ public class RequeryEntityModelEntityInformation<T, ID> extends RequeryEntityInf
 
 
         @Nullable
-        private Object extractActualIdPropertyValue(@NotNull final BeanWrapper sourceIdValueWrapper,
-                                                    @NotNull final String idAttributeName) {
+        private Object extractActualIdPropertyValue(@Nonnull final BeanWrapper sourceIdValueWrapper,
+                                                    @Nonnull final String idAttributeName) {
 
             Object idPropertyValue = sourceIdValueWrapper.getPropertyValue(idAttributeName);
 
@@ -292,8 +293,8 @@ public class RequeryEntityModelEntityInformation<T, ID> extends RequeryEntityInf
             return null;
         }
 
-        private String tryFindSingularIdAttributeNameOrUseFallback(@NotNull final Class<?> idPropertyValueType,
-                                                                   @NotNull final String fallbackIdTypePropertyName) {
+        private String tryFindSingularIdAttributeNameOrUseFallback(@Nonnull final Class<?> idPropertyValueType,
+                                                                   @Nonnull final String fallbackIdTypePropertyName) {
             log.debug("idPropertyValueType={}, fallbackIdTypePropertyName={}", idPropertyValueType, fallbackIdTypePropertyName);
             Type<?> idPropertyType = entityModel.typeOf(idPropertyValueType);
             for (Attribute<?, ?> attr : idPropertyType.getAttributes()) {

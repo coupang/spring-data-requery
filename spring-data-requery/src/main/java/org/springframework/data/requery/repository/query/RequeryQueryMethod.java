@@ -18,8 +18,6 @@ package org.springframework.data.requery.repository.query;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.projection.ProjectionFactory;
@@ -31,6 +29,8 @@ import org.springframework.data.requery.annotation.Query;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -117,7 +117,7 @@ public class RequeryQueryMethod extends QueryMethod {
         }
     }
 
-    @NotNull
+    @Nonnull
     @SuppressWarnings("unchecked")
     @Override
     public RequeryEntityMetadata<?> getEntityInformation() {
@@ -184,7 +184,7 @@ public class RequeryQueryMethod extends QueryMethod {
         return targetType.cast(AnnotationUtils.getValue(annotation, attribute));
     }
 
-    @NotNull
+    @Nonnull
     @Override
     protected RequeryParameters createParameters(Method method) {
         return new RequeryParameters(method);

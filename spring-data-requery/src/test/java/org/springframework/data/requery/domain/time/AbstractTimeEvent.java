@@ -29,10 +29,10 @@ import io.requery.converter.LocalTimeConverter;
 import io.requery.converter.OffsetDateTimeConverter;
 import io.requery.converter.ZonedDateTimeConverter;
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.requery.domain.AbstractPersistable;
 import org.springframework.data.requery.domain.ToStringBuilder;
 
+import javax.annotation.Nonnull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -52,7 +52,7 @@ public abstract class AbstractTimeEvent extends AbstractPersistable<UUID> {
 
     public AbstractTimeEvent() {}
 
-    public AbstractTimeEvent(@NotNull UUID id) {
+    public AbstractTimeEvent(@Nonnull UUID id) {
         this.id = id;
     }
 
@@ -95,7 +95,7 @@ public abstract class AbstractTimeEvent extends AbstractPersistable<UUID> {
 
     @Transient
     @Override
-    protected @NotNull ToStringBuilder buildStringHelper() {
+    protected ToStringBuilder buildStringHelper() {
         return super.buildStringHelper()
             .add("name", name)
             .add("localDate", localDate)

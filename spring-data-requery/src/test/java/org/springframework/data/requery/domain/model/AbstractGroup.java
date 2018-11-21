@@ -34,7 +34,6 @@ import io.requery.query.MutableResult;
 import io.requery.query.Order;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.requery.converters.ByteArrayToBlobConverter;
 import org.springframework.data.requery.domain.AbstractPersistable;
 import org.springframework.data.requery.domain.ToStringBuilder;
@@ -105,7 +104,7 @@ public class AbstractGroup extends AbstractPersistable<Long> {
 
     @Transient
     @Override
-    protected @NotNull ToStringBuilder buildStringHelper() {
+    protected ToStringBuilder buildStringHelper() {
         return super.buildStringHelper()
             .add("name", name)
             .add("type", type);

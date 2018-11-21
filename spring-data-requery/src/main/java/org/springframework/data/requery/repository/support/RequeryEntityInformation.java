@@ -17,9 +17,10 @@
 package org.springframework.data.requery.repository.support;
 
 import io.requery.meta.Attribute;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.data.requery.repository.query.RequeryEntityMetadata;
+
+import javax.annotation.Nullable;
 
 /**
  * Requery용 Entity의 정보를 제공합니다.

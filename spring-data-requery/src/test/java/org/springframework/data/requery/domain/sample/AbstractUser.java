@@ -28,7 +28,6 @@ import io.requery.ManyToOne;
 import io.requery.Table;
 import io.requery.Transient;
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.requery.converters.ByteArrayToBlobConverter;
 import org.springframework.data.requery.domain.AbstractPersistable;
 import org.springframework.data.requery.domain.ToStringBuilder;
@@ -91,7 +90,7 @@ public abstract class AbstractUser extends AbstractPersistable<Integer> { // imp
 
     @Transient
     @Override
-    protected @NotNull ToStringBuilder buildStringHelper() {
+    protected ToStringBuilder buildStringHelper() {
         return super.buildStringHelper()
             .add("firstname", firstname)
             .add("lastname", lastname)

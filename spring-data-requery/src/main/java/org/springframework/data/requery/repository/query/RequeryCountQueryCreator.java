@@ -20,12 +20,13 @@ import io.requery.query.LogicalCondition;
 import io.requery.query.element.QueryElement;
 import io.requery.query.function.Count;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.ReturnedType;
 import org.springframework.data.repository.query.parser.PartTree;
 import org.springframework.data.requery.core.RequeryOperations;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import static org.springframework.data.requery.utils.RequeryUtils.unwrap;
 
@@ -38,25 +39,25 @@ import static org.springframework.data.requery.utils.RequeryUtils.unwrap;
 @Slf4j
 public class RequeryCountQueryCreator extends RequeryQueryCreator {
 
-    public RequeryCountQueryCreator(@NotNull final RequeryOperations operations,
-                                    @NotNull final ParameterMetadataProvider provider,
-                                    @NotNull final ReturnedType returnedType,
-                                    @NotNull final PartTree tree) {
+    public RequeryCountQueryCreator(@Nonnull final RequeryOperations operations,
+                                    @Nonnull final ParameterMetadataProvider provider,
+                                    @Nonnull final ReturnedType returnedType,
+                                    @Nonnull final PartTree tree) {
         super(operations, provider, returnedType, tree);
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    protected QueryElement<?> createQueryElement(@NotNull final ReturnedType type) {
+    protected QueryElement<?> createQueryElement(@Nonnull final ReturnedType type) {
         return unwrap(getOperations().select(Count.count(getDomainClass())));
     }
 
     @SuppressWarnings("unchecked")
-    @NotNull
+    @Nonnull
     @Override
     protected QueryElement<?> complete(@Nullable final LogicalCondition<?, ?> criteria,
-                                       @NotNull final Sort sort,
-                                       @NotNull final QueryElement<?> root) {
+                                       @Nonnull final Sort sort,
+                                       @Nonnull final QueryElement<?> root) {
 
         return unwrap(getOperations()
                           .select(Count.count(getDomainClass()))

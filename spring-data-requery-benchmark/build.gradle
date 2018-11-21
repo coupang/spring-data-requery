@@ -62,8 +62,6 @@ dependencies {
     testAnnotationProcessor "org.projectlombok:lombok"
 
     implementation "javax.inject:javax.inject:1"
-
-    implementation "org.jetbrains:annotations"
     implementation "com.google.code.findbugs:jsr305"
 
     testCompile "org.springframework.boot:spring-boot-starter-test"

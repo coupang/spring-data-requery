@@ -18,12 +18,13 @@ package org.springframework.data.requery.repository.support;
 
 import io.requery.meta.EntityModel;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.repository.core.support.AbstractEntityInformation;
 import org.springframework.data.requery.core.RequeryOperations;
 import org.springframework.data.requery.repository.query.DefaultRequeryEntityMetadata;
 import org.springframework.data.requery.repository.query.RequeryEntityMetadata;
 import org.springframework.util.Assert;
+
+import javax.annotation.Nonnull;
 
 /**
  * {@link RequeryEntityInformation} 을 구현하여,
@@ -35,26 +36,27 @@ import org.springframework.util.Assert;
 public abstract class RequeryEntityInformationSupport<T, ID>
     extends AbstractEntityInformation<T, ID> implements RequeryEntityInformation<T, ID> {
 
-    @NotNull private final RequeryEntityMetadata<T> metadata;
+    @Nonnull private final RequeryEntityMetadata<T> metadata;
 
-    public RequeryEntityInformationSupport(@NotNull final Class<T> domainClass) {
+    public RequeryEntityInformationSupport(@Nonnull final Class<T> domainClass) {
         super(domainClass);
         this.metadata = DefaultRequeryEntityMetadata.of(domainClass);
     }
 
-    @NotNull
+    @Nonnull
     public String getEntityName() {
         return metadata.getEntityName();
     }
 
-    @NotNull
+    @Nonnull
     public String getModelName() {
         return metadata.getModelName();
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T> RequeryEntityInformation<T, ?> getEntityInformation(@NotNull Class<T> domainClass,
-                                                                          @NotNull RequeryOperations operations) {
+    @Nonnull
+    public static <T> RequeryEntityInformation<T, ?> getEntityInformation(@Nonnull final Class<T> domainClass,
+                                                                          @Nonnull final RequeryOperations operations) {
         Assert.notNull(domainClass, "domainClass must not be null.");
         Assert.notNull(operations, "operations must not be null.");
 

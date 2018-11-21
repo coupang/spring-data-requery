@@ -18,9 +18,11 @@ package org.springframework.data.requery.repository.support;
 
 import io.requery.meta.EntityModel;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Persistable;
 import org.springframework.util.Assert;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Extension of {@link RequeryEntityModelEntityInformation} that consideres methods of {@link Persistable} to lookup the id.
@@ -32,21 +34,22 @@ import org.springframework.util.Assert;
 public class RequeryPersistableEntityInformation<T extends Persistable<ID>, ID>
     extends RequeryEntityModelEntityInformation<T, ID> {
 
-    public RequeryPersistableEntityInformation(@NotNull final Class<T> domainClass,
-                                               @NotNull final EntityModel entityModel) {
+    public RequeryPersistableEntityInformation(@Nonnull final Class<T> domainClass,
+                                               @Nonnull final EntityModel entityModel) {
         super(domainClass, entityModel);
     }
 
     @Override
-    public boolean isNew(@NotNull final T entity) {
+    public boolean isNew(@Nonnull final T entity) {
         Assert.notNull(entity, "entity must not be nulll");
         log.trace("is new entity. entity={}, isNew={}", entity, entity.isNew());
 
         return entity.isNew();
     }
 
+    @Nullable
     @Override
-    public ID getId(@NotNull final T entity) {
+    public ID getId(@Nonnull final T entity) {
         Assert.notNull(entity, "entity must not be nulll");
         log.trace("get id of entity. entity={}, id={]", entity, entity.getId());
 

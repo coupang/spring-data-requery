@@ -25,11 +25,11 @@ import io.requery.Key;
 import io.requery.Lazy;
 import io.requery.Transient;
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.requery.converters.ByteArrayToBlobConverter;
 import org.springframework.data.requery.domain.AbstractPersistable;
 import org.springframework.data.requery.domain.ToStringBuilder;
 
+import javax.annotation.Nonnull;
 import java.util.Objects;
 
 /**
@@ -62,7 +62,8 @@ public abstract class AbstractBinaryData extends AbstractPersistable<Long> {
 
     @Transient
     @Override
-    protected @NotNull ToStringBuilder buildStringHelper() {
+    @Nonnull
+    protected ToStringBuilder buildStringHelper() {
         return super.buildStringHelper()
             .add("name", name);
     }

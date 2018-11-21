@@ -19,8 +19,6 @@ package org.springframework.data.requery.repository.query;
 import io.requery.sql.EntityDataStore;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.NamedQueries;
 import org.springframework.data.repository.core.RepositoryMetadata;
@@ -30,6 +28,8 @@ import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.requery.annotation.Query;
 import org.springframework.data.requery.core.RequeryOperations;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 
 import static org.springframework.data.repository.query.QueryLookupStrategy.Key;
@@ -44,10 +44,10 @@ import static org.springframework.data.repository.query.QueryLookupStrategy.Key;
 @UtilityClass
 public final class RequeryQueryLookupStrategy {
 
-    @NotNull
-    public static QueryLookupStrategy create(@NotNull final RequeryOperations operations,
+    @Nonnull
+    public static QueryLookupStrategy create(@Nonnull final RequeryOperations operations,
                                              @Nullable final Key key,
-                                             @NotNull final EvaluationContextProvider evaluationContextProvider) {
+                                             @Nonnull final EvaluationContextProvider evaluationContextProvider) {
         log.debug("Create Query Lookup Strategy with key={}", key);
 
         switch (key != null ? key : Key.CREATE_IF_NOT_FOUND) {
@@ -80,15 +80,18 @@ public final class RequeryQueryLookupStrategy {
             this.operations = operations;
         }
 
+        @Nonnull
         @Override
-        public final RepositoryQuery resolveQuery(Method method,
-                                                  RepositoryMetadata metadata,
-                                                  ProjectionFactory factory,
-                                                  NamedQueries namedQueries) {
+        public final RepositoryQuery resolveQuery(@Nonnull final Method method,
+                                                  @Nonnull final RepositoryMetadata metadata,
+                                                  @Nonnull final ProjectionFactory factory,
+                                                  @Nonnull final NamedQueries namedQueries) {
             return resolveQuery(new RequeryQueryMethod(method, metadata, factory), operations, namedQueries);
         }
 
-        protected abstract RepositoryQuery resolveQuery(RequeryQueryMethod method, RequeryOperations operations, NamedQueries namedQueries);
+        protected abstract RepositoryQuery resolveQuery(@Nonnull final RequeryQueryMethod method,
+                                                        @Nonnull final RequeryOperations operations,
+                                                        @Nullable final NamedQueries namedQueries);
     }
 
 
@@ -102,9 +105,9 @@ public final class RequeryQueryLookupStrategy {
         }
 
         @Override
-        protected RepositoryQuery resolveQuery(RequeryQueryMethod method,
-                                               RequeryOperations operations,
-                                               NamedQueries namedQueries) {
+        protected RepositoryQuery resolveQuery(@Nonnull final RequeryQueryMethod method,
+                                               @Nonnull final RequeryOperations operations,
+                                               @Nullable NamedQueries namedQueries) {
             log.debug("Create PartTreeRequeryQuery, queryMethod={}", method);
             return new PartTreeRequeryQuery(method, operations);
         }
@@ -125,9 +128,9 @@ public final class RequeryQueryLookupStrategy {
         }
 
         @Override
-        protected RepositoryQuery resolveQuery(RequeryQueryMethod method,
-                                               RequeryOperations operations,
-                                               NamedQueries namedQueries) {
+        protected RepositoryQuery resolveQuery(@Nonnull final RequeryQueryMethod method,
+                                               @Nonnull final RequeryOperations operations,
+                                               @Nullable final NamedQueries namedQueries) {
             // @Query annotation이 있다면 그 값으로 한다.
             if (method.isAnnotatedQuery()) {
                 log.debug("Create DeclaredRequeryQuery for @Query annotated method. queryMethod={}", method.getName());
@@ -162,9 +165,9 @@ public final class RequeryQueryLookupStrategy {
         }
 
         @Override
-        protected RepositoryQuery resolveQuery(RequeryQueryMethod method,
-                                               RequeryOperations operations,
-                                               NamedQueries namedQueries) {
+        protected RepositoryQuery resolveQuery(@Nonnull final RequeryQueryMethod method,
+                                               @Nonnull final RequeryOperations operations,
+                                               @Nullable NamedQueries namedQueries) {
             try {
                 log.debug("Resolve query by DeclaredQueryLookupStrategy...");
                 return lookupStrategy.resolveQuery(method, operations, namedQueries);

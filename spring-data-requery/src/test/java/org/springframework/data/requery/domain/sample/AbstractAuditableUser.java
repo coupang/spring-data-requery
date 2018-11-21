@@ -23,7 +23,6 @@ import io.requery.JunctionTable;
 import io.requery.Key;
 import io.requery.ManyToMany;
 import io.requery.Transient;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.requery.domain.AbstractAuditable;
 import org.springframework.data.requery.domain.ToStringBuilder;
 
@@ -51,7 +50,7 @@ public abstract class AbstractAuditableUser extends AbstractAuditable<Integer> {
 
     @Override
     @Transient
-    protected @NotNull ToStringBuilder buildStringHelper() {
+    protected ToStringBuilder buildStringHelper() {
         return super.buildStringHelper()
             .add("firstname", firstname);
     }

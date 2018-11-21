@@ -20,7 +20,6 @@ import io.requery.Embedded;
 import io.requery.Transient;
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.requery.domain.AbstractValueObject;
 import org.springframework.data.requery.domain.ToStringBuilder;
 
@@ -49,7 +48,6 @@ public class NodePosition extends AbstractValueObject {
     }
 
     @Transient
-    @NotNull
     @Override
     protected ToStringBuilder buildStringHelper() {
         return super.buildStringHelper()

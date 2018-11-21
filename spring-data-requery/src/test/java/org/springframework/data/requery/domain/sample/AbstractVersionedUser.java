@@ -21,7 +21,6 @@ import io.requery.Generated;
 import io.requery.Key;
 import io.requery.Transient;
 import io.requery.Version;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.requery.domain.AbstractPersistable;
 import org.springframework.data.requery.domain.ToStringBuilder;
 
@@ -66,7 +65,7 @@ public abstract class AbstractVersionedUser extends AbstractPersistable<Long> {
 
     @Transient
     @Override
-    protected @NotNull ToStringBuilder buildStringHelper() {
+    protected ToStringBuilder buildStringHelper() {
         return super.buildStringHelper()
             .add("name", name)
             .add("email", email)

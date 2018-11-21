@@ -20,8 +20,6 @@ import io.requery.query.NamedExpression;
 import io.requery.query.Scalar;
 import io.requery.query.element.QueryElement;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.ResultProcessor;
 import org.springframework.data.repository.query.ReturnedType;
@@ -32,6 +30,8 @@ import org.springframework.data.requery.repository.query.RequeryQueryExecution.D
 import org.springframework.data.requery.repository.query.RequeryQueryExecution.ExistsExecution;
 import org.springframework.data.requery.utils.RequeryUtils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 import static org.springframework.data.requery.utils.RequeryUtils.applyPageable;
@@ -56,8 +56,8 @@ public class PartTreeRequeryQuery extends AbstractRequeryQuery {
     private final RequeryMappingContext context;
 
 
-    public PartTreeRequeryQuery(@NotNull final RequeryQueryMethod method,
-                                @NotNull final RequeryOperations operations) {
+    public PartTreeRequeryQuery(@Nonnull final RequeryQueryMethod method,
+                                @Nonnull final RequeryOperations operations) {
         super(method, operations);
 
         this.operations = operations;
@@ -75,20 +75,20 @@ public class PartTreeRequeryQuery extends AbstractRequeryQuery {
         }
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    protected QueryElement<?> doCreateQuery(@NotNull final Object[] values) {
+    protected QueryElement<?> doCreateQuery(@Nonnull final Object[] values) {
         return queryPreparer.createQuery(values);
     }
 
     @SuppressWarnings("unchecked")
-    @NotNull
+    @Nonnull
     @Override
-    protected QueryElement<? extends Scalar<Integer>> doCreateCountQuery(@NotNull final Object[] values) {
+    protected QueryElement<? extends Scalar<Integer>> doCreateCountQuery(@Nonnull final Object[] values) {
         return (QueryElement<? extends Scalar<Integer>>) countQueryPreparer.createQuery(values);
     }
 
-    @NotNull
+    @Nonnull
     @Override
     protected RequeryQueryExecution getExecution() {
         if (tree.isDelete()) {
@@ -102,8 +102,8 @@ public class PartTreeRequeryQuery extends AbstractRequeryQuery {
     }
 
     @SuppressWarnings("unchecked")
-    @NotNull
-    protected QueryElement<?> prepareQuery(@NotNull final RequeryParameterAccessor accessor) {
+    @Nonnull
+    protected QueryElement<?> prepareQuery(@Nonnull final RequeryParameterAccessor accessor) {
         QueryElement<?> query = unwrap(getOperations().select(getDomainClass()));
 
         query = buildWhereClause(query, accessor);
@@ -119,9 +119,9 @@ public class PartTreeRequeryQuery extends AbstractRequeryQuery {
     }
 
     @SuppressWarnings("unchecked")
-    @NotNull
-    protected QueryElement<?> buildWhereClause(@NotNull final QueryElement<?> baseQuery,
-                                               @NotNull RequeryParameterAccessor accessor) {
+    @Nonnull
+    protected QueryElement<?> buildWhereClause(@Nonnull final QueryElement<?> baseQuery,
+                                               @Nonnull RequeryParameterAccessor accessor) {
 
         final RequeryParameters bindableParams = accessor.getParameters().getBindableParameters();
         final int bindableParamsSize = bindableParams.getNumberOfParameters();
@@ -157,8 +157,8 @@ public class PartTreeRequeryQuery extends AbstractRequeryQuery {
             }
         }
 
-        @NotNull
-        public QueryElement<?> createQuery(@NotNull final Object[] values) {
+        @Nonnull
+        public QueryElement<?> createQuery(@Nonnull final Object[] values) {
 
             RequeryParametersParameterAccessor accessor = new RequeryParametersParameterAccessor(parameters, values);
             RequeryQueryCreator creator = createCreator(accessor);
@@ -175,8 +175,8 @@ public class PartTreeRequeryQuery extends AbstractRequeryQuery {
         }
 
         @SuppressWarnings("ConstantConditions")
-        @NotNull
-        private QueryElement<?> restrictMaxResultsIfNecessary(@NotNull final QueryElement<?> baseQuery) {
+        @Nonnull
+        private QueryElement<?> restrictMaxResultsIfNecessary(@Nonnull final QueryElement<?> baseQuery) {
 
             QueryElement<?> query = baseQuery;
 

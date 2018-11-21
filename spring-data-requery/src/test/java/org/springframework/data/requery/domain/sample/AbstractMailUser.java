@@ -19,7 +19,6 @@ package org.springframework.data.requery.domain.sample;
 import io.requery.Entity;
 import io.requery.Generated;
 import io.requery.Key;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.requery.domain.AbstractPersistable;
 import org.springframework.data.requery.domain.ToStringBuilder;
 
@@ -52,7 +51,7 @@ public abstract class AbstractMailUser extends AbstractPersistable<Long> {
     }
 
     @Override
-    protected @NotNull ToStringBuilder buildStringHelper() {
+    protected ToStringBuilder buildStringHelper() {
         return super.buildStringHelper()
             .add("name", name);
     }

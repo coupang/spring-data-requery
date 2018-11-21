@@ -42,5 +42,6 @@ class InfrastructureConfig : AbstractRequeryConfiguration() {
             .setType(EmbeddedDatabaseType.H2)
             .setScriptEncoding("UTF-8")
             .ignoreFailedDrops(true)
+            .generateUniqueName(true)
             .build()
 }

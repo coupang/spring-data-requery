@@ -26,7 +26,6 @@ import io.requery.query.element.QueryElement;
 import io.requery.query.function.Function;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.ExampleMatcher.NullHandler;
@@ -35,6 +34,7 @@ import org.springframework.data.support.ExampleMatcherAccessor;
 import org.springframework.data.util.DirectFieldAccessFallbackBeanWrapper;
 import org.springframework.util.Assert;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,9 +58,9 @@ public class QueryByExampleBuilder {
      * {@link Example} 를 표현하는 {@link WhereAndOr} 조건절로 빌드합니다.
      */
     @SuppressWarnings("unchecked")
-    @NotNull
-    public static <E> QueryElement<? extends Result<E>> applyExample(@NotNull final QueryElement<? extends Result<E>> root,
-                                                                     @NotNull final Example<E> example) {
+    @Nonnull
+    public static <E> QueryElement<? extends Result<E>> applyExample(@Nonnull final QueryElement<? extends Result<E>> root,
+                                                                     @Nonnull final Example<E> example) {
         Assert.notNull(root, "Root must not be null!");
         Assert.notNull(example, "Example must not be null!");
 
@@ -84,11 +84,11 @@ public class QueryByExampleBuilder {
     }
 
     @SuppressWarnings("unchecked")
-    @NotNull
-    private <E> List<Condition<E, ?>> getConditions(@NotNull final QueryElement<? extends Result<E>> root,
-                                                    @NotNull final Object exampleValue,
-                                                    @NotNull final Class<E> probeType,
-                                                    @NotNull final ExampleMatcherAccessor exampleAccessor) {
+    @Nonnull
+    private <E> List<Condition<E, ?>> getConditions(@Nonnull final QueryElement<? extends Result<E>> root,
+                                                    @Nonnull final Object exampleValue,
+                                                    @Nonnull final Class<E> probeType,
+                                                    @Nonnull final ExampleMatcherAccessor exampleAccessor) {
 
         List<Condition<E, ?>> conditions = new ArrayList<>();
         DirectFieldAccessFallbackBeanWrapper beanWrapper = new DirectFieldAccessFallbackBeanWrapper(exampleValue);
@@ -134,11 +134,11 @@ public class QueryByExampleBuilder {
     }
 
     @SuppressWarnings("unchecked")
-    @NotNull
-    private <E> Condition<E, ?> buildStringCondition(@NotNull final ExampleMatcherAccessor exampleAccessor,
-                                                     @NotNull final NamedExpression<String> expression,
-                                                     @NotNull final String fieldName,
-                                                     @NotNull final String fieldValue) {
+    @Nonnull
+    private <E> Condition<E, ?> buildStringCondition(@Nonnull final ExampleMatcherAccessor exampleAccessor,
+                                                     @Nonnull final NamedExpression<String> expression,
+                                                     @Nonnull final String fieldName,
+                                                     @Nonnull final String fieldValue) {
         Boolean ignoreCase = exampleAccessor.isIgnoreCaseForPath(fieldName);
 
         log.trace("Matching with ignoreCase? ignoreCase={}", ignoreCase);

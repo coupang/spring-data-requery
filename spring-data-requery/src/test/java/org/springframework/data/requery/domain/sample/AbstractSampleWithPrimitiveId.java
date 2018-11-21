@@ -21,7 +21,6 @@ import io.requery.Key;
 import io.requery.Transient;
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.requery.domain.AbstractValueObject;
 import org.springframework.data.requery.domain.ToStringBuilder;
 
@@ -44,7 +43,6 @@ public abstract class AbstractSampleWithPrimitiveId extends AbstractValueObject 
     protected String name;
 
     @Transient
-    @NotNull
     @Override
     protected ToStringBuilder buildStringHelper() {
         return super.buildStringHelper()

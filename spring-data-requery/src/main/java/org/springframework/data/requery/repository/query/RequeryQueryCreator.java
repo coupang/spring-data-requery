@@ -24,8 +24,6 @@ import io.requery.query.element.QueryElement;
 import io.requery.query.function.Count;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mapping.PropertyPath;
 import org.springframework.data.repository.query.ReturnedType;
@@ -39,6 +37,8 @@ import org.springframework.data.requery.repository.query.ParameterMetadataProvid
 import org.springframework.data.requery.utils.Iterables;
 import org.springframework.util.Assert;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -70,10 +70,10 @@ public class RequeryQueryCreator extends AbstractQueryCreator<QueryElement<?>, L
 
     private final QueryElement<?> root;
 
-    public RequeryQueryCreator(@NotNull final RequeryOperations operations,
-                               @NotNull final ParameterMetadataProvider provider,
-                               @NotNull final ReturnedType returnedType,
-                               @NotNull final PartTree tree) {
+    public RequeryQueryCreator(@Nonnull final RequeryOperations operations,
+                               @Nonnull final ParameterMetadataProvider provider,
+                               @Nonnull final ReturnedType returnedType,
+                               @Nonnull final PartTree tree) {
         super(tree);
 
         Assert.notNull(operations, "operation must not be null.");
@@ -95,8 +95,8 @@ public class RequeryQueryCreator extends AbstractQueryCreator<QueryElement<?>, L
     }
 
     @SuppressWarnings("unchecked")
-    @NotNull
-    protected QueryElement<?> createQueryElement(@NotNull final ReturnedType type) {
+    @Nonnull
+    protected QueryElement<?> createQueryElement(@Nonnull final ReturnedType type) {
 
         Assert.notNull(type, "type must not be null!");
 
@@ -117,26 +117,26 @@ public class RequeryQueryCreator extends AbstractQueryCreator<QueryElement<?>, L
         return unwrap(operations.select(type.getDomainType()));
     }
 
-    @NotNull
+    @Nonnull
     public List<ParameterMetadata<?>> getParameterExpressions() {
         return provider.getExpressions();
     }
 
     @SuppressWarnings("unchecked")
-    @NotNull
+    @Nonnull
     @Override
-    protected LogicalCondition<?, ?> create(@NotNull final Part part,
+    protected LogicalCondition<?, ?> create(@Nonnull final Part part,
                                             @Nullable final Iterator<Object> iterator) {
         log.trace("Build new condition...");
         return buildWhereCondition(part);
     }
 
     @SuppressWarnings("unchecked")
-    @NotNull
+    @Nonnull
     @Override
-    protected LogicalCondition<?, ?> and(@NotNull final Part part,
-                                         @NotNull final LogicalCondition<?, ?> base,
-                                         @NotNull final Iterator<Object> iterator) {
+    protected LogicalCondition<?, ?> and(@Nonnull final Part part,
+                                         @Nonnull final LogicalCondition<?, ?> base,
+                                         @Nonnull final Iterator<Object> iterator) {
         log.trace("add AND condition");
 
         Condition<?, ?> condition = buildWhereCondition(part);
@@ -146,24 +146,24 @@ public class RequeryQueryCreator extends AbstractQueryCreator<QueryElement<?>, L
     }
 
     @SuppressWarnings("unchecked")
-    @NotNull
+    @Nonnull
     @Override
-    protected LogicalCondition<?, ?> or(@NotNull final LogicalCondition<?, ?> base,
-                                        @NotNull final LogicalCondition<?, ?> criteria) {
+    protected LogicalCondition<?, ?> or(@Nonnull final LogicalCondition<?, ?> base,
+                                        @Nonnull final LogicalCondition<?, ?> criteria) {
         return base.or(criteria);
     }
 
-    @NotNull
+    @Nonnull
     @Override
     protected QueryElement<?> complete(@Nullable final LogicalCondition<?, ?> criteria,
-                                       @NotNull final Sort sort) {
+                                       @Nonnull final Sort sort) {
         return complete(criteria, sort, root);
     }
 
     @SuppressWarnings("unchecked")
     protected QueryElement<?> complete(@Nullable final LogicalCondition<?, ?> criteria,
-                                       @NotNull final Sort sort,
-                                       @NotNull QueryElement<?> root) {
+                                       @Nonnull final Sort sort,
+                                       @Nonnull QueryElement<?> root) {
         log.trace("Complete query...");
 
         // TODO: returnType.needsCustomConstruction() 을 이용해서 Custom Type 에 대한 작업을 수행할 수 있다.
@@ -172,16 +172,16 @@ public class RequeryQueryCreator extends AbstractQueryCreator<QueryElement<?>, L
         return applySort(returnedType.getDomainType(), queryElement, sort);
     }
 
-    private LogicalCondition<?, ?> buildWhereCondition(@NotNull final Part part) {
+    private LogicalCondition<?, ?> buildWhereCondition(@Nonnull final Part part) {
         return new QueryElementBuilder(part).build();
     }
 
     private class QueryElementBuilder {
 
-        @NotNull
+        @Nonnull
         private final Part part;
 
-        public QueryElementBuilder(@NotNull final Part part) {
+        public QueryElementBuilder(@Nonnull final Part part) {
             Assert.notNull(part, "Part must not be null!");
             log.debug("Create QueryElementBuilder. part={}l", part);
             this.part = part;
@@ -191,7 +191,7 @@ public class RequeryQueryCreator extends AbstractQueryCreator<QueryElement<?>, L
          * Build Requery {@link QueryElement} from the underlying {@link Part}
          */
         @SuppressWarnings("unchecked")
-        @NotNull
+        @Nonnull
         public LogicalCondition<?, ?> build() {
 
             PropertyPath property = part.getProperty();
@@ -337,12 +337,12 @@ public class RequeryQueryCreator extends AbstractQueryCreator<QueryElement<?>, L
             return condition;
         }
 
-        private void throwNotSupportedKeyword(@NotNull final Part.Type type) {
+        private void throwNotSupportedKeyword(@Nonnull final Part.Type type) {
             throw new NotSupportedException("Not supported keyword. Part.Type=" + type);
         }
 
-        @NotNull
-        private <T> FieldExpression<T> upperIfIgnoreCase(@NotNull final FieldExpression<T> expression) {
+        @Nonnull
+        private <T> FieldExpression<T> upperIfIgnoreCase(@Nonnull final FieldExpression<T> expression) {
 
             switch (part.shouldIgnoreCase()) {
                 case ALWAYS:
@@ -363,7 +363,7 @@ public class RequeryQueryCreator extends AbstractQueryCreator<QueryElement<?>, L
             }
         }
 
-        private boolean canUpperCase(@NotNull final FieldExpression<?> expression) {
+        private boolean canUpperCase(@Nonnull final FieldExpression<?> expression) {
             return String.class.equals(expression.getClassType());
         }
 
@@ -371,8 +371,8 @@ public class RequeryQueryCreator extends AbstractQueryCreator<QueryElement<?>, L
             return part.shouldIgnoreCase() != Part.IgnoreCaseType.NEVER;
         }
 
-        @NotNull
-        private String upperCase(@NotNull final Object value) {
+        @Nonnull
+        private String upperCase(@Nonnull final Object value) {
             return value.toString().toUpperCase();
         }
     }

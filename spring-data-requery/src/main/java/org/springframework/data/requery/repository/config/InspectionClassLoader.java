@@ -16,8 +16,9 @@
 
 package org.springframework.data.requery.repository.config;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.instrument.classloading.ShadowingClassLoader;
+
+import javax.annotation.Nonnull;
 
 /**
  * Disposable {@link ClassLoader} used to inspect user-code classes within an isolated class loader without preventing
@@ -28,7 +29,7 @@ import org.springframework.instrument.classloading.ShadowingClassLoader;
  */
 public class InspectionClassLoader extends ShadowingClassLoader {
 
-    public InspectionClassLoader(@NotNull final ClassLoader parent) {
+    public InspectionClassLoader(@Nonnull final ClassLoader parent) {
         super(parent, true);
         excludePackage("org.springframework.");
     }

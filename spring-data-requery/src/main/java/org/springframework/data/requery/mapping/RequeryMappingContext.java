@@ -17,8 +17,6 @@
 package org.springframework.data.requery.mapping;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -27,6 +25,9 @@ import org.springframework.data.mapping.model.FieldNamingStrategy;
 import org.springframework.data.mapping.model.Property;
 import org.springframework.data.mapping.model.SimpleTypeHolder;
 import org.springframework.data.util.TypeInformation;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Requery Entity의 Mapping 정보를 제공합니다.
@@ -44,18 +45,18 @@ public class RequeryMappingContext
     @Nullable
     private ApplicationContext applicationContext;
 
-    public void setFieldNamingStrategy(FieldNamingStrategy fieldNamingStrategy) {
+    public void setFieldNamingStrategy(@Nullable final FieldNamingStrategy fieldNamingStrategy) {
         this.fieldNamingStrategy = fieldNamingStrategy;
     }
 
     @Override
-    public void setApplicationContext(@NotNull final ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(@Nonnull final ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    protected <T> DefaultRequeryPersistentEntity<?> createPersistentEntity(@NotNull TypeInformation<T> typeInformation) {
+    protected <T> DefaultRequeryPersistentEntity<?> createPersistentEntity(@Nonnull final TypeInformation<T> typeInformation) {
         final DefaultRequeryPersistentEntity<T> entity = new DefaultRequeryPersistentEntity<>(typeInformation);
         if (applicationContext != null) {
             entity.setApplicationContext(applicationContext);
@@ -64,11 +65,11 @@ public class RequeryMappingContext
         return entity;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    protected RequeryPersistentProperty createPersistentProperty(@NotNull Property property,
-                                                                 @NotNull DefaultRequeryPersistentEntity<?> owner,
-                                                                 @NotNull SimpleTypeHolder simpleTypeHolder) {
+    protected RequeryPersistentProperty createPersistentProperty(@Nonnull final Property property,
+                                                                 @Nonnull final DefaultRequeryPersistentEntity<?> owner,
+                                                                 @Nonnull final SimpleTypeHolder simpleTypeHolder) {
         log.debug("Create property. property={}", property);
         return new DefaultRequeryPersistentProperty(property,
                                                     owner,

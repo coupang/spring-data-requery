@@ -19,8 +19,8 @@ package org.springframework.data.requery.utils;
 import io.requery.meta.Attribute;
 import io.requery.meta.EntityModel;
 import io.requery.meta.Type;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
@@ -34,24 +34,24 @@ import java.util.Set;
  */
 public class RequeryMetamodel {
 
-    @NotNull
+    @Nonnull
     private final EntityModel entityModel;
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     private Optional<Collection<Class<?>>> managedTypes = Optional.empty();
 
 
-    public RequeryMetamodel(@NotNull final EntityModel entityModel) {
+    public RequeryMetamodel(@Nonnull final EntityModel entityModel) {
         this.entityModel = entityModel;
     }
 
-    public boolean isRequeryManaged(@NotNull final Class<?> entityClass) {
+    public boolean isRequeryManaged(@Nonnull final Class<?> entityClass) {
         return getManagedTypes().contains(entityClass);
     }
 
-    public boolean isSingleIdAttribute(@NotNull final Class<?> entityClass,
-                                       @NotNull final String name,
-                                       @NotNull final Class<?> attributeClass) {
+    public boolean isSingleIdAttribute(@Nonnull final Class<?> entityClass,
+                                       @Nonnull final String name,
+                                       @Nonnull final Class<?> attributeClass) {
         return entityModel.getTypes()
             .stream()
             .filter(type -> entityClass.equals(type.getClassType()))
@@ -63,7 +63,7 @@ public class RequeryMetamodel {
 
     }
 
-    @NotNull
+    @Nonnull
     private Collection<Class<?>> getManagedTypes() {
         if (!managedTypes.isPresent()) {
             Set<Type<?>> entityTypes = entityModel.getTypes();
@@ -82,8 +82,8 @@ public class RequeryMetamodel {
     }
 
 
-    @NotNull
-    private static Optional<? extends Attribute<?, ?>> getSingleKeyAttribute(@NotNull final Type<?> type) {
+    @Nonnull
+    private static Optional<? extends Attribute<?, ?>> getSingleKeyAttribute(@Nonnull final Type<?> type) {
         return Optional.ofNullable(type.getSingleKeyAttribute());
     }
 

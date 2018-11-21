@@ -17,9 +17,9 @@
 package org.springframework.data.requery.converters;
 
 import io.requery.Converter;
-import org.jetbrains.annotations.Nullable;
 import org.joda.time.DateTime;
 
+import javax.annotation.Nullable;
 import java.sql.Timestamp;
 
 /**

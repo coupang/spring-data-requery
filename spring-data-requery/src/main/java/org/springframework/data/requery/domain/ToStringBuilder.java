@@ -16,10 +16,10 @@
 
 package org.springframework.data.requery.domain;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.util.Assert;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,23 +31,23 @@ import java.util.Map;
  */
 public class ToStringBuilder implements Serializable {
 
-    @NotNull
-    public static ToStringBuilder of(@NotNull final Object obj) {
+    @Nonnull
+    public static ToStringBuilder of(@Nonnull final Object obj) {
         Assert.notNull(obj, "obj must not be null");
         return new ToStringBuilder(obj);
     }
 
-    @NotNull
-    public static ToStringBuilder of(@NotNull final String classname) {
+    @Nonnull
+    public static ToStringBuilder of(@Nonnull final String classname) {
         Assert.hasText(classname, "classname must has text");
         return new ToStringBuilder(classname);
     }
 
-    public ToStringBuilder(@NotNull final Object obj) {
+    public ToStringBuilder(@Nonnull final Object obj) {
         this(obj.getClass().getName());
     }
 
-    public ToStringBuilder(@NotNull final String classname) {
+    public ToStringBuilder(@Nonnull final String classname) {
         Assert.hasText(classname, "classname must has text.");
         this.classname = classname;
     }
@@ -55,12 +55,12 @@ public class ToStringBuilder implements Serializable {
     private final String classname;
     private final transient Map<String, Object> valueMap = new HashMap<>();
 
-    public ToStringBuilder add(@NotNull final String name, @Nullable final Object value) {
+    public ToStringBuilder add(@Nonnull final String name, @Nullable final Object value) {
         valueMap.put(name, value != null ? value : "<null>");
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public String toString() {
 
@@ -76,7 +76,7 @@ public class ToStringBuilder implements Serializable {
         return this.classname + "(" + builder.toString() + ")";
     }
 
-    @NotNull
+    @Nonnull
     public String toString(int limit) {
         return (limit > 0) ? toString().substring(0, limit) : toString();
     }

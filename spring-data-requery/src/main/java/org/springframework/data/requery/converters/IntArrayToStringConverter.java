@@ -17,7 +17,8 @@
 package org.springframework.data.requery.converters;
 
 import io.requery.Converter;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 
 /**
  * <code>int[]</code> 를 string 으로 저장하는 converter

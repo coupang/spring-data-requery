@@ -24,7 +24,6 @@ import io.requery.sql.EntityDataStore;
 import io.requery.sql.SchemaModifier;
 import io.requery.sql.TableCreationMode;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +36,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.Assert;
 
+import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
@@ -73,8 +73,8 @@ public abstract class AbstractRequeryConfiguration {
      * @return Requery용 configuration
      */
     @Bean
-    public io.requery.sql.Configuration requeryConfiguration(@NotNull DataSource dataSource,
-                                                             @NotNull EntityModel entityModel) {
+    public io.requery.sql.Configuration requeryConfiguration(@Nonnull DataSource dataSource,
+                                                             @Nonnull EntityModel entityModel) {
         Assert.notNull(dataSource, "dataSource must not be null");
         Assert.notNull(getEntityModel(), "enittymodel must not be null");
 
@@ -95,13 +95,14 @@ public abstract class AbstractRequeryConfiguration {
      * @return {@link EntityDataStore} instance
      */
     @Bean(destroyMethod = "close")
-    public EntityDataStore<Object> entityDataStore(@NotNull io.requery.sql.Configuration configuration) {
+    public EntityDataStore<Object> entityDataStore(@Nonnull io.requery.sql.Configuration configuration) {
         log.info("Create EntityDataStore instance.");
         return new EntityDataStore<>(configuration);
     }
 
     @Bean
-    public RequeryOperations requeryOperations(EntityDataStore<Object> entityDataStore, RequeryMappingContext mappingContext) {
+    public RequeryOperations requeryOperations(@Nonnull final EntityDataStore<Object> entityDataStore,
+                                               @Nonnull final RequeryMappingContext mappingContext) {
         log.info("Create RequeryTemplate instance.");
         return new RequeryTemplate(entityDataStore, mappingContext);
     }
@@ -114,7 +115,7 @@ public abstract class AbstractRequeryConfiguration {
     }
 
     @Bean
-    public PlatformTransactionManager transactionManager(DataSource dataSource) {
+    public PlatformTransactionManager transactionManager(@Nonnull final DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
     }
 

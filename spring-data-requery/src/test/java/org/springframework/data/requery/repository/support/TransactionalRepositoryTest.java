@@ -36,6 +36,7 @@ import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Nonnull;
 import javax.sql.DataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,7 +53,7 @@ public class TransactionalRepositoryTest {
 
         @Bean
         @Override
-        public DelegatingTransactionManager transactionManager(DataSource dataSource) {
+        public DelegatingTransactionManager transactionManager(@Nonnull final DataSource dataSource) {
             return new DelegatingTransactionManager(super.transactionManager(dataSource));
         }
     }

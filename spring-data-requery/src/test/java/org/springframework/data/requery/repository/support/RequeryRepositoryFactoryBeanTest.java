@@ -17,7 +17,6 @@
 package org.springframework.data.requery.repository.support;
 
 import io.requery.meta.EntityModel;
-import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,6 +36,7 @@ import org.springframework.data.requery.core.RequeryOperations;
 import org.springframework.data.requery.domain.basic.AbstractBasicUser;
 import org.springframework.data.requery.repository.RequeryRepository;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -105,11 +105,11 @@ public class RequeryRepositoryFactoryBeanTest {
 
     private class DummyRequeryRepositoryFactoryBean<T extends RequeryRepository<S, ID>, S, ID> extends RequeryRepositoryFactoryBean<T, S, ID> {
 
-        public DummyRequeryRepositoryFactoryBean(@NotNull Class<? extends T> repositoryInterface) {
+        public DummyRequeryRepositoryFactoryBean(@Nonnull Class<? extends T> repositoryInterface) {
             super(repositoryInterface);
         }
 
-        @NotNull
+        @Nonnull
         @Override
         protected RepositoryFactorySupport doCreateRepositoryFactory() {
             return factory;

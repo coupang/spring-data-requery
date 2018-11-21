@@ -18,9 +18,8 @@ package org.springframework.data.requery.domain;
 
 import io.requery.Persistable;
 import io.requery.Superclass;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -62,7 +61,6 @@ public abstract class AbstractPersistable<ID> extends AbstractValueObject implem
         return (getId() != null) ? getId().hashCode() : System.identityHashCode(this);
     }
 
-    @NotNull
     @Override
     @io.requery.Transient
     protected ToStringBuilder buildStringHelper() {

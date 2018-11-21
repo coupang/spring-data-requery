@@ -17,11 +17,11 @@
 package org.springframework.data.requery.repository.query;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
@@ -36,25 +36,25 @@ import java.util.Objects;
 @Slf4j
 public class RequeryParameters extends Parameters<RequeryParameters, RequeryParameters.RequeryParameter> {
 
-    public RequeryParameters(@NotNull final Method method) {
+    public RequeryParameters(@Nonnull final Method method) {
         super(method);
         log.debug("Ctor RequeryParameters. method={}", method);
     }
 
-    public RequeryParameters(@NotNull final List<RequeryParameter> parameters) {
+    public RequeryParameters(@Nonnull final List<RequeryParameter> parameters) {
         super(parameters);
         log.debug("Ctor RequeryParameters. parameters={}", parameters);
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    protected RequeryParameter createParameter(@NotNull final MethodParameter parameter) {
+    protected RequeryParameter createParameter(@Nonnull final MethodParameter parameter) {
         return new RequeryParameter(parameter);
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    protected RequeryParameters createFrom(@NotNull final List<RequeryParameter> parameters) {
+    protected RequeryParameters createFrom(@Nonnull final List<RequeryParameter> parameters) {
         return new RequeryParameters(parameters);
     }
 
@@ -72,7 +72,7 @@ public class RequeryParameters extends Parameters<RequeryParameters, RequeryPara
     @Slf4j
     static class RequeryParameter extends Parameter {
 
-        @NotNull
+        @Nonnull
         private final MethodParameter parameter;
 
         /**
@@ -80,7 +80,7 @@ public class RequeryParameters extends Parameters<RequeryParameters, RequeryPara
          *
          * @param parameter must not be {@literal null}.
          */
-        public RequeryParameter(@NotNull final MethodParameter parameter) {
+        public RequeryParameter(@Nonnull final MethodParameter parameter) {
             super(parameter);
             this.parameter = parameter;
 
@@ -91,7 +91,7 @@ public class RequeryParameters extends Parameters<RequeryParameters, RequeryPara
             return Objects.equals(getType(), Date.class);
         }
 
-        @NotNull
+        @Nonnull
         @Override
         public String toString() {
             return parameter.getParameter().toString();

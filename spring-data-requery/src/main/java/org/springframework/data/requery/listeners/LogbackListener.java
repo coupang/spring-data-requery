@@ -20,8 +20,9 @@ import io.requery.sql.BoundParameters;
 import io.requery.sql.EntityStateListener;
 import io.requery.sql.StatementListener;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNullableByDefault;
 import java.sql.Statement;
 
 /**
@@ -30,6 +31,7 @@ import java.sql.Statement;
  * @author debop
  */
 @Slf4j
+@ParametersAreNullableByDefault
 public class LogbackListener<E> implements EntityStateListener<E>, StatementListener {
 
     private final boolean printStatement;

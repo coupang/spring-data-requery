@@ -17,12 +17,12 @@
 package org.springframework.data.requery.domain.hierarchy;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.requery.domain.AbstractDomainTest;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,11 +32,11 @@ public class HierarchyTest extends AbstractDomainTest {
 
     private static Random rnd = new Random(System.currentTimeMillis());
 
-    private static TreeNode treeNodeOf(@NotNull String name) {
+    private static TreeNode treeNodeOf(@Nonnull String name) {
         return treeNodeOf(name, null);
     }
 
-    private static TreeNode treeNodeOf(@NotNull String name, @Nullable TreeNode parent) {
+    private static TreeNode treeNodeOf(@Nonnull String name, @Nullable TreeNode parent) {
         TreeNode node = new TreeNode();
 
         node.setName(name);

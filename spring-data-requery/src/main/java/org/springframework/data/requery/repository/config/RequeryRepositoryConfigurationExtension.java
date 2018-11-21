@@ -18,8 +18,6 @@ package org.springframework.data.requery.repository.config;
 
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.io.ResourceLoader;
@@ -32,6 +30,8 @@ import org.springframework.data.requery.repository.support.RequeryRepositoryFact
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,40 +53,40 @@ public class RequeryRepositoryConfigurationExtension extends RepositoryConfigura
     private static final String DEFAULT_TRANSACTION_MANAGER_BEAN_NAME = "transactionManager";
     private static final String ENABLE_DEFAULT_TRANSACTIONS_ATTRIBUTE = "enableDefaultTransactions";
 
-    @NotNull
+    @Nonnull
     @Override
     public String getModuleName() {
         return "REQUERY";
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public String getRepositoryFactoryBeanClassName() {
         return RequeryRepositoryFactoryBean.class.getName();
     }
 
-    @NotNull
+    @Nonnull
     @Override
     protected String getModulePrefix() {
         return getModuleName().toLowerCase(Locale.US);
     }
 
-    @NotNull
+    @Nonnull
     @Override
     protected Collection<Class<? extends Annotation>> getIdentifyingAnnotations() {
         return Arrays.asList(io.requery.Entity.class,
                              io.requery.Superclass.class);
     }
 
-    @NotNull
+    @Nonnull
     @Override
     protected Collection<Class<?>> getIdentifyingTypes() {
         return Collections.singleton(RequeryRepository.class);
     }
 
     @Override
-    public void postProcess(@NotNull final BeanDefinitionBuilder builder,
-                            @NotNull final RepositoryConfigurationSource source) {
+    public void postProcess(@Nonnull final BeanDefinitionBuilder builder,
+                            @Nonnull final RepositoryConfigurationSource source) {
 
         Optional<String> transactionManagerRef = source.getAttribute("transactionManagerRef");
 
@@ -94,8 +94,8 @@ public class RequeryRepositoryConfigurationExtension extends RepositoryConfigura
     }
 
     @Override
-    public void postProcess(@NotNull final BeanDefinitionBuilder builder,
-                            @NotNull final AnnotationRepositoryConfigurationSource config) {
+    public void postProcess(@Nonnull final BeanDefinitionBuilder builder,
+                            @Nonnull final AnnotationRepositoryConfigurationSource config) {
 
         AnnotationAttributes attributes = config.getAttributes();
 
@@ -104,8 +104,8 @@ public class RequeryRepositoryConfigurationExtension extends RepositoryConfigura
     }
 
     @Override
-    public void postProcess(@NotNull final BeanDefinitionBuilder builder,
-                            @NotNull final XmlRepositoryConfigurationSource config) {
+    public void postProcess(@Nonnull final BeanDefinitionBuilder builder,
+                            @Nonnull final XmlRepositoryConfigurationSource config) {
 
         Optional<String> enableDefaultTransactions = config.getAttribute(ENABLE_DEFAULT_TRANSACTIONS_ATTRIBUTE);
 
@@ -117,7 +117,7 @@ public class RequeryRepositoryConfigurationExtension extends RepositoryConfigura
 
     @Nullable
     @Override
-    protected ClassLoader getConfigurationInspectionClassLoader(@NotNull final ResourceLoader loader) {
+    protected ClassLoader getConfigurationInspectionClassLoader(@Nonnull final ResourceLoader loader) {
 
         ClassLoader classLoader = loader.getClassLoader();
 

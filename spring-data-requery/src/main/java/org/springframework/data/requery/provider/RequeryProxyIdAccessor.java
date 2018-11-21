@@ -19,9 +19,10 @@ package org.springframework.data.requery.provider;
 import io.requery.meta.EntityModel;
 import io.requery.sql.EntityDataStore;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.requery.utils.RequeryUtils;
+
+import javax.annotation.Nullable;
 
 /**
  * org.springframework.data.requery.provider.RequeryProxyIdAccessor
@@ -39,7 +40,7 @@ public class RequeryProxyIdAccessor implements ProxyIdAccessor {
     }
 
     @Override
-    public boolean shouldUseAccessorFor(Object entity) {
+    public boolean shouldUseAccessorFor(@Nullable final Object entity) {
         if (entity == null)
             return false;
 
@@ -50,7 +51,8 @@ public class RequeryProxyIdAccessor implements ProxyIdAccessor {
 
     @SuppressWarnings("ConstantConditions")
     @Override
-    public @Nullable Object getIdentifierFrom(Object entity) {
+    @Nullable
+    public Object getIdentifierFrom(@Nullable Object entity) {
         if (entity == null)
             return null;
 

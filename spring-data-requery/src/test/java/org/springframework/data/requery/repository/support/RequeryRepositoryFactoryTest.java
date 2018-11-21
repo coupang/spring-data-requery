@@ -19,7 +19,6 @@ package org.springframework.data.requery.repository.support;
 import io.requery.meta.EntityModel;
 import io.requery.sql.EntityDataStore;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -39,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
@@ -65,9 +65,9 @@ public class RequeryRepositoryFactoryTest {
 
         factory = new RequeryRepositoryFactory(requeryOperations) {
             @SuppressWarnings("unchecked")
-            @NotNull
+            @Nonnull
             @Override
-            public <T, ID> RequeryEntityInformation<T, ID> getEntityInformation(@NotNull final Class<T> domainClass) {
+            public <T, ID> RequeryEntityInformation<T, ID> getEntityInformation(@Nonnull final Class<T> domainClass) {
                 return (RequeryEntityInformation<T, ID>) entityInformation;
             }
         };
@@ -172,8 +172,8 @@ public class RequeryRepositoryFactoryTest {
     private interface SimpleSampleRepository extends RequeryRepository<BasicUser, Long> {
 
         @Transactional
-        @NotNull
-        Optional<BasicUser> findById(@NotNull final Long id);
+        @Nonnull
+        Optional<BasicUser> findById(@Nonnull final Long id);
     }
 
     public interface SampleCustomRepository {
@@ -211,8 +211,8 @@ public class RequeryRepositoryFactoryTest {
 
     static class CustomRequeryRepository<T, ID> extends SimpleRequeryRepository<T, ID> {
 
-        public CustomRequeryRepository(@NotNull RequeryEntityInformation<T, ID> entityInformation,
-                                       @NotNull RequeryOperations operations) {
+        public CustomRequeryRepository(@Nonnull RequeryEntityInformation<T, ID> entityInformation,
+                                       @Nonnull RequeryOperations operations) {
             super(entityInformation, operations);
         }
     }

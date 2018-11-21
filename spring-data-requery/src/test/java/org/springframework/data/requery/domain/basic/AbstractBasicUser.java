@@ -26,10 +26,10 @@ import io.requery.OneToOne;
 import io.requery.Table;
 import io.requery.Transient;
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.requery.domain.AuditableLongEntity;
 import org.springframework.data.requery.domain.ToStringBuilder;
 
+import javax.annotation.Nonnull;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -79,7 +79,8 @@ public abstract class AbstractBasicUser extends AuditableLongEntity {
 
     @Transient
     @Override
-    protected @NotNull ToStringBuilder buildStringHelper() {
+    @Nonnull
+    protected ToStringBuilder buildStringHelper() {
         return super.buildStringHelper()
             .add("name", name)
             .add("email", email)

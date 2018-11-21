@@ -21,8 +21,6 @@ import io.requery.query.Scalar;
 import io.requery.query.Tuple;
 import io.requery.query.element.QueryElement;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.RepositoryQuery;
@@ -32,6 +30,8 @@ import org.springframework.data.requery.annotation.Query;
 import org.springframework.data.requery.core.RequeryOperations;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -45,32 +45,32 @@ import java.util.List;
 @Slf4j
 public class DeclaredRequeryQuery extends AbstractRequeryQuery {
 
-    public DeclaredRequeryQuery(@NotNull RequeryQueryMethod method,
-                                @NotNull RequeryOperations operations) {
+    public DeclaredRequeryQuery(@Nonnull RequeryQueryMethod method,
+                                @Nonnull RequeryOperations operations) {
         super(method, operations);
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    protected QueryElement<? extends Result<?>> doCreateQuery(@NotNull final Object[] values) {
+    protected QueryElement<? extends Result<?>> doCreateQuery(@Nonnull final Object[] values) {
         throw new UnsupportedOperationException("Unsupported operation in DeclaredRequeryQuery is defined");
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    protected QueryElement<? extends Scalar<Integer>> doCreateCountQuery(@NotNull final Object[] values) {
+    protected QueryElement<? extends Scalar<Integer>> doCreateCountQuery(@Nonnull final Object[] values) {
         throw new UnsupportedOperationException("Unsupported operation in @Query is defined");
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public Object execute(@NotNull final Object[] parameters) {
+    public Object execute(@Nonnull final Object[] parameters) {
         // return operations.runInTransaction(() -> executeInTransaction(parameters));
         return executeInTransaction(parameters);
     }
 
     @SuppressWarnings("unchecked")
-    private Object executeInTransaction(@NotNull final Object[] parameters) {
+    private Object executeInTransaction(@Nonnull final Object[] parameters) {
 
         Object resultSet = null;
 
@@ -123,8 +123,8 @@ public class DeclaredRequeryQuery extends AbstractRequeryQuery {
         return resultSet;
     }
 
-    @NotNull
-    private Object[] extractValues(int pageableIndex, @NotNull final Object[] parameters) {
+    @Nonnull
+    private Object[] extractValues(int pageableIndex, @Nonnull final Object[] parameters) {
 
         Object[] values = (pageableIndex >= 0) ? new Object[parameters.length - 1] : parameters;
 
@@ -186,7 +186,7 @@ public class DeclaredRequeryQuery extends AbstractRequeryQuery {
 
     @SuppressWarnings("unchecked")
     @Nullable
-    private Object castResult(@NotNull final Result<?> result, @NotNull final Pageable pageable, final Long totals) {
+    private Object castResult(@Nonnull final Result<?> result, @Nonnull final Pageable pageable, final Long totals) {
         // TODO: List<Tuple> 인 경우 returned type 으로 변경해야 한다.
 
         if (getQueryMethod().isCollectionQuery()) {
@@ -206,7 +206,7 @@ public class DeclaredRequeryQuery extends AbstractRequeryQuery {
         }
     }
 
-    @NotNull
+    @Nonnull
     private String getRawQuery() {
 
         String rawQuery = getQueryMethod().getAnnotatedQuery();
@@ -219,7 +219,7 @@ public class DeclaredRequeryQuery extends AbstractRequeryQuery {
         return rawQuery;
     }
 
-    @NotNull
+    @Nonnull
     private ReturnedType getReturnedType(Object[] parameters) {
         RequeryParametersParameterAccessor accessor = new RequeryParametersParameterAccessor(queryMethod, parameters);
         ResultProcessor processor = getQueryMethod().getResultProcessor();

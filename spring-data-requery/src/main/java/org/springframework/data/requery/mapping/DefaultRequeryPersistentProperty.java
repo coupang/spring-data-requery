@@ -17,8 +17,6 @@
 package org.springframework.data.requery.mapping;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.data.mapping.Association;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.model.AnnotationBasedPersistentProperty;
@@ -28,6 +26,8 @@ import org.springframework.data.mapping.model.PropertyNameFieldNamingStrategy;
 import org.springframework.data.mapping.model.SimpleTypeHolder;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 /**
@@ -46,9 +46,9 @@ public class DefaultRequeryPersistentProperty
     /**
      * Creates a new {@link AnnotationBasedPersistentProperty}.
      */
-    public DefaultRequeryPersistentProperty(@NotNull final Property property,
-                                            @NotNull final PersistentEntity<?, RequeryPersistentProperty> owner,
-                                            @NotNull final SimpleTypeHolder simpleTypeHolder,
+    public DefaultRequeryPersistentProperty(@Nonnull final Property property,
+                                            @Nonnull final PersistentEntity<?, RequeryPersistentProperty> owner,
+                                            @Nonnull final SimpleTypeHolder simpleTypeHolder,
                                             @Nullable final FieldNamingStrategy fieldNamingStrategy) {
         super(property, owner, simpleTypeHolder);
 
@@ -57,7 +57,7 @@ public class DefaultRequeryPersistentProperty
                                    : PropertyNameFieldNamingStrategy.INSTANCE;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     protected Association<RequeryPersistentProperty> createAssociation() {
         return new Association<>(this, null);
