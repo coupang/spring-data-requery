@@ -27,8 +27,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
 import org.springframework.beans.factory.ListableBeanFactory
 import org.springframework.dao.support.PersistenceExceptionTranslator
 import org.springframework.data.repository.Repository
@@ -42,7 +40,6 @@ import org.springframework.data.requery.kotlin.domain.sample.User
 import org.springframework.data.requery.kotlin.repository.RequeryRepository
 import org.springframework.data.requery.kotlin.uninitialized
 
-@RunWith(MockitoJUnitRunner.Silent::class)
 class RequeryRepositoryFactoryBeanTest {
 
     private lateinit var factoryBean: RequeryRepositoryFactoryBean<SimpleSampleRepository, User, Int>

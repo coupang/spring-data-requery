@@ -18,6 +18,8 @@ package org.springframework.data.requery.kotlin.repository.config
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 class InspectionClassLoaderTest {
 
@@ -34,5 +36,11 @@ class InspectionClassLoaderTest {
             .isNotSameAs(javaClass.classLoader)
 
         assertThat(isolated).isNotEqualTo(included)
+
+        assertEquals(classLoader, isolated.classLoader)
+        assertNotEquals(javaClass.classLoader, isolated.classLoader)
+
+        assertEquals(javaClass.classLoader, included.classLoader)
+        assertNotEquals(included, isolated)
     }
 }

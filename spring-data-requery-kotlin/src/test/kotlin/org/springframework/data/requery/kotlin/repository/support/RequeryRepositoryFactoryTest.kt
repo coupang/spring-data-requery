@@ -25,8 +25,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
 import org.springframework.data.repository.core.EntityInformation
 import org.springframework.data.repository.core.support.RepositoryComposition
 import org.springframework.data.repository.query.QueryLookupStrategy
@@ -43,7 +41,6 @@ import java.util.*
  *
  * @author debop
  */
-@RunWith(MockitoJUnitRunner.Silent::class)
 class RequeryRepositoryFactoryTest {
 
     lateinit var factory: RequeryRepositoryFactory
