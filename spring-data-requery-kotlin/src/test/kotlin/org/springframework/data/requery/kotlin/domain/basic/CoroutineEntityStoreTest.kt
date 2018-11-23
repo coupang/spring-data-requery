@@ -16,8 +16,8 @@
 
 package org.springframework.data.requery.kotlin.domain.basic
 
-import kotlinx.coroutines.experimental.Dispatchers
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
 import org.springframework.data.requery.kotlin.coroutines.CoroutineEntityStore

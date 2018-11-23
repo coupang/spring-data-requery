@@ -18,9 +18,9 @@ package org.springframework.data.requery.kotlin.repository.query
 
 import io.requery.query.Result
 import io.requery.query.element.QueryElement
-import kotlinx.coroutines.experimental.Dispatchers
-import kotlinx.coroutines.experimental.runBlocking
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import mu.KLogging
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable

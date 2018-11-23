@@ -21,7 +21,7 @@ import io.requery.query.LogicalCondition
 import io.requery.query.NamedExpression
 import io.requery.query.element.QueryElement
 import io.requery.query.function.Count
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import org.springframework.data.domain.Sort
 import org.springframework.data.repository.query.ReturnedType

@@ -17,7 +17,7 @@
 package org.springframework.data.requery.kotlin.repository.query
 
 import io.requery.query.element.QueryElement
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import org.springframework.data.domain.Sort
 import org.springframework.data.repository.query.parser.PartTree

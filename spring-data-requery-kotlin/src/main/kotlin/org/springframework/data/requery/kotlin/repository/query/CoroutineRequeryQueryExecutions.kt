@@ -20,8 +20,8 @@ import io.requery.PersistenceException
 import io.requery.query.Result
 import io.requery.query.element.QueryElement
 import io.requery.query.function.Count
-import kotlinx.coroutines.experimental.Dispatchers
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import mu.KLogging
 import org.springframework.core.convert.ConversionService
 import org.springframework.core.convert.support.ConfigurableConversionService

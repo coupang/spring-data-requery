@@ -19,9 +19,9 @@ package org.springframework.data.requery.kotlin.repository.query
 import io.requery.query.Result
 import io.requery.query.Tuple
 import io.requery.query.element.QueryElement
-import kotlinx.coroutines.experimental.GlobalScope
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import org.springframework.data.repository.query.QueryMethod
 import org.springframework.data.repository.query.RepositoryQuery

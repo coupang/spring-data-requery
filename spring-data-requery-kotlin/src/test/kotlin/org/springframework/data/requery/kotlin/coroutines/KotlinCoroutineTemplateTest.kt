@@ -16,9 +16,9 @@
 
 package org.springframework.data.requery.kotlin.coroutines
 
-import kotlinx.coroutines.experimental.Dispatchers
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import org.junit.Before
 import org.junit.Test

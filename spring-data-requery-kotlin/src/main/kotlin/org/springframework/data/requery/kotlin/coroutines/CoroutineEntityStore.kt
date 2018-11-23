@@ -33,9 +33,9 @@ import io.requery.query.Return
 import io.requery.query.Scalar
 import io.requery.query.Tuple
 import io.requery.sql.KotlinEntityDataStore
-import kotlinx.coroutines.experimental.Deferred
-import kotlinx.coroutines.experimental.Dispatchers
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import mu.KLogging
 import kotlin.reflect.KClass
 

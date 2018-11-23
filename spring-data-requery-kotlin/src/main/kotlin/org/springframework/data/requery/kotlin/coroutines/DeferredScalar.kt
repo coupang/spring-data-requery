@@ -18,10 +18,10 @@ package org.springframework.data.requery.kotlin.coroutines
 
 import io.requery.query.Scalar
 import io.requery.query.ScalarDelegate
-import kotlinx.coroutines.experimental.Deferred
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.coroutineScope
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
 
 /**
  * Kotlin Coroutines 을 이용하여 Scala 수형의 질의 반환 값을 받을 때 사용하는 클래스입니다.

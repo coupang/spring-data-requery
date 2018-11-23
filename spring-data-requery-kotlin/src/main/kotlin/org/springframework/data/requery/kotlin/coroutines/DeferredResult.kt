@@ -20,9 +20,9 @@ import io.requery.query.Result
 import io.requery.query.ResultDelegate
 import io.requery.query.element.QueryElement
 import io.requery.query.element.QueryWrapper
-import kotlinx.coroutines.experimental.Deferred
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.coroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 
 /**
  * Kotlin Coroutines를 이용한 비동기 방식의 작업의 [Result]를 표현합니다.
