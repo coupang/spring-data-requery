@@ -142,7 +142,7 @@ class KotlinCoroutineTemplateTest : AbstractDomainTest() {
         with(coroutineTemplate) {
             // Insert 시에 다중 Client로부터 입력 받는 것으로 가정한다.
             users.chunked(8).forEach { groupedUsers ->
-                async(Dispatchers.Default) {
+                async(Dispatchers.IO) {
                     insertAll(groupedUsers)
                 }.await()
             }

@@ -17,7 +17,10 @@
 package org.springframework.data.requery.kotlin.coroutines
 
 import io.requery.TransactionIsolation
+import kotlinx.coroutines.Job
 import mu.KLogging
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * [CoroutineRequeryOperations]의 구현체 입니다.
@@ -28,6 +31,12 @@ import mu.KLogging
 class CoroutineRequeryTemplate(override val entityStore: CoroutineEntityStore<Any>) : CoroutineRequeryOperations {
 
     companion object : KLogging()
+
+    private val job = Job()
+
+    override val coroutineContext: CoroutineContext
+        get() = EmptyCoroutineContext + job
+
 
     /**
      * Transaction 환경 하에서 지정된 block을 실행합니다.

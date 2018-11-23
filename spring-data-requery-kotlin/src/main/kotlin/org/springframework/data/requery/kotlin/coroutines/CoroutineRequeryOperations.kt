@@ -32,6 +32,7 @@ import io.requery.query.element.QueryElement
 import io.requery.query.function.Count
 import io.requery.sql.EntityContext
 import io.requery.sql.KotlinEntityDataStore
+import kotlinx.coroutines.CoroutineScope
 import org.springframework.data.requery.kotlin.applyWhereConditions
 import org.springframework.data.requery.kotlin.getEntityContext
 import org.springframework.data.requery.kotlin.getEntityModel
@@ -42,7 +43,7 @@ import kotlin.reflect.KClass
 
  * @author debop
  */
-interface CoroutineRequeryOperations {
+interface CoroutineRequeryOperations : CoroutineScope {
 
     val entityStore: CoroutineEntityStore<Any>
 
