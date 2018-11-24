@@ -55,7 +55,7 @@ public final class PostgreSQLTestContainer {
     }
 
     public static PostgreSQLContainer createPostgreSQLContainer() {
-        PostgreSQLContainer container = new PostgreSQLContainer(PostgreSQLContainer.IMAGE + ":" + POSTGRES_VERSION);
+        PostgreSQLContainer container = new PostgreSQLContainer(); // new PostgreSQLContainer(PostgreSQLContainer.IMAGE + ":" + POSTGRES_VERSION);
         container.setWaitStrategy(new HostPortWaitStrategy());
         container.withLogConsumer(new Slf4jLogConsumer(log));
         container.withDatabaseName("test");
@@ -69,7 +69,8 @@ public final class PostgreSQLTestContainer {
         log.debug("jdbc url={}", JDBC_URL);
 
         HikariConfig config = new HikariConfig();
-        config.setDriverClassName("org.postgresql.Driver");
+        config.setDataSourceClassName("org.postgresql.ds.PGSimpleDataSource");
+        // config.setDriverClassName("org.postgresql.Driver");
         config.setJdbcUrl(JDBC_URL);
         config.setUsername(INSTANCE.getUsername());
         config.setPassword(INSTANCE.getPassword());

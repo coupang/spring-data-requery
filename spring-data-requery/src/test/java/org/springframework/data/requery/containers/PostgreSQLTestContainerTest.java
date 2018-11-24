@@ -39,6 +39,7 @@ public class PostgreSQLTestContainerTest {
         Connection connection = dataSource.getConnection();
 
         assertThat(connection).isNotNull();
+
         connection.close();
     }
 }
