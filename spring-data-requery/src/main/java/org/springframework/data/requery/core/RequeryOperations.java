@@ -128,6 +128,7 @@ public interface RequeryOperations {
         return getDataStore().insert(entityType);
     }
 
+    @SuppressWarnings("unchecked")
     default <E> InsertInto<? extends Result<Tuple>> insert(@Nonnull final Class<E> entityType, QueryAttribute<E, ?>... attributes) {
         return getDataStore().insert(entityType, attributes);
     }

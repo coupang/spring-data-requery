@@ -131,6 +131,7 @@ subprojects {
             dependency "com.nhaarman:mockito-kotlin:1.6.0"
 
             dependency "mysql:mysql-connector-java:8.0.11"
+            dependency "org.postgresql:postgresql:42.2.5"
 
             dependency "com.h2database:h2:1.4.197"
             dependency "org.testcontainers:mysql:1.7.3"
@@ -172,9 +173,11 @@ subprojects {
 
         testImplementation "com.zaxxer:HikariCP"
         testImplementation "mysql:mysql-connector-java"
+        testImplementation "org.postgresql:postgresql"
 
         testImplementation "com.h2database:h2"
         testImplementation "org.testcontainers:mysql"
+        testImplementation "org.testcontainers:postgresql"
     }
 
     sourceCompatibility = JavaVersion.VERSION_1_8
