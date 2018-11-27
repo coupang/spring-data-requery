@@ -116,6 +116,10 @@ public class RequeryAutoConfiguration {
      */
     @PostConstruct
     protected void setupSchema() {
+        if (properties.getTableCreationMode() == null) {
+            log.info("No action to Database schema");
+            return;
+        }
         log.info("Setup Requery Database Schema... mode={}", properties.getTableCreationMode());
 
         try {

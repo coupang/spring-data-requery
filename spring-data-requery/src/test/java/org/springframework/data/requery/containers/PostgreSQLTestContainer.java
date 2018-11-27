@@ -50,12 +50,12 @@ public final class PostgreSQLTestContainer {
         INSTANCE = createPostgreSQLContainer();
 
         HOST = INSTANCE.getContainerIpAddress();
-        PORT = INSTANCE.getMappedPort(5432);
+        PORT = INSTANCE.getMappedPort(PostgreSQLContainer.POSTGRESQL_PORT);
         JDBC_URL = "jdbc:postgresql://" + HOST + ":" + PORT + "/test";
     }
 
     public static PostgreSQLContainer createPostgreSQLContainer() {
-        PostgreSQLContainer container = new PostgreSQLContainer(); // new PostgreSQLContainer(PostgreSQLContainer.IMAGE + ":" + POSTGRES_VERSION);
+        PostgreSQLContainer container = new PostgreSQLContainer(PostgreSQLContainer.IMAGE + ":" + POSTGRES_VERSION);
         container.setWaitStrategy(new HostPortWaitStrategy());
         container.withLogConsumer(new Slf4jLogConsumer(log));
         container.withDatabaseName("test");
@@ -69,9 +69,9 @@ public final class PostgreSQLTestContainer {
         log.debug("jdbc url={}", JDBC_URL);
 
         HikariConfig config = new HikariConfig();
-        config.setDataSourceClassName("org.postgresql.ds.PGSimpleDataSource");
-        // config.setDriverClassName("org.postgresql.Driver");
-        config.setJdbcUrl(JDBC_URL);
+//        config.setDataSourceClassName("org.postgresql.ds.PGSimpleDataSource");
+        config.setDriverClassName(INSTANCE.getDriverClassName());
+        config.setJdbcUrl(INSTANCE.getJdbcUrl());
         config.setUsername(INSTANCE.getUsername());
         config.setPassword(INSTANCE.getPassword());
 

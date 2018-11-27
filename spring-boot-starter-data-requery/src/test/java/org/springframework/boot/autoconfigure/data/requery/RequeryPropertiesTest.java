@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.data.requery;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.data.requery.domain.Models;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
@@ -40,7 +41,7 @@ public class RequeryPropertiesTest {
         assertThat(className).isNotEmpty();
         assertThat(modelName).isNotEmpty();
 
-        Class<?> clazz = Class.forName(className);
+        Class<?> clazz = ClassUtils.forName(className, Thread.currentThread().getContextClassLoader());
 
         Field field = clazz.getField(modelName);
         field.setAccessible(true);

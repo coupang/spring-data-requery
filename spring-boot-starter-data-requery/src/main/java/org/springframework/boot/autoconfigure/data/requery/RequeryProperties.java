@@ -49,6 +49,6 @@ public class RequeryProperties {
     /**
      * Table creation mode
      */
-    private TableCreationMode tableCreationMode = TableCreationMode.CREATE_NOT_EXISTS;
+    private TableCreationMode tableCreationMode; // = TableCreationMode.CREATE_NOT_EXISTS;
 
 }
