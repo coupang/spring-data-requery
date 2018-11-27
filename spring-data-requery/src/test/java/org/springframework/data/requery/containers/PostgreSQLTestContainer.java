@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
-import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 
 import javax.sql.DataSource;
 
@@ -56,9 +55,8 @@ public final class PostgreSQLTestContainer {
 
     public static PostgreSQLContainer createPostgreSQLContainer() {
         PostgreSQLContainer container = new PostgreSQLContainer(PostgreSQLContainer.IMAGE + ":" + POSTGRES_VERSION);
-        container.setWaitStrategy(new HostPortWaitStrategy());
+
         container.withLogConsumer(new Slf4jLogConsumer(log));
-        container.withDatabaseName("test");
         container.start();
 
         return container;
