@@ -20,6 +20,7 @@ import io.requery.Column;
 import io.requery.Convert;
 import io.requery.Entity;
 import io.requery.Key;
+import io.requery.Nullable;
 import io.requery.PreInsert;
 import io.requery.PreUpdate;
 import io.requery.Transient;
@@ -71,9 +72,13 @@ public abstract class AbstractTimeEvent extends AbstractPersistable<UUID> {
     @Convert(LocalTimeConverter.class)
     protected LocalTime localTime;
 
+    @Nullable
+    @Column(definition = "timestamp NULL DEFAULT NULL")
     @Convert(OffsetDateTimeConverter.class)
     protected OffsetDateTime offsetDateTime;
 
+    @Nullable
+    @Column(definition = "timestamp NULL DEFAULT NULL")
     @Convert(ZonedDateTimeConverter.class)
     protected ZonedDateTime zonedDateTime;
 

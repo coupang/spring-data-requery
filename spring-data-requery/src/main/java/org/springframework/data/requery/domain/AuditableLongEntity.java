@@ -16,6 +16,7 @@
 
 package org.springframework.data.requery.domain;
 
+import io.requery.Column;
 import io.requery.Convert;
 import io.requery.Lazy;
 import io.requery.Nullable;
@@ -41,6 +42,7 @@ public abstract class AuditableLongEntity extends AbstractPersistable<Long> {
 
     @Nullable
     @Lazy
+    @Column(definition = "timestamp NULL DEFAULT NULL")
     @Convert(LocalDateTimeConverter.class)
     protected LocalDateTime lastModifiedDate;
 

@@ -20,6 +20,7 @@ import io.requery.TransactionIsolation;
 import io.requery.meta.Attribute;
 import io.requery.meta.EntityModel;
 import io.requery.meta.QueryAttribute;
+import io.requery.query.Condition;
 import io.requery.query.Deletion;
 import io.requery.query.Expression;
 import io.requery.query.InsertInto;
@@ -201,6 +202,11 @@ public interface RequeryOperations {
     default <E> boolean exists(@Nonnull final Class<E> entityType,
                                @Nonnull final QueryElement<? extends Result<E>> whereClause) {
         return whereClause.limit(1).get().firstOrNull() != null;
+    }
+
+    default <E, K> boolean existsBy(@Nonnull final Class<E> entityType,
+                                    @Nonnull final Condition<K, ?> condition) {
+        return getDataStore().count(entityType).from(entityType).where(condition).get().value() > 0;
     }
 
     default Result<Tuple> raw(@Nonnull final String query, final Object... parameters) {

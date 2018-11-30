@@ -151,9 +151,13 @@ public class RequeryPersistentPropertyTest {
 
     @Embedded
     static class SampleEmbeddable {
+
+        protected String name;
     }
 
     static class SampleEmbedded {
+
+        protected String name;
     }
 
     @org.springframework.data.annotation.AccessType(org.springframework.data.annotation.AccessType.Type.PROPERTY)

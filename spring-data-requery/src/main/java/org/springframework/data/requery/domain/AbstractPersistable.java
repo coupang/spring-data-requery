@@ -20,6 +20,7 @@ import io.requery.Persistable;
 import io.requery.Superclass;
 
 import javax.annotation.Nullable;
+import java.beans.Transient;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -35,6 +36,7 @@ public abstract class AbstractPersistable<ID> extends AbstractValueObject implem
     @Nullable
     public abstract ID getId();
 
+    @Transient
     @io.requery.Transient
     public boolean isNew() {
         return getId() == null;

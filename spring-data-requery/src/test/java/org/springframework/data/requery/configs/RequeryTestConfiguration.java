@@ -40,12 +40,9 @@ public class RequeryTestConfiguration extends AbstractRequeryConfiguration {
 
     @Bean
     public DataSource dataSource() {
-//        return DataSourceBuilder.create()
-//            .type(HikariDataSource.class)
-//            .driverClassName("org.h2.Driver")
-//            .url("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false")
-//            .username("sa")
-//            .build();
+//        return PostgreSQLTestContainer.getDataSource();
+//        return MySQLTestContainer.getDataSource();
+
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.h2.Driver");
         config.setJdbcUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false");

@@ -16,12 +16,21 @@
 
 package org.springframework.data.requery.domain.model2;
 
+import io.requery.Column;
+import io.requery.Convert;
 import io.requery.Entity;
 import io.requery.Key;
+import io.requery.Nullable;
+import io.requery.PreInsert;
+import io.requery.PreUpdate;
 import io.requery.Table;
 import io.requery.Transient;
+import io.requery.converter.LocalDateConverter;
+import io.requery.converter.LocalDateTimeConverter;
+import io.requery.converter.LocalTimeConverter;
+import io.requery.converter.OffsetDateTimeConverter;
+import io.requery.converter.ZonedDateTimeConverter;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.data.requery.domain.AbstractPersistable;
 import org.springframework.data.requery.domain.ToStringBuilder;
 
@@ -41,7 +50,6 @@ import java.util.UUID;
  * @since 18. 6. 4
  */
 @Getter
-@Setter
 @Entity
 @Table(name = "model2_event")
 public class AbstractModel2Event extends AbstractPersistable<UUID> {
@@ -53,16 +61,36 @@ public class AbstractModel2Event extends AbstractPersistable<UUID> {
 
     protected String name;
 
+    @Convert(LocalDateConverter.class)
     protected LocalDate javaLocalDate;
 
+    @Convert(LocalDateTimeConverter.class)
     protected LocalDateTime javaLocalDateTime;
 
+    @Column(name = "local_time")
+    @Convert(LocalTimeConverter.class)
     protected LocalTime javaLocalTime;
 
+    @Nullable
+    @Column(definition = "timestamp NULL DEFAULT NULL")
+    @Convert(OffsetDateTimeConverter.class)
     protected OffsetDateTime offsetDateTime;
 
+    @Nullable
+    @Column(definition = "timestamp NULL DEFAULT NULL")
+    @Convert(ZonedDateTimeConverter.class)
     protected ZonedDateTime zonedDateTime;
 
+    @PreInsert
+    @PreUpdate
+    public void onPreUpsert() {
+        javaLocalDate = LocalDate.now();
+        javaLocalDateTime = LocalDateTime.now();
+        javaLocalTime = LocalTime.now();
+
+        offsetDateTime = OffsetDateTime.now();
+        zonedDateTime = ZonedDateTime.now();
+    }
 
     @Override
     public int hashCode() {
