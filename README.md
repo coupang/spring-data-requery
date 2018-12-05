@@ -28,7 +28,7 @@ Add dependency
 <dependency>
     <groupId>com.coupang</groupId>
     <artifactId>spring-data-requery</artifactId>
-    <version>2.0.2</version>
+    <version>2.0.3</version>
 </dependency>
 ```
 
@@ -42,13 +42,13 @@ repository {
 }
 dependencies {
     // for Java
-    compile "com.coupang:spring-data-requery:2.0.2"
+    compile "com.coupang:spring-data-requery:2.0.3"
     
     // for Kotlin
-    compile "com.coupang:spring-data-requery-kotlin:2.0.2"
+    compile "com.coupang:spring-data-requery-kotlin:2.0.3"
     
     // for Spring Boopt 2
-    compile "com.coupang:spring-boot-starter-data-requery:2.0.2"
+    compile "com.coupang:spring-boot-starter-data-requery:2.0.3"
 }
 ```
 
@@ -85,6 +85,7 @@ spring boot 환경설정에서 다음과 같이 설정하면 쉽게 사용 가�
 spring.data.requery.modelName = org.springframework.boot.autoconfigure.data.requery.domain.Models.DEFAULT
 spring.data.requery.batchUpdateSize = 50
 spring.data.requery.statementCacheSize = 512
+# if no need to create schema, make `tableCreationMode` to comments
 spring.data.requery.tableCreationMode = CREATE_NOT_EXISTS
 
 spring.datasource.hikari.driver-class-name = org.h2.Driver
