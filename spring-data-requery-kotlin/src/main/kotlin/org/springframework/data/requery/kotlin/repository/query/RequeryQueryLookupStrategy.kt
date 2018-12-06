@@ -20,11 +20,11 @@ import mu.KotlinLogging
 import org.springframework.data.projection.ProjectionFactory
 import org.springframework.data.repository.core.NamedQueries
 import org.springframework.data.repository.core.RepositoryMetadata
-import org.springframework.data.repository.query.EvaluationContextProvider
 import org.springframework.data.repository.query.QueryLookupStrategy
 import org.springframework.data.repository.query.QueryLookupStrategy.Key.CREATE
 import org.springframework.data.repository.query.QueryLookupStrategy.Key.CREATE_IF_NOT_FOUND
 import org.springframework.data.repository.query.QueryLookupStrategy.Key.USE_DECLARED_QUERY
+import org.springframework.data.repository.query.QueryMethodEvaluationContextProvider
 import org.springframework.data.repository.query.RepositoryQuery
 import org.springframework.data.requery.kotlin.annotation.Query
 import org.springframework.data.requery.kotlin.core.RequeryOperations
@@ -42,15 +42,15 @@ object RequeryQueryLookupStrategy {
     @JvmStatic
     fun create(operations: RequeryOperations,
                key: QueryLookupStrategy.Key?,
-               evaluationContextProvider: EvaluationContextProvider): QueryLookupStrategy {
+               evaluationContextProvider: QueryMethodEvaluationContextProvider): QueryLookupStrategy {
 
         log.debug { "Create QueryLookupStrategy with key=$key" }
 
         return when(key ?: CREATE_IF_NOT_FOUND) {
-            CREATE -> {
+            CREATE              -> {
                 CreateQueryLookupStrategy(operations)
             }
-            USE_DECLARED_QUERY -> {
+            USE_DECLARED_QUERY  -> {
                 DeclaredQueryLookupStrategy(operations, evaluationContextProvider)
             }
             CREATE_IF_NOT_FOUND -> {
@@ -58,7 +58,7 @@ object RequeryQueryLookupStrategy {
                                                     CreateQueryLookupStrategy(operations),
                                                     DeclaredQueryLookupStrategy(operations, evaluationContextProvider))
             }
-            else ->
+            else                ->
                 throw IllegalArgumentException("Unsupported query lookup strategy. key=$key")
         }
     }
@@ -102,7 +102,7 @@ object RequeryQueryLookupStrategy {
      */
     @Suppress("UNUSED_PARAMETER")
     class DeclaredQueryLookupStrategy(operations: RequeryOperations,
-                                      evaluationContextProvider: EvaluationContextProvider) : AbstractQueryLookupStrategy(operations) {
+                                      evaluationContextProvider: QueryMethodEvaluationContextProvider) : AbstractQueryLookupStrategy(operations) {
 
         override fun resolveQuery(method: RequeryQueryMethod,
                                   operations: RequeryOperations,

@@ -20,8 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.repository.core.RepositoryInformation;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
-import org.springframework.data.repository.query.EvaluationContextProvider;
 import org.springframework.data.repository.query.QueryLookupStrategy;
+import org.springframework.data.repository.query.QueryMethodEvaluationContextProvider;
 import org.springframework.data.requery.core.RequeryOperations;
 import org.springframework.data.requery.repository.query.RequeryQueryLookupStrategy;
 import org.springframework.util.Assert;
@@ -85,7 +85,7 @@ public class RequeryRepositoryFactory extends RepositoryFactorySupport {
     @Nonnull
     @Override
     protected Optional<QueryLookupStrategy> getQueryLookupStrategy(@Nullable final QueryLookupStrategy.Key key,
-                                                                   @Nonnull final EvaluationContextProvider evaluationContextProvider) {
+                                                                   @Nonnull final QueryMethodEvaluationContextProvider evaluationContextProvider) {
         log.debug("Create QueryLookupStrategy by key={}", key);
         return Optional.of(RequeryQueryLookupStrategy.create(operations, key, evaluationContextProvider));
     }

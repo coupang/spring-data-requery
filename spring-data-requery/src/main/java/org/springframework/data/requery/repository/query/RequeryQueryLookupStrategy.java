@@ -22,8 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.NamedQueries;
 import org.springframework.data.repository.core.RepositoryMetadata;
-import org.springframework.data.repository.query.EvaluationContextProvider;
 import org.springframework.data.repository.query.QueryLookupStrategy;
+import org.springframework.data.repository.query.QueryMethodEvaluationContextProvider;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.requery.annotation.Query;
 import org.springframework.data.requery.core.RequeryOperations;
@@ -47,7 +47,7 @@ public final class RequeryQueryLookupStrategy {
     @Nonnull
     public static QueryLookupStrategy create(@Nonnull final RequeryOperations operations,
                                              @Nullable final Key key,
-                                             @Nonnull final EvaluationContextProvider evaluationContextProvider) {
+                                             @Nonnull final QueryMethodEvaluationContextProvider evaluationContextProvider) {
         log.debug("Create Query Lookup Strategy with key={}", key);
 
         switch (key != null ? key : Key.CREATE_IF_NOT_FOUND) {
@@ -119,10 +119,10 @@ public final class RequeryQueryLookupStrategy {
      */
     private static class DeclaredQueryLookupStrategy extends AbstractQueryLookupStrategy {
 
-        private final EvaluationContextProvider evaluationContextProvider;
+        private final QueryMethodEvaluationContextProvider evaluationContextProvider;
 
         public DeclaredQueryLookupStrategy(RequeryOperations operations,
-                                           EvaluationContextProvider evaluationContextProvider) {
+                                           QueryMethodEvaluationContextProvider evaluationContextProvider) {
             super(operations);
             this.evaluationContextProvider = evaluationContextProvider;
         }

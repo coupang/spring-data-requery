@@ -21,8 +21,8 @@ import org.springframework.data.repository.core.EntityInformation
 import org.springframework.data.repository.core.RepositoryInformation
 import org.springframework.data.repository.core.RepositoryMetadata
 import org.springframework.data.repository.core.support.RepositoryFactorySupport
-import org.springframework.data.repository.query.EvaluationContextProvider
 import org.springframework.data.repository.query.QueryLookupStrategy
+import org.springframework.data.repository.query.QueryMethodEvaluationContextProvider
 import org.springframework.data.requery.kotlin.core.RequeryOperations
 import org.springframework.data.requery.kotlin.repository.query.RequeryQueryLookupStrategy
 import java.util.*
@@ -72,7 +72,7 @@ open class RequeryRepositoryFactory(val operations: RequeryOperations) : Reposit
 
 
     override fun getQueryLookupStrategy(key: QueryLookupStrategy.Key?,
-                                        evaluationContextProvider: EvaluationContextProvider): Optional<QueryLookupStrategy> {
+                                        evaluationContextProvider: QueryMethodEvaluationContextProvider): Optional<QueryLookupStrategy> {
         log.debug { "Create QueryLookupStrategy by key=$key" }
         return Optional.ofNullable(RequeryQueryLookupStrategy.create(operations, key, evaluationContextProvider))
     }

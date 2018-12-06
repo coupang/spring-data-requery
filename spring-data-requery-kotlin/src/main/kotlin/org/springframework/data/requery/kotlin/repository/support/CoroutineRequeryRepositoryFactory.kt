@@ -21,9 +21,9 @@ import org.springframework.data.repository.core.EntityInformation
 import org.springframework.data.repository.core.RepositoryInformation
 import org.springframework.data.repository.core.RepositoryMetadata
 import org.springframework.data.repository.core.support.RepositoryFactorySupport
-import org.springframework.data.repository.query.EvaluationContextProvider
 import org.springframework.data.repository.query.QueryLookupStrategy
 import org.springframework.data.repository.query.QueryLookupStrategy.Key
+import org.springframework.data.repository.query.QueryMethodEvaluationContextProvider
 import org.springframework.data.requery.kotlin.coroutines.CoroutineRequeryOperations
 import org.springframework.data.requery.kotlin.repository.query.CoroutineRequeryQueryLookupStrategy
 import java.util.*
@@ -74,7 +74,7 @@ open class CoroutineRequeryRepositoryFactory(private val operations: CoroutineRe
         SimpleCoroutineRequeryRepository::class.java
 
     override fun getQueryLookupStrategy(key: Key?,
-                                        evaluationContextProvider: EvaluationContextProvider): Optional<QueryLookupStrategy> {
+                                        evaluationContextProvider: QueryMethodEvaluationContextProvider): Optional<QueryLookupStrategy> {
         logger.debug { "Create CoroutineQueryLookupStrategy by key=$key" }
         return Optional.ofNullable(CoroutineRequeryQueryLookupStrategy.create(operations, key, evaluationContextProvider))
     }

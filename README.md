@@ -9,6 +9,13 @@ Spring Data for [requery](http://requery.io)
 
 참고: [Requery Overview](doc/Requery%20Overview.pdf)
 
+## Branch Information
+
+* 1.5.x   : Support Spring Boot 1.5.x (Not provided currently)
+* 2.x   : Support Spring Boot 2.0.x
+* 2.1.x : Support Spring Boot 2.1.x 
+
+
 ## Setup
 
 #### Maven

@@ -20,11 +20,11 @@ import mu.KLogging
 import org.springframework.data.projection.ProjectionFactory
 import org.springframework.data.repository.core.NamedQueries
 import org.springframework.data.repository.core.RepositoryMetadata
-import org.springframework.data.repository.query.EvaluationContextProvider
 import org.springframework.data.repository.query.QueryLookupStrategy
 import org.springframework.data.repository.query.QueryLookupStrategy.Key.CREATE
 import org.springframework.data.repository.query.QueryLookupStrategy.Key.CREATE_IF_NOT_FOUND
 import org.springframework.data.repository.query.QueryLookupStrategy.Key.USE_DECLARED_QUERY
+import org.springframework.data.repository.query.QueryMethodEvaluationContextProvider
 import org.springframework.data.repository.query.RepositoryQuery
 import org.springframework.data.requery.kotlin.annotation.Query
 import org.springframework.data.requery.kotlin.coroutines.CoroutineRequeryOperations
@@ -39,17 +39,17 @@ object CoroutineRequeryQueryLookupStrategy : KLogging() {
 
     fun create(operations: CoroutineRequeryOperations,
                key: QueryLookupStrategy.Key?,
-               evaluationContextProvider: EvaluationContextProvider): QueryLookupStrategy {
+               evaluationContextProvider: QueryMethodEvaluationContextProvider): QueryLookupStrategy {
         logger.debug { "Create QueryLookupStrategy with key=$key" }
 
         return when(key ?: CREATE_IF_NOT_FOUND) {
-            CREATE -> CoroutineCreateQueryLookupStrategy(operations)
-            USE_DECLARED_QUERY -> CoroutineDeclaredQueryLookupStrategy(operations, evaluationContextProvider)
+            CREATE              -> CoroutineCreateQueryLookupStrategy(operations)
+            USE_DECLARED_QUERY  -> CoroutineDeclaredQueryLookupStrategy(operations, evaluationContextProvider)
             CREATE_IF_NOT_FOUND ->
                 CoroutineCreateIfNotFoundQueryLookupStrategy(operations,
                                                              CoroutineCreateQueryLookupStrategy(operations),
                                                              CoroutineDeclaredQueryLookupStrategy(operations, evaluationContextProvider))
-            else ->
+            else                ->
                 throw IllegalArgumentException("Unsupported query lookup strategy. key=$key")
         }
     }
@@ -93,7 +93,7 @@ object CoroutineRequeryQueryLookupStrategy : KLogging() {
      */
     @Suppress("UNUSED_PARAMETER")
     class CoroutineDeclaredQueryLookupStrategy(operations: CoroutineRequeryOperations,
-                                               evaluationContextProvider: EvaluationContextProvider)
+                                               evaluationContextProvider: QueryMethodEvaluationContextProvider)
         : AbstractCoroutineQueryLookupStrategy(operations) {
 
         override fun resolveQuery(method: RequeryQueryMethod,
