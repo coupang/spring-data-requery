@@ -41,6 +41,6 @@ import org.springframework.data.requery.repository.support.RequeryRepositoryFact
 @ConditionalOnMissingBean({ RequeryRepositoryFactoryBean.class, RequeryRepositoryConfigurationExtension.class })
 @ConditionalOnProperty(prefix = "spring.data.requery.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
 @Import(RequeryRepositoriesAutoConfigureRgistrar.class)
-@AutoConfigureAfter(RequeryDataAutoConfiguration.class)
+@AutoConfigureAfter(RequeryAutoConfiguration.class)
 public class RequeryRepositoriesAutoConfiguration {
 }
