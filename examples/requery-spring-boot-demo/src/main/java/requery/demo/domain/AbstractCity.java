@@ -20,6 +20,7 @@ import io.requery.Column;
 import io.requery.Entity;
 import io.requery.Generated;
 import io.requery.Key;
+import io.requery.Transient;
 import lombok.Getter;
 import org.springframework.data.requery.domain.ToStringBuilder;
 
@@ -62,8 +63,10 @@ public class AbstractCity extends AbstractLifecycleEntity {
         return Objects.hash(name, state, country);
     }
 
+    @Nonnull
     @Override
-    protected  ToStringBuilder buildStringHelper() {
+    @Transient
+    protected ToStringBuilder buildStringHelper() {
         return super.buildStringHelper()
             .add("name", name)
             .add("state", state)

@@ -12,7 +12,7 @@ cache:
 
   branches:
     only:
-    - master
-    - 2.x
+      - 2.0.x
+      - 2.1.x
 
 script: ./gradlew clean build
