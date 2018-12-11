@@ -889,4 +889,95 @@ public class FunctionalQueryTest extends AbstractDomainTest {
             requeryOperations.insert(p2);
         }).isInstanceOf(PersistenceException.class);
     }
+
+    @Test
+    public void join_with_filtering() {
+
+        Person person1 = RandomData.randomPerson();
+        person1.setName("Carol");
+
+        Phone phone1 = RandomData.randomPhone();
+        phone1.setNormalized(true);
+
+        Phone phone2 = RandomData.randomPhone();
+        phone2.setNormalized(false);
+
+        person1.getPhoneNumbers().add(phone1);
+        person1.getPhoneNumbers().add(phone2);
+
+        requeryOperations.insert(person1);
+
+        assertThat(person1.getId()).isNotNull();
+        assertThat(person1.getPhoneNumbers()).hasSize(2);
+        assertThat(phone1.getId()).isNotNull();
+        assertThat(phone2.getId()).isNotNull();
+
+        // Details 에 대한 필터링을 수행하고자 해도, Master에서 Details property에 접근 시 proxy가 모두 읽어오게 한다.
+        // 아니면 tuple 로 가져오게 하던가. 
+        List<Person> people = requeryOperations
+            .select(Person.class)
+            .join(Phone.class).on(Phone.OWNER_ID.eq(Person.ID).and(Phone.NORMALIZED.eq(false)))
+            .where(Person.ID.eq(person1.getId()))
+            .get()
+            .toList();
+
+        assertThat(people).hasSize(1);
+        Person loaded = people.get(0);
+        assertThat(loaded.getPhoneNumberList()).hasSize(2);
+        assertThat(loaded.getPhoneNumberList()).containsOnly(phone1, phone2);
+
+        // 효율을 생각하면 Details 를 가져온 후, Master를 가져오게 해야 한다.
+        List<Phone> phones = requeryOperations
+            .select(Phone.class)
+            .join(Person.class).on(Phone.OWNER_ID.eq(Person.ID).and(Phone.NORMALIZED.eq(false)))
+            .where(Person.ID.eq(person1.getId()))
+            .get()
+            .toList();
+
+        assertThat(phones).hasSize(1);
+        assertThat(phones.get(0).getOwner()).isEqualTo(person1);
+    }
+
+    @Test
+    public void join_with_filer_get_tuple() {
+
+        Person person1 = RandomData.randomPerson();
+        person1.setName("Carol");
+
+        Phone phone1 = RandomData.randomPhone();
+        phone1.setNormalized(true);
+
+        Phone phone2 = RandomData.randomPhone();
+        phone2.setNormalized(false);
+
+        person1.getPhoneNumbers().add(phone1);
+        person1.getPhoneNumbers().add(phone2);
+
+        requeryOperations.insert(person1);
+
+        assertThat(person1.getId()).isNotNull();
+        assertThat(person1.getPhoneNumbers()).hasSize(2);
+        assertThat(phone1.getId()).isNotNull();
+        assertThat(phone2.getId()).isNotNull();
+
+        // Master - Details 중 필요한 것들만 tuple 로 가져오도록 한다.
+
+        Expression[] columns = { Person.NAME.as("personName"), Phone.PHONE_NUMBER.as("phoneNo"), Phone.NORMALIZED.as("normalized") };
+
+        List<Tuple> rows = requeryOperations
+            .select(columns)
+            .join(Person.class).on(Phone.NORMALIZED.eq(false).and(Phone.OWNER_ID.eq(Person.ID)))
+            .where(Person.ID.eq(person1.getId()))
+            .get()
+            .toList();
+
+        rows.forEach(row -> {
+            log.debug("row={}", row);
+        });
+
+        assertThat(rows).hasSize(1);
+        assertThat(rows.get(0).<String>get("personName")).isEqualTo(person1.getName());
+        assertThat(rows.get(0).<String>get("phoneNo")).isEqualTo(phone2.getPhoneNumber());
+        assertThat(rows.get(0).<Boolean>get("normalized")).isEqualTo(phone2.isNormalized());
+    }
 }
