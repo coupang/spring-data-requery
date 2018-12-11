@@ -47,7 +47,7 @@ idea {
 
 dependencies {
 
-    compile "com.coupang:spring-boot-starter-data-requery:2.0.2-SNAPSHOT"
+    compile "com.coupang:spring-boot-starter-data-requery:2.0.3"
 
     optional "org.springframework.boot:spring-boot-autoconfigure"
     optional "org.springframework.boot:spring-boot-autoconfigure-processor"
