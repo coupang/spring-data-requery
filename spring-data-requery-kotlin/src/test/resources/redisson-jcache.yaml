@@ -1,0 +1,28 @@
+singleServerConfig:
+  idleConnectionTimeout: 10000
+  pingTimeout: 1000
+  connectTimeout: 1000
+  timeout: 5000
+  retryAttempts: 3
+  retryInterval: 1500
+  reconnectionTimeout: 3000
+  failedAttempts: 3
+  password: null
+  subscriptionsPerConnection: 5
+  clientName: null
+  address: "redis://127.0.0.1:6379"
+  subscriptionConnectionMinimumIdleSize: 1
+  subscriptionConnectionPoolSize: 25
+  connectionMinimumIdleSize: 10
+  connectionPoolSize: 64
+  database: 0
+  dnsMonitoring: false
+  dnsMonitoringInterval: 5000
+threads: 0
+
+# Java 7 이상에서는 org.redisson.codec.SnappyCodec 을 쓰고, fst 도 2.x 이상을 써야 합니다.
+# Java 8 을 사용하시면, 기본 값인 org.redisson.codec.SnappyCodec 을 사용하시면 됩니다.
+# codec: !<org.redisson.codec.SnappyCodec> {}
+
+useLinuxNativeEpoll: false
+eventLoopGroup: null

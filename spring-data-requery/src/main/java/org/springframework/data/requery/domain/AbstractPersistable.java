@@ -19,6 +19,7 @@ package org.springframework.data.requery.domain;
 import io.requery.Persistable;
 import io.requery.Superclass;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.beans.Transient;
 import java.io.Serializable;
@@ -65,6 +66,7 @@ public abstract class AbstractPersistable<ID> extends AbstractValueObject implem
 
     @Override
     @io.requery.Transient
+    @Nonnull
     protected ToStringBuilder buildStringHelper() {
         return super.buildStringHelper()
             .add("id", getId());

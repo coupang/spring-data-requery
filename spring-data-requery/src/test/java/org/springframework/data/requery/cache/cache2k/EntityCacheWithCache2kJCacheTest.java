@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.data.requery.cache;
+package org.springframework.data.requery.cache.cache2k;
 
 import io.requery.EntityCache;
 import io.requery.cache.EntityCacheBuilder;
 import io.requery.meta.EntityModel;
+import org.cache2k.jcache.provider.JCacheProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.requery.domain.AbstractDomainTest;
@@ -32,12 +33,12 @@ import javax.inject.Inject;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * EntityCacheTest
+ * EntityCache with Cache2k-JCache
  *
  * @author debop
  * @since 18. 6. 5
  */
-public class EntityCacheTest extends AbstractDomainTest {
+public class EntityCacheWithCache2kJCacheTest extends AbstractDomainTest {
 
     @Inject
     EntityModel entityModel;
@@ -45,7 +46,7 @@ public class EntityCacheTest extends AbstractDomainTest {
     private EntityCache cache;
 
     private EntityCache getCache(EntityModel entityModel) {
-        CachingProvider provider = Caching.getCachingProvider();
+        CachingProvider provider = Caching.getCachingProvider(JCacheProvider.class.getName());
         CacheManager cacheManager = provider.getCacheManager();
 
         return new EntityCacheBuilder(entityModel)

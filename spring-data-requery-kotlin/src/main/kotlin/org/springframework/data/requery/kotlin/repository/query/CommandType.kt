@@ -39,7 +39,7 @@ enum class CommandType {
             if(command.isNullOrBlank())
                 return NONE
 
-            if(command!! == "remove") {
+            if (command == "remove") {
                 return DELETE
             }
             return CommandType.values()

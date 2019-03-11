@@ -111,7 +111,7 @@ class DeclaredRequeryQuery(queryMethod: RequeryQueryMethod, operations: RequeryO
             error("No `@Query` query specified on ${queryMethod.name}")
         }
 
-        return nativeQuery!!
+        return nativeQuery
     }
 
     private fun getReturnedType(parameters: Array<Any>): ReturnedType {

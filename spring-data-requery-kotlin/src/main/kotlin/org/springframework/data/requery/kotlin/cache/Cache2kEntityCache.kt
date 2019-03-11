@@ -84,7 +84,7 @@ class Cache2kEntityCache @JvmOverloads constructor(
     override fun clear() {
         synchronized(syncObj) {
             cacheManager.forEach { _, cache ->
-                cache.close()
+                cache.clearAndClose()
             }
             cacheManager.clear()
         }

@@ -66,19 +66,19 @@ class CoroutineDeclaredRequeryQuery(queryMethod: RequeryQueryMethod,
                     val values = removePageable(accessor, parameters)
 
                     val countQuery = "select count(cnt_tbl.*) from ($query) as cnt_tbl"
-                    val totals = withContext(Dispatchers.Unconfined) {
+                    val totals = withContext(Dispatchers.Default) {
                         operations.raw(countQuery, *values).first().get<Long>(0)
                     }
 
                     val contentQuery = "$query offset ${pageable.offset} limit ${pageable.pageSize}"
-                    val contents = withContext(Dispatchers.Unconfined) {
+                    val contents = withContext(Dispatchers.Default) {
                         runNativeQuery(contentQuery, values)
                     }
                     contents.castResult(pageable, totals)
                 }
             }
             else -> runBlocking {
-                withContext(Dispatchers.Unconfined) {
+                withContext(Dispatchers.Default) {
                     runNativeQuery(query, parameters).castResult()
                 }
             }
@@ -121,7 +121,7 @@ class CoroutineDeclaredRequeryQuery(queryMethod: RequeryQueryMethod,
             error("No `@Query` query specified on ${queryMethod.name}")
         }
 
-        return nativeQuery!!
+        return nativeQuery
     }
 
     private fun getReturnedType(parameters: Array<Any>): ReturnedType {

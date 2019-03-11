@@ -26,7 +26,7 @@ import org.springframework.data.repository.query.QueryLookupStrategy
 import org.springframework.data.repository.query.QueryLookupStrategy.Key
 import org.springframework.data.requery.kotlin.coroutines.CoroutineRequeryOperations
 import org.springframework.data.requery.kotlin.repository.query.CoroutineRequeryQueryLookupStrategy
-import java.util.*
+import java.util.Optional
 
 /**
  * Requery with coroutine specific generic repository factory.
@@ -67,7 +67,7 @@ open class CoroutineRequeryRepositoryFactory(private val operations: CoroutineRe
         check(repository != null) { "Fail to find target repository for domain type=[${information.domainType.name}]" }
 
         logger.debug { "Find target repository. repository=$repository" }
-        return repository!!
+        return repository
     }
 
     override fun getRepositoryBaseClass(metadata: RepositoryMetadata): Class<*> =

@@ -125,7 +125,7 @@ open class CoroutinePartTreeRequerQuery(queryMethod: RequeryQueryMethod,
             val creator = createCreator(accessor)
             check(creator != null) { "Creator must not be null." }
 
-            var query = creator!!.createQuery(getDynamicSort(values))
+            var query = creator.createQuery(getDynamicSort(values))
             if(queryMethod.isPageQuery) {
                 query = query.applyPageable(domainKlass, accessor.pageable)
             }

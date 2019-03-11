@@ -183,7 +183,7 @@ internal class CoroutinePagedExecution(val parameters: RequeryParameters) : Abst
             queryElement = adjustPage(queryElement, query.domainClass, pageable)
             logger.trace { "offset=${queryElement.offset}, limit=${queryElement.limit}, pageable=$pageable" }
 
-            val result = withContext(Dispatchers.Unconfined) { queryElement.getAsResult().toList() }
+            val result = withContext(Dispatchers.Default) { queryElement.getAsResult().toList() }
             val totals = withContext(Dispatchers.Default) { doExecuteTotals(query, values) }
 
             PageImpl(result, pageable, totals)

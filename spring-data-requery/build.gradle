@@ -68,6 +68,11 @@ dependencies {
     optional "org.threeten:threetenbp"
     optional "joda-time:joda-time"
 
+    optional "org.cache2k:cache2k-core"
+    optional "org.redisson:redisson"
+    optional "org.xerial.snappy:snappy-java"
+    optional "de.ruedigermoeller:fst"
+
     testImplementation "javax.cache:cache-api"
     testImplementation "org.eclipse.persistence:javax.persistence"
 }
