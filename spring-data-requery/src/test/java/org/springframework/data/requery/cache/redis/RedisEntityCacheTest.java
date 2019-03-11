@@ -8,7 +8,7 @@ import io.requery.query.Result;
 import io.requery.sql.ConfigurationBuilder;
 import io.requery.sql.EntityDataStore;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,6 +86,11 @@ public class RedisEntityCacheTest extends AbstractRedisCacheTest {
     @Autowired
     protected RequeryOperations requeryOperations;
 
+    @Before
+    public void setup() {
+        requeryOperations.deleteAll(BasicUser.class);
+    }
+
     @Test
     public void insert_user_without_association() throws Exception {
         BasicUser user = RandomData.randomUser();
@@ -105,9 +110,9 @@ public class RedisEntityCacheTest extends AbstractRedisCacheTest {
         assertThat(loaded2).isEqualTo(loaded);
     }
 
-
     @Test
     public void select_with_limit() throws Exception {
+
         BasicUser user = RandomData.randomUser();
         requeryOperations.insert(user);
 
@@ -118,10 +123,23 @@ public class RedisEntityCacheTest extends AbstractRedisCacheTest {
             .get();
 
         BasicUser first = result.first();
-        Assertions.assertThat(first.getId()).isEqualTo(user.getId());
-        Assertions.assertThat(first.getName()).isEqualTo(user.getName());
+        assertThat(first.getId()).isEqualTo(user.getId());
+        assertThat(first.getName()).isEqualTo(user.getName());
 
         // NOTE: Lazy loading을 수행합니다 !!!
-        Assertions.assertThat(first.getAge()).isEqualTo(user.getAge());
+        assertThat(first.getAge()).isEqualTo(user.getAge());
+
+
+        Result<BasicUser> result2 = requeryOperations
+            .select(BasicUser.class, BasicUser.ID, BasicUser.NAME)
+            .limit(10)
+            .get();
+
+        BasicUser first2 = result.first();
+        assertThat(first2.getId()).isEqualTo(user.getId());
+        assertThat(first2.getName()).isEqualTo(user.getName());
+
+        // NOTE: Lazy loading을 수행합니다 !!!
+        assertThat(first2.getAge()).isEqualTo(user.getAge());
     }
 }
