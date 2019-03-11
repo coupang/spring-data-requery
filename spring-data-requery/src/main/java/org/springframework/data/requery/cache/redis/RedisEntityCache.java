@@ -97,6 +97,8 @@ public class RedisEntityCache implements EntityCache {
 
     @Override
     public void invalidate(Class<?> type) {
+        log.trace("Invalidate all cache entity. type={}", type);
+
         RMapCache cache = getCache(type);
         if (cache != null) {
             cache.clear();
@@ -114,6 +116,8 @@ public class RedisEntityCache implements EntityCache {
 
     @Override
     public void clear() {
+        log.info("Clear all cache entities");
+
         synchronized (syncObj) {
             caches.forEach((key, cache) -> invalidate(key));
             caches.clear();
