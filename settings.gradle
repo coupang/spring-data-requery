@@ -24,5 +24,5 @@ include 'spring-boot-starter-data-requery'
 // include 'spring-data-benchmark'
 // include 'spring-data-requery-benchmark'
 
-include ':examples:requery-spring-boot-demo'
+// include ':examples:requery-spring-boot-demo'
 
