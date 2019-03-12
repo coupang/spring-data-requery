@@ -139,6 +139,10 @@ subprojects {
             dependency "org.postgresql:postgresql:42.2.5"
 
             dependency "com.h2database:h2:1.4.197"
+            dependency "org.testcontainers:mysql:1.7.3"
+            dependency "org.testcontainers:mariadb:1.7.3"
+            dependency "org.testcontainers:postgresql:1.7.3"
+
             dependency "org.testcontainers:testcontainers:$testcontainers_version"
             dependency "org.testcontainers:mysql:$testcontainers_version"
             dependency "org.testcontainers:mariadb:$testcontainers_version"
@@ -183,6 +187,7 @@ subprojects {
         testImplementation "org.postgresql:postgresql"
 
         testImplementation "com.h2database:h2"
+        testImplementation "org.testcontainers:testcontainers"
         testImplementation "org.testcontainers:mysql"
         testImplementation "org.testcontainers:postgresql"
     }
@@ -210,6 +215,16 @@ subprojects {
 
     jacoco {
         toolVersion = "0.8.1"
+    }
+
+    jar {
+        manifest.attributes["Specification-Title"] = "Spring Data Requery"
+        manifest.attributes["Specification-Version"] = project.version
+        manifest.attributes["Implementation-Title"] = project.name
+        manifest.attributes["Implementation-Version"] = project.version
+        manifest.attributes["Automatic-Module-Name"] = project.name.replace('-', '.')
+        manifest.attributes["Created-By"] =
+                "${System.getProperty("java.version")} (${System.getProperty("java.specification.vendor")})"
     }
 
     task sourcesJar(type: Jar, dependsOn: classes) {

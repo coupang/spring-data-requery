@@ -85,13 +85,12 @@ dependencies {
 
     optional "org.cache2k:cache2k-core"
     optional "org.redisson:redisson"
+
     optional "org.threeten:threetenbp"
     optional "joda-time:joda-time"
 
     testImplementation "com.nhaarman:mockito-kotlin"
     testImplementation "com.fasterxml.jackson.module:jackson-module-kotlin"
-
-    testImplementation "org.testcontainers:testcontainers"
 }
 
 compileKotlin {
