@@ -123,8 +123,13 @@ subprojects {
             dependency "org.apache.commons:commons-lang3:3.7"
             dependency "org.apache.commons:commons-collections4:4.1"
 
-            dependency "org.cache2k:cache2k-all:1.2.0.Final"
-            dependency "org.cache2k:cache2k-jcache:1.2.0.Final"
+            dependency "org.cache2k:cache2k-core:1.2.1.Final"
+            dependency "org.cache2k:cache2k-jcache:1.2.1.Final"
+
+            dependency "org.redisson:redisson:3.10.3"
+
+            dependency "org.xerial.snappy:snappy-java:1.1.7.1"
+            dependency "de.ruedigermoeller:fst:2.57"
 
             dependency "org.assertj:assertj-core:3.10.0"
             dependency "org.mockito:mockito-core:2.19.0"
@@ -137,12 +142,18 @@ subprojects {
             dependency "org.testcontainers:mysql:1.7.3"
             dependency "org.testcontainers:mariadb:1.7.3"
             dependency "org.testcontainers:postgresql:1.7.3"
+
+            dependency "org.testcontainers:testcontainers:$testcontainers_version"
+            dependency "org.testcontainers:mysql:$testcontainers_version"
+            dependency "org.testcontainers:mariadb:$testcontainers_version"
+            dependency "org.testcontainers:postgresql:$testcontainers_version"
         }
     }
 
     dependencies {
 
         compileOnly "com.google.code.findbugs:jsr305"
+        testCompileOnly "com.google.code.findbugs:jsr305"
 
         implementation "org.slf4j:slf4j-api"
         testImplementation "ch.qos.logback:logback-classic"
@@ -158,7 +169,7 @@ subprojects {
         testImplementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
         testImplementation "com.fasterxml.jackson.datatype:jackson-datatype-jdk8"
 
-        testImplementation "org.cache2k:cache2k-all"
+        testImplementation "org.cache2k:cache2k-core"
         testImplementation "org.cache2k:cache2k-jcache"
 
         testImplementation "io.reactivex.rxjava2:rxjava"
@@ -176,6 +187,7 @@ subprojects {
         testImplementation "org.postgresql:postgresql"
 
         testImplementation "com.h2database:h2"
+        testImplementation "org.testcontainers:testcontainers"
         testImplementation "org.testcontainers:mysql"
         testImplementation "org.testcontainers:postgresql"
     }
@@ -203,6 +215,16 @@ subprojects {
 
     jacoco {
         toolVersion = "0.8.1"
+    }
+
+    jar {
+        manifest.attributes["Specification-Title"] = "Spring Data Requery"
+        manifest.attributes["Specification-Version"] = project.version
+        manifest.attributes["Implementation-Title"] = project.name
+        manifest.attributes["Implementation-Version"] = project.version
+        manifest.attributes["Automatic-Module-Name"] = project.name.replace('-', '.')
+        manifest.attributes["Created-By"] =
+                "${System.getProperty("java.version")} (${System.getProperty("java.specification.vendor")})"
     }
 
     task sourcesJar(type: Jar, dependsOn: classes) {

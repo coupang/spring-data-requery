@@ -83,7 +83,9 @@ dependencies {
     compile "org.springframework:spring-tx"
     compile "org.springframework.data:spring-data-commons"
 
-    optional "org.cache2k:cache2k-all"
+    optional "org.cache2k:cache2k-core"
+    optional "org.redisson:redisson"
+
     optional "org.threeten:threetenbp"
     optional "joda-time:joda-time"
 
