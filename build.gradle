@@ -233,7 +233,7 @@ subprojects {
     }
 
     // Skip Documentation Tasks?
-    def skipDocumantation = false
+    def skipDocumantation = true
 
 
     if (!skipDocumantation) {
