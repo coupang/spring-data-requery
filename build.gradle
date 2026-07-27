@@ -94,8 +94,10 @@ subprojects {
             dependency "io.requery:requery-jackson:$requery_version"
             dependency "io.requery:requery-processor:$requery_version"
 
-            dependency "org.slf4j:slf4j-api:1.7.25"
-            dependency "ch.qos.logback:logback-classic:1.2.3"
+            dependency "org.slf4j:slf4j-api:1.7.36"
+            // SECURITY: 1.2.3 -> 1.2.13 fixes CVE-2021-42550 (JNDI RCE via config) and
+            // CVE-2023-6378 (deserialization DoS). Stays on the SLF4J-1.7-compatible 1.2.x line.
+            dependency "ch.qos.logback:logback-classic:1.2.13"
             dependency "io.github.microutils:kotlin-logging:1.5.4"
 
 
@@ -117,28 +119,44 @@ subprojects {
             dependency "javax.validation:validation-api:2.0.1.Final"
             dependency "org.eclipse.persistence:javax.persistence:2.2.0"
 
-            dependency "org.javassist:javassist:3.22.0-GA"
+            // SECURITY: baseline currency bump (no strong exploited CVE, EOL/dated).
+            dependency "org.javassist:javassist:3.29.2-GA"
 
             dependency "org.apache.commons:commons-lang3:3.7"
-            dependency "org.apache.commons:commons-collections4:4.1"
+            // SECURITY: 4.1 already mitigates the InvokerTransformer gadget (CVE-2015-6420/-7501
+            // affect 3.2.1 and 4.0). 4.4 keeps the baseline current; not a functional change.
+            dependency "org.apache.commons:commons-collections4:4.4"
 
             // Cache
             dependency "org.cache2k:cache2k-core:1.2.1.Final"
             dependency "org.cache2k:cache2k-jcache:1.2.1.Final"
 
+            // SECURITY (Finding 1 / CWE-502): Redisson's default codec (FST) performs
+            // unrestricted Java-compatible deserialization and feeds RedisSerializedEntity.readObject.
+            // A version bump alone does NOT close this; see SECURITY.md for the required deployment
+            // hardening (authenticated + TLS Redis, jdk.serialFilter allow-list) and the tracked
+            // code remediation (schema-bound codec / ObjectInputFilter).
             dependency "org.redisson:redisson:3.10.3"
 
-            dependency "org.xerial.snappy:snappy-java:1.1.7.1"
+            // SECURITY: 1.1.7.1 -> 1.1.10.5 fixes CVE-2023-34453/-34455/-43642 (DoS via
+            // unchecked lengths / integer overflow). Reachable if the Snappy codec is enabled.
+            dependency "org.xerial.snappy:snappy-java:1.1.10.5"
             dependency "de.ruedigermoeller:fst:2.57"
 
             dependency "org.assertj:assertj-core:3.10.0"
             dependency "org.mockito:mockito-core:2.19.0"
             dependency "com.nhaarman:mockito-kotlin:1.6.0"
 
-            dependency "mysql:mysql-connector-java:8.0.11"
-            dependency "org.postgresql:postgresql:42.2.5"
+            // SECURITY: 8.0.11 -> 8.0.28 fixes CVE-2021-2471 (XXE) and CVE-2019-2692.
+            dependency "mysql:mysql-connector-java:8.0.28"
+            // SECURITY: 42.2.5 -> 42.2.28 fixes CVE-2020-13692 (XXE) and CVE-2022-21724
+            // (unchecked plugin class instantiation). Kept on the 42.2.x line for JDBC42 compatibility.
+            dependency "org.postgresql:postgresql:42.2.28"
 
-            dependency "com.h2database:h2:1.4.197"
+            // SECURITY: 1.4.197 -> 2.2.224 fixes CVE-2021-42392 and CVE-2022-23221 (H2 console
+            // JNDI/JDBC-URL RCE). H2 is test/demo scope here. NOTE: H2 2.x has SQL-compatibility
+            // changes vs 1.4.x; test suites MUST be revalidated in CI (see SECURITY.md).
+            dependency "com.h2database:h2:2.2.224"
             dependency "org.testcontainers:mysql:1.7.3"
             dependency "org.testcontainers:mariadb:1.7.3"
             dependency "org.testcontainers:postgresql:1.7.3"
